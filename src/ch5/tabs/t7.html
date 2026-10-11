@@ -1,0 +1,125 @@
+<!--NAV: 岩石與礦物-->
+<div class="pagehead">
+  <span class="ref">課本 p.152–161｜5-3 岩石與礦物</span>
+  <h2>石頭是地球的「日記本」</h2>
+  <p class="hook"><b>課本 tell me why：</b>人類用岩石蓋房子、做雕刻。這些岩石外觀為什麼差那麼多？——因為它們的「出生方式」不一樣。</p>
+</div>
+
+<details class="teacher"><summary>👩‍🏫 教學提示</summary><div class="inner">
+  三種岩類各一個「岩石製造機」，每個 5 分鐘：火成岩（冷卻快慢 → 晶體大小）、沉積岩（第 4 分頁的沉積物 → 壓密膠結）、變質岩（加溫加壓）。<br>
+  接著做「虛擬實驗桌」對應實驗 5-1 與探討活動 5-1（可在真實驗之前預習，或之後複習）。資優班有兩個擂台：岩石循環、冰算不算礦物。
+</div></details>
+
+<div data-guess="t7"></div>
+
+<!-- 火成岩 -->
+<div class="card">
+  <h3>🌋 火成岩製造機：岩漿冷卻</h3>
+  <div class="grid2">
+    <canvas class="sim" id="t7ign" style="background:#222"></canvas>
+    <div class="controls">
+      <div><div class="note">① 岩漿的成分</div>
+        <div class="chips" id="t7comp"><button class="chip on" data-c="light">淺色（富含矽）</button><button class="chip" data-c="mid">中間</button><button class="chip" data-c="dark">深色（富含鐵、鎂）</button></div></div>
+      <div class="ctl"><label>② 在哪裡冷卻 <output for="t7cool"></output></label><input type="range" id="t7cool" min="0" max="100" value="15"></div>
+      <div class="btnrow"><button class="btn warn" id="t7go">🔥→🪨 讓岩漿冷卻</button></div>
+      <div class="callout" id="t7ignName" style="min-height:70px">選好條件，按「讓岩漿冷卻」。</div>
+    </div>
+  </div>
+</div>
+
+<!-- 沉積岩 -->
+<div class="card">
+  <h3>🏞 沉積岩製造機：堆積＋壓密＋膠結</h3>
+  <div class="grid2">
+    <canvas class="sim" id="t7sed" style="background:#CFE6F5"></canvas>
+    <div class="controls">
+      <div class="note">選一種沉積物（想想它在第 4 分頁的河流哪一段出現）：</div>
+      <div class="chips" id="t7sedC">
+        <button class="chip on" data-s="0">礫石（上游）</button><button class="chip" data-s="1">沙（中下游）</button><button class="chip" data-s="2">泥（出海口）</button>
+        <button class="chip" data-s="3">貝殼、珊瑚</button><button class="chip" data-s="4">鹽的結晶</button>
+      </div>
+      <div class="btnrow"><button class="btn warn" id="t7press">⬇ 一層層堆上去、壓緊</button><button class="btn ghost" id="t7sedReset">↺ 重來</button></div>
+      <div class="callout" id="t7sedName" style="min-height:70px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 變質岩 -->
+<div class="card">
+  <h3>🔥 變質岩製造機：高溫高壓，但不熔化</h3>
+  <div class="grid2">
+    <canvas class="sim" id="t7met" style="background:#fff"></canvas>
+    <div class="controls">
+      <div class="chips" id="t7metC"><button class="chip on" data-m="0">頁岩</button><button class="chip" data-m="1">石灰岩</button><button class="chip" data-m="2">花岡岩</button></div>
+      <div class="ctl"><label>埋得多深（溫度＋壓力） <output for="t7heat"></output></label><input type="range" id="t7heat" min="0" max="100" value="0"></div>
+      <div class="callout" id="t7metName" style="min-height:70px"></div>
+    </div>
+  </div>
+</div>
+
+<div class="cases">
+  <div class="case">
+    <div class="where">🇹🇼 臺灣｜澎湖 大菓葉</div>
+    <h4>柱狀玄武岩</h4>
+    <p>澎湖群島主要由玄武岩質的岩漿冷卻形成。岩漿在地表冷卻時會收縮，收縮的力量把岩石拉裂成一根根六角形的柱子。</p>
+    <div class="links"><a href="https://www.google.com/search?tbm=isch&q=%E6%BE%8E%E6%B9%96+%E5%A4%A7%E8%8F%93%E8%91%89+%E6%9F%B1%E7%8B%80%E7%8E%84%E6%AD%A6%E5%B2%A9" target="_blank" rel="noopener">📷 看照片</a></div>
+  </div>
+  <div class="case world">
+    <div class="where">🌍 國際｜英國 北愛爾蘭</div>
+    <h4>巨人堤道：澎湖的遠房親戚</h4>
+    <p>大約 5000 萬到 6000 萬年前，大量熔岩從地殼裂縫湧出，冷卻收縮後形成約四萬根玄武岩柱，大多是六角形，像有人鋪好的石階。</p>
+    <p>研究發現：玄武岩大約在冷卻到 840–890 °C 時開始裂開。柱子的粗細，和熔岩冷卻得多快有關。</p>
+    <div class="links"><a href="https://www.smithsonianmag.com/smart-news/researchers-reveal-how-giants-causeway-was-formed-180968806/" target="_blank" rel="noopener">史密森尼雜誌（英）</a><a href="https://www.google.com/search?tbm=isch&q=Giant%27s+Causeway" target="_blank" rel="noopener">📷 看照片</a></div>
+  </div>
+  <div class="case">
+    <div class="where">🇹🇼 臺灣｜花蓮 太魯閣・豐田</div>
+    <h4>大理岩峽谷與「臺灣玉」</h4>
+    <p>太魯閣的峽谷是立霧溪切穿厚厚的<b>大理岩</b>（石灰岩變質而成）形成的。</p>
+    <p>花蓮豐田出產的「臺灣玉」（閃玉），是蛇紋岩被熱水改造而成的。1975 年全盛時期，產量曾占全世界約九成。</p>
+    <div class="links"><a href="https://www.google.com/search?tbm=isch&q=%E5%A4%AA%E9%AD%AF%E9%96%A3+%E7%87%95%E5%AD%90%E5%8F%A3" target="_blank" rel="noopener">📷 太魯閣</a><a href="https://www.google.com/search?tbm=isch&q=%E8%B1%90%E7%94%B0+%E9%96%83%E7%8E%89+%E8%87%BA%E7%81%A3%E7%8E%89" target="_blank" rel="noopener">📷 臺灣玉</a></div>
+  </div>
+  <div class="case world">
+    <div class="where">🌍 國際｜印度 泰姬瑪哈陵</div>
+    <h4>白色大理岩蓋的陵墓</h4>
+    <p>質地細緻的大理岩容易雕刻、拋光後很漂亮，所以常被用在建築與雕像上。泰姬瑪哈陵就是用白色大理岩蓋成的。課本提到的奇美博物館，也大量使用大理岩。</p>
+    <p class="ask">想一想：大理岩含有碳酸鈣。遇到酸雨會怎樣？（提示：虛擬實驗桌滴鹽酸）</p>
+  </div>
+</div>
+
+<!-- 虛擬實驗桌 -->
+<div class="card">
+  <h3>🔬 虛擬實驗桌 <span class="tag note">實驗 5-1 猜猜我是誰＋探討活動 5-1</span></h3>
+  <p class="note" style="margin-top:0">選一個標本，再選一個工具。</p>
+  <div class="chips" id="t7spec"></div>
+  <div class="btnrow" style="margin:10px 0" id="t7tools">
+    <button class="btn ghost" data-t="look">🔍 放大鏡觀察</button><button class="btn ghost" data-t="acid">💧 滴稀鹽酸</button>
+    <button class="btn ghost" data-t="nail">💅 用指甲刻</button><button class="btn ghost" data-t="iron">🔩 用鐵釘刻</button>
+  </div>
+  <div class="grid2">
+    <canvas class="sim" id="t7lab" style="background:#F7F3EA"></canvas>
+    <div class="callout" id="t7labOut" style="min-height:120px">結果會顯示在這裡。</div>
+  </div>
+  <h3 style="margin-top:14px">✍ 把六塊岩石分類</h3>
+  <div id="t7sort"></div>
+</div>
+
+<details class="deep"><summary>🧠 資優挑戰｜迷思擂台：岩石循環一定照順序走？冰算不算礦物？</summary><div class="inner">
+  <div class="card" style="margin:0 0 10px">
+    <h3>♻ 岩石循環地圖</h3>
+    <div class="grid2">
+      <canvas class="sim" id="t7cyc" style="background:#fff"></canvas>
+      <div class="controls">
+        <div class="btnrow"><button class="btn deepb" id="t7walk">🎲 讓一顆石頭隨機走 6 步</button></div>
+        <div class="callout" id="t7walkLog" style="min-height:140px;font-size:.9rem">點圖上的箭頭看說明，或讓石頭隨機走走看。</div>
+      </div>
+    </div>
+  </div>
+  <div data-arena="t7"></div>
+  <div class="card" style="margin:10px 0">
+    <h3>📋 礦物檢查表：天然產生？原子規則排列？固體？無機物？四個都「是」才算礦物</h3>
+    <div id="t7min"></div>
+  </div>
+  <div data-arena="t7b"></div>
+</div></details>
+
+<div class="takeaway">💬 <b>一句話帶走：</b>火成岩看「冷卻快慢」，沉積岩看「顆粒大小與來源」，變質岩看「原本是什麼岩石」。</div>

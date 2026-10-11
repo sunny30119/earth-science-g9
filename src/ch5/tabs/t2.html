@@ -1,0 +1,61 @@
+<!--NAV: 地下水與地層下陷-->
+<div class="pagehead">
+  <span class="ref">課本 p.138–140｜5-1 ② 地下水</span>
+  <h2>腳底下看不見的水庫</h2>
+  <p class="hook"><b>關鍵問題：</b>雨水滲到地下，會停在哪裡？如果我們抽得比雨水補回去的還快，會發生什麼事？</p>
+</div>
+
+<details class="teacher"><summary>👩‍🏫 教學提示</summary><div class="inner">
+  ① 先不按播放，讓學生指出「透水層、不透水層、地下水面」。② 把井的深度拉一拉，對應課本例題 5-1。③ 把抽水量拉到最大、按播放跑 30 年，觀察地面下沉與海水入侵。④ 按「停止抽水」再跑 30 年——水面回來了，地面沒有回來。
+</div></details>
+
+<div class="card">
+  <h3>🧪 地下水模擬器 <span class="tag note">剖面圖：左邊是內陸，右邊是海</span></h3>
+  <div class="grid2">
+    <canvas class="sim" id="t2cv"></canvas>
+    <div class="controls">
+      <div class="ctl"><label>每年降雨（補注）<output for="t2rain"></output></label><input type="range" id="t2rain" min="0" max="100" value="50"></div>
+      <div class="ctl"><label>每年抽水量 <output for="t2pump"></output></label><input type="range" id="t2pump" min="0" max="100" value="50"></div>
+      <div class="ctl"><label>水井深度 <output for="t2well"></output></label><input type="range" id="t2well" min="2" max="20" value="8"></div>
+      <div class="btnrow">
+        <button class="btn" id="t2play">▶ 時間前進</button>
+        <button class="btn warn" id="t2stop">🚫 停止抽水</button>
+        <button class="btn ghost" id="t2reset">↺ 重設</button>
+      </div>
+      <div class="readout" id="t2read"></div>
+    </div>
+  </div>
+</div>
+
+<div data-guess="t2"></div>
+
+<div class="cases">
+  <div class="case">
+    <div class="where">🇹🇼 臺灣｜雲林・高鐵沿線</div>
+    <h4>25 年來第一次：雲林沒有「顯著下陷」</h4>
+    <p>2025 年監測顯示，雲林全縣沒有任何地方的下陷速率超過每年 3 公分，是近 25 年來第一次。</p>
+    <p>原因：雨下得多，加上政府補助農民把稻田改種<b>比較不耗水</b>的作物，少抽了地下水，還在河邊做「補注」把水灌回地下。</p>
+    <p>為什麼特別緊張高鐵？高鐵公司曾評估：如果每年下陷約 <span class="num">7 公分</span>，10 年內可能危及行車安全。</p>
+    <div class="links"><a href="https://www.storm.mg/article/11146380" target="_blank" rel="noopener">📰 風傳媒報導</a><a href="https://www.google.com/search?tbm=isch&q=%E5%98%89%E7%BE%A9+%E6%9D%B1%E7%9F%B3+%E5%9C%B0%E5%B1%A4%E4%B8%8B%E9%99%B7" target="_blank" rel="noopener">📷 嘉義東石的老房子（課本圖 5-6）</a></div>
+  </div>
+  <div class="case world">
+    <div class="where">🌍 國際｜墨西哥・墨西哥城</div>
+    <h4>從太空看見城市在下沉</h4>
+    <p>NASA 和印度合作的 NISAR 雷達衛星（2025 年發射）發現：墨西哥城部分地區<span class="num">每個月</span>下沉約 2 公分，連機場和地標「獨立天使紀念柱」都在下沉。</p>
+    <p>這座城市蓋在古代湖底的軟黏土上，一百多年來大量抽地下水，黏土被壓扁。1990 年代最嚴重時，一年沉 35 公分。</p>
+    <div class="links"><a href="https://www.jpl.nasa.gov/news/us-indian-space-mission-maps-extreme-subsidence-in-mexico-city/" target="_blank" rel="noopener">NASA JPL 新聞稿（英）</a><a href="https://www.youtube.com/results?search_query=Mexico+City+sinking+NISAR" target="_blank" rel="noopener">🎬 YouTube 影片</a></div>
+  </div>
+  <div class="case world">
+    <div class="where">🌍 國際｜印尼・雅加達</div>
+    <h4>沉到要「搬首都」</h4>
+    <p>雅加達大約 40% 的土地已經低於海平面，北邊最嚴重的地方一年下沉可達 20 公分以上，連防海水的堤防都跟著沉。</p>
+    <p>印尼政府因此決定把首都遷到婆羅洲的「努山塔拉」。主要原因：大量抽取地下水。</p>
+    <div class="links"><a href="https://www.aljazeera.com/news/2022/11/9/hldwhyindonesia-is-abandoning-its-capital-jakarta-to-save-ithld" target="_blank" rel="noopener">半島電視台專題（英）</a></div>
+  </div>
+</div>
+
+<details class="deep"><summary>🧠 資優挑戰｜迷思擂台：停止抽水，地面會彈回來嗎？</summary><div class="inner">
+  <div data-arena="t2"></div>
+</div></details>
+
+<div class="takeaway">💬 <b>一句話帶走：</b>地下水抽得比補得快 → 地層______，而且______回不去。</div>

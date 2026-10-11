@@ -1,0 +1,70 @@
+<!--NAV: 月相變化-->
+<div class="pagehead">
+  <span class="ref">課本 p.203–205｜7-3 ① 月相變化＋實驗 7-1</span>
+  <h2>月亮為什麼會「變形」？</h2>
+  <p class="hook"><b>關鍵事實：</b>月亮自己不會發光，它的光芒是反射的太陽光。月球永遠有一半被太陽照亮——那為什麼我們看到的形狀每天都不一樣？</p>
+</div>
+
+<details class="teacher"><summary>👩‍🏫 教學提示</summary><div class="inner">
+  建議先做實體的實驗 7-1（黑黃球），再用這裡「放慢、對照」。左圖是從北極上空看（上帝視角），右圖是從臺灣看到的樣子，兩邊同步。請學生預測：拖到某個位置時，右邊會看到什麼月相？什麼時候升起？
+</div></details>
+
+<div data-guess="t4"></div>
+
+<div class="card">
+  <h3>🌙 月相模擬器 <span class="tag note">拖曳左圖的月球，或按播放</span></h3>
+  <div class="grid2 even">
+    <canvas class="sim" id="c7moonTop" style="background:#05070F"></canvas>
+    <canvas class="sim" id="c7moonView" style="background:#0B1530"></canvas>
+  </div>
+  <div class="grid2" style="margin-top:10px">
+    <div class="controls">
+      <div class="ctl"><label>農曆日期 <output for="c7lday"></output></label><input type="range" id="c7lday" min="0" max="29.5" value="7.4" step="0.1"></div>
+      <div class="btnrow"><button class="btn" id="c7moonPlay">▶ 播放一個月</button><label class="note"><input type="checkbox" id="c7shadow"> 顯示地球的影子</label></div>
+    </div>
+    <div class="readout" id="c7moonR"></div>
+  </div>
+</div>
+
+<div class="card">
+  <h3>📋 月相整理</h3>
+  <table class="simple">
+    <tr><th>月相</th><th>農曆</th><th>日、地、月的位置</th><th>亮面朝向</th><th>大約何時升起</th></tr>
+    <tr><td>新月（朔）</td><td>初一</td><td>月球在太陽和地球之間</td><td>看不到</td><td>清晨（和太陽一起）</td></tr>
+    <tr><td>上弦月</td><td>初七、初八</td><td>三者成直角</td><td>朝西</td><td>中午</td></tr>
+    <tr><td>滿月（望）</td><td>十五</td><td>地球在太陽和月球之間</td><td>整個亮</td><td>傍晚（日落時）</td></tr>
+    <tr><td>下弦月</td><td>二十二、二十三</td><td>三者成直角</td><td>朝東</td><td>半夜</td></tr>
+  </table>
+  <p class="note">月相變化一輪約 29.5 天，所以農曆一個月大約 29 或 30 天。</p>
+</div>
+
+<div class="cases">
+  <div class="case">
+    <div class="where">🇹🇼 生活｜中秋節</div>
+    <h4>為什麼中秋節一定是滿月（或接近滿月）？</h4>
+    <p>農曆是依照月相訂的：初一是新月，十五前後是滿月。中秋節是農曆八月十五，所以月亮又圓又亮，而且傍晚就從東方升起，整晚都看得到。</p>
+    <p class="ask">想一想：如果有人說「我在中秋節中午看到滿月掛在天頂」，可能嗎？</p>
+  </div>
+  <div class="case world">
+    <div class="where">🌍 歷史｜1969 年 阿波羅 11 號</div>
+    <h4>人類第一次踏上月球</h4>
+    <p>美國太空人阿姆斯壯首度踏上月球表面（課本 p.203）。太空人在月球上回頭看地球，也會看到地球有「地相」變化——當地球上看到新月時，月球上看到的是「滿地」。</p>
+  </div>
+</div>
+
+<details class="deep"><summary>🧠 資優挑戰｜為什麼月球永遠同一面朝地球？＋迷思擂台：月相是地球的影子造成的？</summary><div class="inner">
+  <div class="card" style="margin:0 0 10px">
+    <h3>🔄 月球的自轉（課本探究提問 p.204）</h3>
+    <div class="grid2">
+      <canvas class="sim" id="c7lock" style="background:#05070F"></canvas>
+      <div class="controls">
+        <div class="chips" id="c7lockMode"><button class="chip on" data-m="sync">自轉一圈＝公轉一圈（真實）</button><button class="chip" data-m="none">假設：月球不自轉</button></div>
+        <div class="btnrow"><button class="btn deepb" id="c7lockGo">▶ 播放</button></div>
+        <div class="callout" id="c7lockTxt"></div>
+      </div>
+    </div>
+  </div>
+  <div data-arena="t4"></div>
+</div></details>
+
+<div class="takeaway">💬 <b>一句話帶走：</b>月相是因為月球繞地球公轉，我們看到它「被太陽照亮那一半」的______不同；不是地球的______。</div>

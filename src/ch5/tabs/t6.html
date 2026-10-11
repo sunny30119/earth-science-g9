@@ -1,0 +1,96 @@
+<!--NAV: 河道與海岸線-->
+<div class="pagehead">
+  <span class="ref">課本 p.149–151、163｜5-2 ③ 河道與海岸線的變化＋科學大事記</span>
+  <h2>動一個地方，整條河、整片海岸都會「回應」</h2>
+  <p class="hook"><b>核心想法：</b>河床和海岸線一直在追求「平衡」——突起的被削平、低窪的被填滿、沙進來和沙出去打平。人類一出手，平衡就會往別的地方「討回來」。</p>
+</div>
+
+<details class="teacher"><summary>👩‍🏫 教學提示</summary><div class="inner">
+  ① 挖砂石：先問「在下游挖，上游的橋會不會有事？」投票後再跑模擬。② 海岸線：依序試「上游蓋水庫」「蓋漁港突堤」，對照課本圖 5-19 的大武漁港（淤積）與馬沙溝（流失）。③ 資優班：截彎取直擂台，對應課本 p.163 基隆河的科學大事記。
+</div></details>
+
+<div class="card">
+  <h3>⛏ 挖砂石，橋為什麼會危險？ <span class="tag note">河流縱剖面：左上游、右下游</span></h3>
+  <div class="grid2">
+    <canvas class="sim" id="t6bed" style="background:#EAF4FA"></canvas>
+    <div class="controls">
+      <div class="btnrow">
+        <button class="btn warn" id="t6dig">⛏ 在下游持續挖砂石</button>
+        <button class="btn ghost" id="t6bump">⛰ 加一塊突起的岩盤</button>
+      </div>
+      <div class="btnrow">
+        <button class="btn" id="t6bedPlay">▶ 時間前進</button>
+        <button class="btn ghost" id="t6bedReset">↺ 重設</button>
+      </div>
+      <div class="readout" id="t6bedR"></div>
+      <p class="note">紅色虛線是原本的河床。河床會自己「找平衡」：突起處被侵蝕、低窪處被沉積填補（課本 p.149）。</p>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h3>🏖 海岸線的收支平衡 <span class="tag note">從空中往下看：上面是陸地，下面是海</span></h3>
+  <div class="grid2">
+    <canvas class="sim" id="t6coast" style="background:#4F86C6"></canvas>
+    <div class="controls">
+      <div class="ctl"><label>河川帶來的沙 <output for="t6sup"></output></label><input type="range" id="t6sup" min="0" max="100" value="60"></div>
+      <div class="ctl"><label>波浪強度 <output for="t6wave"></output></label><input type="range" id="t6wave" min="10" max="100" value="50"></div>
+      <div class="btnrow">
+        <button class="btn warn" id="t6dam">🏗 上游蓋水庫（攔住八成的沙）</button>
+        <button class="btn warn" id="t6jetty">⚓ 蓋漁港突堤</button>
+      </div>
+      <div class="btnrow"><button class="btn" id="t6coastPlay">▶ 時間前進</button><button class="btn ghost" id="t6coastReset">↺ 重設</button></div>
+      <div class="readout" id="t6coastR"></div>
+      <p class="note">沿岸流把沙從左往右帶。沉積的沙 ＞ 被帶走的沙 → 海岸線前進；反過來就後退。</p>
+    </div>
+  </div>
+</div>
+
+<div data-guess="t6"></div>
+
+<div class="cases">
+  <div class="case">
+    <div class="where">🇹🇼 臺灣｜臺中 大甲溪 后豐大橋</div>
+    <h4>2008 年，颱風沖斷了橋墩</h4>
+    <p>辛樂克颱風帶來豪雨，大甲溪暴漲，沖斷后豐大橋的橋墩，造成 6 人罹難。</p>
+    <p>事後交通部全面檢查河川橋梁的「水下基礎」，並花了十多億元改建、修繕將近兩百座橋。河床被沖刷降低、橋墩基礎外露，正是橋梁最怕的事。</p>
+    <div class="links"><a href="https://news.tvbs.com.tw/life/181416" target="_blank" rel="noopener">📰 TVBS 2008 報導</a><a href="https://news.tvbs.com.tw/life/109310" target="_blank" rel="noopener">📰 一步一腳印：重建斷橋</a></div>
+  </div>
+  <div class="case">
+    <div class="where">🇹🇼 臺灣｜雲林・嘉義外海 外傘頂洲</div>
+    <h4>「會移動的國土」正在縮小</h4>
+    <p>外傘頂洲是臺灣最大的沙洲。有保育單位統計，2003 到 2023 年間面積少了約 <span class="num">823 公頃</span>（約 30 個大安森林公園），而且整個沙洲一直往南漂。</p>
+    <p>原因之一：河川上游的攔沙壩讓送到海邊的沙變少，海浪和季風卻照樣把沙帶走。現在地方居民用竹籬和蚵殼「護沙」。</p>
+    <div class="links"><a href="https://news.pts.org.tw/article/479079" target="_blank" rel="noopener">📰 公視報導</a><a href="https://www.taiwannews.com.tw/news/5903194" target="_blank" rel="noopener">📰 台灣英文新聞（英）</a></div>
+  </div>
+  <div class="case">
+    <div class="where">🇹🇼 臺灣｜臺南 七股潟湖</div>
+    <h4>水庫＋突堤，沙洲往陸地退</h4>
+    <p>七股潟湖被三座沙洲圍住。曾文水庫蓋好後，河川送來的沙變少；漁港的突堤又擋住沿岸流，沙洲持續往東、往南退縮。蚵農說：「沙洲一直往內陸移，蚵架都在外海了。」</p>
+    <div class="links"><a href="https://news.pts.org.tw/article/542605" target="_blank" rel="noopener">📰 公視報導</a></div>
+  </div>
+  <div class="case world">
+    <div class="where">🌍 國際｜埃及 尼羅河三角洲</div>
+    <h4>一座水庫，讓整個三角洲變瘦</h4>
+    <p>1970 年完工的亞斯文高壩，攔住了尼羅河約九成的泥沙。三角洲得不到新的沙補充，海岸開始後退，有些地方一年退了好幾十公尺，有的村子已經消失。</p>
+    <p class="ask">想一想：這和七股、外傘頂洲有什麼共同點？</p>
+    <div class="links"><a href="https://eastleighvoice.co.ke/ethiopia/380673/study-says-egypts-aswan-high-dam-accelerated-nile-delta-erosion-land-subsidence" target="_blank" rel="noopener">報導（英）</a><a href="https://www.google.com/search?tbm=isch&q=Nile+delta+coastal+erosion+Rosetta" target="_blank" rel="noopener">📷 衛星對照圖</a></div>
+  </div>
+</div>
+
+<details class="deep"><summary>🧠 資優挑戰｜迷思擂台：河道拉直，水流得快，下游就不淹水？</summary><div class="inner">
+  <div class="card" style="margin:0">
+    <h3>〰 截彎取直模擬（基隆河的故事）</h3>
+    <div class="grid2">
+      <canvas class="sim" id="t6mea" style="background:#fff"></canvas>
+      <div class="controls">
+        <div class="ctl"><label>截彎取直的程度 <output for="t6str"></output></label><input type="range" id="t6str" min="0" max="100" value="0"></div>
+        <div class="readout" id="t6meaR"></div>
+        <p class="note">上圖：從空中看河道（起點和終點的高度差不變）。下圖：一場大雨後，下游測站的水量變化。灰線＝原本彎曲時；藍線＝現在。</p>
+      </div>
+    </div>
+  </div>
+  <div data-arena="t6"></div>
+</div></details>
+
+<div class="takeaway">💬 <b>一句話帶走：</b>沉積的沙 ＞ 被帶走的沙 → 海岸線______；上游攔住了沙 → 下游的海岸會______。</div>

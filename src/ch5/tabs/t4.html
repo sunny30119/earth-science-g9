@@ -1,0 +1,75 @@
+<!--NAV: 外營力與河流-->
+<div class="pagehead">
+  <span class="ref">課本 p.142–146｜5-2 ①②</span>
+  <h2>河流：把高山搬到海邊的輸送帶</h2>
+  <p class="hook"><b>課本 tell me why：</b>阿翰去泛舟，發現上游到下游的石頭大小不一樣。為什麼？</p>
+</div>
+
+<details class="teacher"><summary>👩‍🏫 教學提示</summary><div class="inner">
+  ① 先玩「這是哪個作用？」分類（5 分鐘），特別強調「風化不是風」。② 河流模擬：讓它跑 20 秒，請學生描述上、中、下游各堆了什麼。再按「⛈ 豪雨」看看巨石會不會被沖走。③ 把「地勢落差」調小，比較平原河流和山區河流。<br>
+  ④ 資優班：Hjulström 圖的迷思擂台約 15 分鐘。
+</div></details>
+
+<details class="card" style="padding:0">
+  <summary style="cursor:pointer;padding:14px 18px;font-weight:bold;font-size:1.15rem">🧩 暖身：外營力的四個作用，這是哪一個？（點開）</summary>
+  <div style="padding:0 18px 16px">
+  <p class="note" style="margin-top:0">風化（變碎、變質，留在原地）→ 侵蝕（離開原地）→ 搬運（被帶走）→ 沉積（停下來堆積）</p>
+  <div id="t4sort"></div>
+  </div>
+</details>
+
+<div class="card">
+  <h3>🏞 河流模擬器 <span class="tag note">從源頭（左）到出海口（右）的縱剖面</span></h3>
+  <canvas class="sim" id="t4cv" style="background:#EAF4FA"></canvas>
+  <div class="grid2" style="margin-top:10px">
+    <div class="controls">
+      <div class="ctl"><label>地勢落差（坡度） <output for="t4rel"></output></label><input type="range" id="t4rel" min="80" max="280" value="220"></div>
+      <div class="ctl"><label>河水流量 <output for="t4q"></output></label><input type="range" id="t4q" min="30" max="200" value="100"></div>
+      <div class="btnrow">
+        <button class="btn warn" id="t4flood">⛈ 豪雨（流量暫時變 3 倍）</button>
+        <button class="btn ghost" id="t4reset">↺ 清空河床</button>
+      </div>
+    </div>
+    <div>
+      <div class="readout" id="t4read"></div>
+      <p class="note">圖例：<span style="color:#78909C">●</span> 巨石　<span style="color:#A1887F">●</span> 鵝卵石　<span style="color:#E0B455">●</span> 細沙　<span style="color:#8D6E63">•</span> 泥</p>
+    </div>
+  </div>
+</div>
+
+<div data-guess="t4"></div>
+
+<div class="cases">
+  <div class="case">
+    <div class="where">🇹🇼 臺灣｜2004 艾利颱風・石門水庫</div>
+    <h4>泥沙多到整個桃園停水</h4>
+    <p>艾利颱風在山區降下豪雨，大量山坡土石被沖進河裡、一路搬運進石門水庫。水太混濁、淨水廠處理不了，桃園大規模停水十多天。</p>
+    <p>這是「豪雨 → 流量暴增 → 搬運力暴增」最真實的例子。之後石門水庫花了很多年做清淤和排砂。</p>
+    <div class="links"><a href="https://www.google.com/search?q=%E8%89%BE%E5%88%A9%E9%A2%B1%E9%A2%A8+%E7%9F%B3%E9%96%80%E6%B0%B4%E5%BA%AB+%E6%BF%81%E5%BA%A6+%E5%81%9C%E6%B0%B4" target="_blank" rel="noopener">🔎 搜尋相關報導</a></div>
+  </div>
+  <div class="case world">
+    <div class="where">🌍 國際｜中國・黃河</div>
+    <h4>河床比房子還高的「地上河」</h4>
+    <p>黃河流經黃土高原，帶走大量泥沙，是全世界含沙量最高的大河之一。到了下游，地勢平、流速慢，泥沙不斷<b>沉積</b>在河床上，河床愈墊愈高。</p>
+    <p>人們只好一直把堤防加高，結果河床竟然比兩岸的田地和城市還高，被稱為「懸河」。</p>
+    <p class="ask">想一想：用模擬器的哪個設定，可以模仿黃河下游？</p>
+    <div class="links"><a href="https://www.google.com/search?tbm=isch&q=%E9%BB%83%E6%B2%B3+%E6%87%B8%E6%B2%B3+%E7%A4%BA%E6%84%8F%E5%9C%96" target="_blank" rel="noopener">📷 看示意圖</a></div>
+  </div>
+</div>
+
+<details class="deep"><summary>🧠 資優挑戰｜迷思擂台：最細的泥，最容易被水沖走？</summary><div class="inner">
+  <div class="card" style="margin:0">
+    <h3>📈 流速 vs 顆粒大小（Hjulström 圖）</h3>
+    <div class="grid2">
+      <canvas class="sim" id="t4hj" style="background:#fff"></canvas>
+      <div class="controls">
+        <div class="ctl"><label>河水流速 <output for="t4v"></output></label><input type="range" id="t4v" min="0" max="100" value="20"></div>
+        <div id="t4hjList" style="font-size:.9rem"></div>
+        <p class="note">圖依 Hjulström（1935）的研究概略重繪，曲線位置為示意。紅線以上：河床上的顆粒會被「沖起來」；藍線以下：水中的顆粒會「沉下去」；兩線之間：已經在水裡的會繼續被帶著走。</p>
+      </div>
+    </div>
+  </div>
+  <div data-arena="t4"></div>
+</div></details>
+
+<div class="takeaway">💬 <b>一句話帶走：</b>上游流速快，以______作用為主，石頭______；出海口流速慢，以______作用為主，留下______。</div>

@@ -1,0 +1,84 @@
+<!--NAV: 岩層的紀錄-->
+<div class="pagehead">
+  <span class="ref">課本 p.181–185｜6-3 岩層與地質事件、岩層與化石</span>
+  <h2>岩層是一本地球的歷史書</h2>
+  <p class="hook"><b>課本 tell me why：</b>墾丁社頂自然公園裡有許多貝類化石和珊瑚礁巨岩。這表示那裡的環境發生過什麼變動？</p>
+</div>
+
+<details class="teacher"><summary>👩‍🏫 教學提示</summary><div class="inner">
+  ① 先複習三個判斷原則（下方卡片）。② 「岩層積木」：老師示範課本 p.182 的六步驟，再讓學生上台自己「蓋」一個剖面，給同學猜順序。③ 「排序挑戰」用抽號點人。④ 化石：先分類沉積環境，再用「46 億年月曆」感受時間尺度。資優班最後做翻轉岩層擂台。
+</div></details>
+
+<div class="card">
+  <h3>📏 判斷先後的三個原則</h3>
+  <div class="grid2 even" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr))">
+    <div class="callout" style="margin:0">① 沉積岩在<b>不受外力</b>的情況下，通常是<b>水平</b>的。</div>
+    <div class="callout" style="margin:0">② <b>下方</b>的岩層比上方的岩層<b>先沉積</b>，年代較久遠。</div>
+    <div class="callout" style="margin:0">③ 岩層中<b>較早</b>發生的事件，會被<b>較晚</b>發生的事件影響（被切過、被侵蝕）。</div>
+  </div>
+</div>
+
+<div data-guess="t7"></div>
+
+<div class="card">
+  <h3>🧱 岩層積木 <span class="tag note">一步一步「蓋」出岩層剖面</span></h3>
+  <div class="grid2">
+    <div>
+      <canvas class="sim" id="c6strata" style="background:#DDEBF5"></canvas>
+      <div class="note" id="c6legend" style="margin-top:6px"></div>
+    </div>
+    <div class="controls">
+      <div><div class="note">沉積一層（可以順便埋一種化石）</div>
+        <div class="chips" id="c6fos" style="margin:4px 0"><button class="chip on" data-f="">不放化石</button><button class="chip" data-f="tri">三葉蟲</button><button class="chip" data-f="amm">菊石</button><button class="chip" data-f="dino">恐龍</button><button class="chip" data-f="mam">哺乳類</button><button class="chip" data-f="coral">珊瑚</button><button class="chip" data-f="leaf">樹葉</button></div>
+        <div class="btnrow"><button class="btn" data-ev="dep:cong">礫岩</button><button class="btn" data-ev="dep:sand">砂岩</button><button class="btn" data-ev="dep:shale">頁岩</button><button class="btn" data-ev="dep:lime">石灰岩</button></div></div>
+      <div><div class="note">其他地質事件</div>
+        <div class="btnrow"><button class="btn warn" data-ev="tilt">↗ 受力傾斜</button><button class="btn warn" data-ev="ero">〰 侵蝕</button><button class="btn warn" data-ev="dike">🔥 岩漿侵入（岩脈）</button><button class="btn warn" data-ev="fault">⚡ 發生斷層</button><button class="btn deepb" data-ev="flip">🟣 強烈擠壓到翻轉</button></div></div>
+      <div class="btnrow"><button class="btn ghost" id="c6undo">↶ 復原一步</button><button class="btn ghost" id="c6clear">清空</button><button class="btn ghost" id="c6pre1">載入課本 p.182 六步驟</button></div>
+      <ol id="c6log" style="margin:0;padding-left:22px;font-size:.92rem"></ol>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h3>🔢 排序挑戰：這個剖面是怎麼形成的？</h3>
+  <div class="grid2">
+    <canvas class="sim" id="c6quiz" style="background:#DDEBF5"></canvas>
+    <div class="controls">
+      <div class="btnrow"><button class="btn warn" id="c6qNew">🎲 出一題</button><button class="btn ghost" id="c6qReset">重新排</button><button class="btn" id="c6qCheck">對答案</button></div>
+      <div class="note">依照「最早 → 最晚」的順序，點下面的事件卡：</div>
+      <div class="chips" id="c6qCards"></div>
+      <ol id="c6qPick" style="margin:0;padding-left:22px"></ol>
+      <div class="callout" id="c6qRes" style="display:none"></div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h3>🦕 化石：判斷「環境」和「年代」</h3>
+  <div id="c6fsort"></div>
+  <h3 style="margin-top:16px">📅 如果地球 46 億年的歷史濃縮成一年</h3>
+  <canvas class="sim" id="c6cal" style="background:#fff"></canvas>
+  <div class="callout" id="c6calTxt">點上面的標記，看看那件事發生在「幾月幾日」。</div>
+</div>
+
+<div class="cases">
+  <div class="case">
+    <div class="where">🇹🇼 臺灣｜墾丁 社頂自然公園</div>
+    <h4>山上的珊瑚礁</h4>
+    <p>珊瑚只能活在溫暖的淺海裡。現在社頂的珊瑚礁石灰岩卻在陸地上、甚至在山坡上——代表這裡以前是淺海，後來被板塊擠壓<b>抬升</b>到陸地上。</p>
+    <p class="ask">對照判斷原則：這片珊瑚礁告訴我們哪兩件事的先後？</p>
+    <div class="links"><a href="https://www.google.com/search?tbm=isch&q=%E7%A4%BE%E9%A0%82%E8%87%AA%E7%84%B6%E5%85%AC%E5%9C%92+%E7%8F%8A%E7%91%9A%E7%A4%81" target="_blank" rel="noopener">📷 看照片</a></div>
+  </div>
+  <div class="case">
+    <div class="where">🇹🇼 🟣 加深｜臺灣找得到恐龍化石嗎？</div>
+    <h4>臺灣太「年輕」了</h4>
+    <p>臺灣地表的岩層大多是在新生代形成的，比恐龍滅絕（約 6600 萬年前）還晚。所以在臺灣的岩層裡，找到的多是貝類、珊瑚、鯨魚、象、鹿等新生代的化石，幾乎不可能找到恐龍或三葉蟲。</p>
+    <p class="ask">想一想：這和上一分頁「臺灣在幾百萬年前才開始隆起」有什麼關係？</p>
+  </div>
+</div>
+
+<details class="deep"><summary>🧠 資優挑戰｜迷思擂台：最下面的岩層，一定最老？</summary><div class="inner">
+  <div data-arena="t7"></div>
+</div></details>
+
+<div class="takeaway">💬 <b>一句話帶走：</b>下面的岩層比較______；被切過的比切過它的______。化石可以判斷岩層的______和______。</div>

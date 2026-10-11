@@ -1,0 +1,56 @@
+<!--NAV: 地震預警-->
+<div class="pagehead">
+  <span class="ref">課本 p.178、187–188｜地科 In my life＋科學大事記：強震即時警報</span>
+  <h2>手機的「國家級警報」，為什麼有時來得及、有時來不及？</h2>
+  <p class="hook"><b>課本 In my life：</b>阿翰收到警報時已經在搖了，琳琳卻有時間關火、躲到桌下。差在哪裡？</p>
+</div>
+
+<details class="teacher"><summary>👩‍🏫 教學提示</summary><div class="inner">
+  ① 按「▶ 地震發生」，畫面會慢動作播放：先看到快的 P 波、慢的 S 波（主要的破壞），再看到警報在第幾秒「瞬間」傳遍全臺。② 讓學生讀出每個城市的預警秒數，找出「盲區」。③ 調整「計算時間」，討論為什麼氣象署一直努力把它縮短。
+</div></details>
+
+<div data-guess="t5"></div>
+
+<div class="card">
+  <h3>⏱ 地震預警模擬 <span class="tag note">點地圖任何地方 = 設定震央</span></h3>
+  <div class="grid2">
+    <canvas class="sim" id="c6ew" style="background:#D8ECF5;max-width:520px;margin:0 auto"></canvas>
+    <div class="controls">
+      <div class="btnrow"><button class="btn warn" id="c6ewGo">▶ 地震發生</button><button class="btn ghost" id="c6ewHL">震央設在花蓮外海</button></div>
+      <div class="ctl"><label>氣象署計算＋發送警報需要 <output for="c6proc"></output></label><input type="range" id="c6proc" min="3" max="20" value="10"></div>
+      <div class="readout" id="c6ewClock"></div>
+      <div id="c6ewList" style="font-size:.9rem"></div>
+      <p class="note">簡化設定：P 波每秒約 6 公里、S 波每秒約 3.5 公里；警報用電磁波傳送，幾乎瞬間到達。</p>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h3>📡 警報是怎麼來的？（課本 p.187）</h3>
+  <div class="chips" style="gap:4px;align-items:center">
+    <span class="chip">① 測站測到地震波</span>→<span class="chip">② 用電磁波把數據傳回氣象署</span>→<span class="chip">③ 電腦算出震央、規模、各地震度</span>→<span class="chip">④ 判斷要不要發警報</span>→<span class="chip">⑤ 警報比地震波先到你家</span>
+  </div>
+  <p class="note" style="margin-bottom:0">關鍵原理：<b>電磁波（每秒 30 萬公里）比地震波（每秒幾公里）快太多了</b>。國家級警報的門檻大約是：規模 5.0 以上、預估所在地震度 4 級以上。</p>
+</div>
+
+<div class="cases">
+  <div class="case">
+    <div class="where">🇹🇼 臺灣｜2024 年 0403 花蓮地震</div>
+    <h4>地震後約 9 秒，第一則國家級警報發出</h4>
+    <p>地震發生在 7:58:09，氣象署在 7:58:18 和 7:58:24 發出兩則國家級警報。但因為東部海域的測站比較少，一開始估的規模（6.2、6.8）比實際小，雙北等地預估震度沒達到門檻，一開始沒收到警報。</p>
+    <p>氣象署的目標：把預警盲區從震央半徑約 35 公里縮小到約 25 公里，淺層地震在地震後約 7 秒就發出警報。</p>
+    <div class="links"><a href="https://www.bnext.com.tw/article/78770/earthquake-why-no-alarm" target="_blank" rel="noopener">📰 數位時代：為什麼沒收到警報</a><a href="https://technews.tw/?p=851843" target="_blank" rel="noopener">📰 科技新報：縮短到 7 秒</a></div>
+  </div>
+  <div class="case world">
+    <div class="where">🌍 國際｜墨西哥城</div>
+    <h4>離震央愈遠，預警時間愈長</h4>
+    <p>墨西哥城距離太平洋岸的隱沒帶好幾百公里。墨西哥的地震警報系統在海岸附近偵測到地震後，街上的警報器會響起，市民往往有幾十秒的時間可以離開建築物。</p>
+    <p class="ask">對照模擬：離震央 300 公里的地方，預警時間大約幾秒？</p>
+  </div>
+</div>
+
+<details class="deep"><summary>🧠 資優挑戰｜迷思擂台：地震預警＝地震預測？</summary><div class="inner">
+  <div data-arena="t5"></div>
+</div></details>
+
+<div class="takeaway">💬 <b>一句話帶走：</b>地震預警利用「______波比地震波快」來搶時間；離震央愈______，預警時間愈長。它不是地震「預測」。</div>

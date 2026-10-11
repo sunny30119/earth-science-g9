@@ -1,0 +1,63 @@
+<!--NAV: 日食與月食-->
+<div class="pagehead">
+  <span class="ref">課本 p.206–208｜7-3 ② 日食與月食＋探討活動 7-2</span>
+  <h2>天狗食日？其實是影子在玩遊戲</h2>
+  <p class="hook"><b>課本 tell me why：</b>古人以為日食是「天狗把太陽吃掉」，要敲鑼打鼓嚇跑天狗。日食究竟是怎麼發生的？</p>
+</div>
+
+<details class="teacher"><summary>👩‍🏫 教學提示</summary><div class="inner">
+  ① 日食：拉動「月球離地球的距離」，看月影的尖端能不能碰到地球 → 日全食／日環食；再看地球上不同位置看到什麼。② 月食：把月球從地球影子外移到影子中央。③ 資優班：「一年中的 12 次新月」，把軌道夾角從 5 度改成 0 度。<br>⚠️ 提醒學生：觀察日食一定要用專用的日食眼鏡，絕對不能直視太陽。
+</div></details>
+
+<div data-guess="t5"></div>
+
+<div class="card">
+  <h3>🌑 日食與月食模擬器 <span class="tag note">側視圖，大小與距離沒有照比例</span></h3>
+  <div class="chips" id="c7eMode"><button class="chip on" data-m="solar">☀️ 日食：月球在太陽和地球之間</button><button class="chip" data-m="lunar">🌕 月食：地球在太陽和月球之間</button></div>
+  <canvas class="sim" id="c7ecl" style="background:#05070F;margin-top:8px"></canvas>
+  <div class="grid2" style="margin-top:10px">
+    <div class="controls">
+      <div class="ctl" id="c7eDistBox"><label>月球離地球的距離 <output for="c7eDist"></output></label><input type="range" id="c7eDist" min="0" max="100" value="95"></div>
+      <div class="ctl" id="c7eObsBox"><label>觀察者在地球上的位置 <output for="c7eObs"></output></label><input type="range" id="c7eObs" min="-100" max="100" value="0"></div>
+      <div class="ctl" id="c7eMoonBox" style="display:none"><label>月球的位置（上下） <output for="c7eMoonY"></output></label><input type="range" id="c7eMoonY" min="-100" max="100" value="0"></div>
+    </div>
+    <div style="display:flex;gap:12px;align-items:center">
+      <canvas class="sim" id="c7eSee" style="background:#0B1530;max-width:180px !important"></canvas>
+      <div class="callout" id="c7eTxt" style="flex:1"></div>
+    </div>
+  </div>
+</div>
+
+<div class="cases">
+  <div class="case">
+    <div class="where">🇹🇼 臺灣｜2020 年 6 月 21 日（夏至）</div>
+    <h4>環食帶橫跨臺灣</h4>
+    <p>日環食的環食帶從金門、澎湖北側一路經過雲林南部、嘉義、臺南北側到花東。嘉義是最佳觀測地點之一，金色的「火環」大約只維持了 1 分鐘。</p>
+    <div class="links"><a href="https://www.google.com/search?tbm=isch&q=2020+%E6%97%A5%E7%92%B0%E9%A3%9F+%E5%98%89%E7%BE%A9" target="_blank" rel="noopener">📷 看照片</a></div>
+  </div>
+  <div class="case">
+    <div class="where">🇹🇼 臺灣｜2025/9/8 凌晨、2026/3/3 元宵節</div>
+    <h4>兩次全程可見的「紅月」</h4>
+    <p>2025 年 9 月 8 日凌晨的月全食，全食階段長達約 1 小時 23 分。2026 年 3 月 3 日的月全食剛好落在元宵節，月亮在晚上 7 點多變成紅色——上一次元宵節遇上月全食是 1990 年，下一次要等到 2072 年。</p>
+    <p class="ask">算算看：你下一次在臺灣能全程看到月全食，是哪一天？（天文館：2028 年 12 月 31 日跨年夜，紅月出現在 2029 年元旦凌晨）</p>
+    <div class="links"><a href="https://www.google.com/search?q=%E8%87%BA%E5%8C%97%E5%B8%82%E7%AB%8B%E5%A4%A9%E6%96%87%E7%A7%91%E5%AD%B8%E6%95%99%E8%82%B2%E9%A4%A8+%E6%9C%88%E5%85%A8%E9%A3%9F" target="_blank" rel="noopener">🔎 臺北天文館月食資訊</a></div>
+  </div>
+  <div class="case world">
+    <div class="where">🌍 國際｜2027 年 8 月 2 日 埃及路克索</div>
+    <h4>本世紀陸地上最長的日全食</h4>
+    <p>月球那時正好很靠近地球（月影比較大），日全食在埃及路克索附近可以維持約 <span class="num">6 分 23 秒</span>。這是到 2114 年以前，在陸地上能看到的最長日全食。</p>
+    <p class="ask">對照模擬器：月球「近」還是「遠」的時候，日全食會比較長？</p>
+  </div>
+</div>
+
+<details class="deep"><summary>🧠 資優挑戰｜一年中的 12 次新月＋迷思擂台：為什麼不是每個月都有日食？</summary><div class="inner">
+  <div class="card" style="margin:0 0 10px">
+    <h3>📅 一年中的 12 次新月（從側面看）</h3>
+    <canvas class="sim" id="c7nodes" style="background:#05070F"></canvas>
+    <div class="ctl" style="margin-top:8px"><label>月球軌道面和地球軌道面的夾角 <output for="c7inc"></output></label><input type="range" id="c7inc" min="0" max="10" value="5" step="0.5"></div>
+    <p class="note">每一格是一次新月。黃線是地球繞太陽的軌道面；月球太高或太低，影子就打不到地球。🟣 真實情況：兩個軌道面的交線會慢慢轉動，所以「容易發生日食的季節」每年大約提早 19 天，不是固定在某幾個月。</p>
+  </div>
+  <div data-arena="t5"></div>
+</div></details>
+
+<div class="takeaway">💬 <b>一句話帶走：</b>日食：______在中間，只發生在______；月食：______在中間，只發生在______。</div>

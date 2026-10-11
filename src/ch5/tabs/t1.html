@@ -1,0 +1,69 @@
+<!--NAV: 地球三圈與水的分布-->
+<div class="pagehead">
+  <span class="ref">課本 p.135–137｜5-1 ①②</span>
+  <h2>藍色星球上，水其實很「缺」</h2>
+  <p class="hook"><b>課本 tell me why：</b>民間故事說海裡有一個會一直磨出鹽巴的石磨。那海水的鹽到底從哪裡來？（答案在第 3 分頁揭曉，先記在心裡）</p>
+</div>
+
+<details class="teacher"><summary>👩‍🏫 教學提示</summary><div class="inner">
+  先做「三圈連連看」暖身（3 分鐘），再做「一千格的水」：先讓全班投票猜，再一步一步按按鈕把水「倒掉」，最後只剩一小撮能用。資優班接著打開紫色擂台：浮冰融化。
+</div></details>
+
+<div class="grid2 even">
+  <div class="card">
+    <h3>① 地球三圈連連看</h3>
+    <p class="note" style="margin-top:0">點一個事件，看看它牽動了哪幾個「圈」。</p>
+    <canvas class="sim" id="t1sph" style="background:#FAFAF6"></canvas>
+    <div class="chips" id="t1ev" style="margin-top:8px"></div>
+  </div>
+  <div class="card">
+    <h3>② 一千格的水</h3>
+    <p class="note" style="margin-top:0">把地球上所有的水縮成 1000 格（像一瓶 1 公升的寶特瓶，一格 = 1 毫升）。</p>
+    <canvas class="sim" id="t1grid" style="background:#fff"></canvas>
+    <div class="btnrow" style="margin-top:8px">
+      <button class="btn" data-v="all">全部的水</button>
+      <button class="btn" data-v="fresh">只看淡水</button>
+      <button class="btn warn" data-v="use">只看人能直接用的</button>
+    </div>
+    <div class="readout" id="t1read" style="margin-top:8px"></div>
+  </div>
+</div>
+
+<div data-guess="t1"></div>
+
+<div class="cases">
+  <div class="case world">
+    <div class="where">🌍 國際｜格陵蘭</div>
+    <h4>冰川一直在「瘦身」</h4>
+    <p>2025 年格陵蘭冰層淨流失約 <span class="num">1290 億噸</span>，比過去 20 年的平均少，因為那年雪下得多——但還是在流失。</p>
+    <p>這些融冰讓全球海平面在一年內上升約 <b>0.4 公釐</b>。如果整片冰層融光，海平面會上升約 <b>7 公尺</b>。</p>
+    <p class="ask">想一想：課本說冰川是淡水，為什麼它融化反而是壞消息？</p>
+    <div class="links"><a href="https://climate.copernicus.eu/esotc/2025/greenland-ice-sheet" target="_blank" rel="noopener">歐盟哥白尼氣候報告（英）</a><a href="https://svs.gsfc.nasa.gov/31156/" target="_blank" rel="noopener">🎬 NASA 動畫：2002–2025 冰量變化</a></div>
+  </div>
+  <div class="case">
+    <div class="where">🇹🇼 臺灣｜2021 年大旱</div>
+    <h4>雨下得多，水卻不夠用？</h4>
+    <p>2021 年春天，颱風少、梅雨遲到，水庫見底。臺中、苗栗一度實施「<b>供五停二</b>」——一週有兩天沒有自來水。</p>
+    <p>臺灣雨量不少，但山高、河短、坡陡，雨水很快就流進海裡，能留住的不多。</p>
+    <p class="ask">想一想：連結第 3 分頁的水循環——水「跑去哪裡」了？</p>
+    <div class="links"><a href="https://www.google.com/search?q=2021+%E4%BE%9B%E4%BA%94%E5%81%9C%E4%BA%8C+%E8%87%BA%E4%B8%AD+%E6%97%B1%E7%81%BD" target="_blank" rel="noopener">🔎 搜尋相關報導</a></div>
+  </div>
+</div>
+
+<details class="deep"><summary>🧠 資優挑戰｜迷思擂台：海上的冰山融化，海平面會上升嗎？</summary><div class="inner">
+  <div class="card" style="margin:0">
+    <h3>🧪 兩杯水實驗室</h3>
+    <div class="grid2">
+      <canvas class="sim" id="t1ice" style="background:#F7FAFC"></canvas>
+      <div class="controls">
+        <div class="ctl"><label>融化程度 <output for="t1melt"></output></label><input type="range" id="t1melt" min="0" max="100" value="0"></div>
+        <label class="note"><input type="checkbox" id="t1salt"> 杯子裡裝的是「海水」（比淡水重一點）</label>
+        <div class="readout" id="t1iceR"></div>
+        <p class="note">左杯：冰浮在水上（像北極海冰）。右杯：冰放在石頭上（像格陵蘭陸地上的冰）。兩杯一開始水面一樣高、冰一樣多。</p>
+      </div>
+    </div>
+  </div>
+  <div data-arena="t1"></div>
+</div></details>
+
+<div class="takeaway">💬 <b>一句話帶走：</b>地球的水有 97% 是______；人類能直接用的淡水大約只有______%。</div>

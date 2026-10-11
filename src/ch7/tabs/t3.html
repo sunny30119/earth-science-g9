@@ -1,0 +1,70 @@
+<!--NAV: 晝夜與四季-->
+<div class="pagehead">
+  <span class="ref">課本 p.199–202｜7-2 晝夜與四季＋探討活動 7-1</span>
+  <h2>為什麼有白天黑夜？為什麼有春夏秋冬？</h2>
+  <p class="hook"><b>課本 tell me why：</b>隨著季節交替，景色跟著改變。地球為什麼會有四季？</p>
+</div>
+
+<details class="teacher"><summary>👩‍🏫 教學提示</summary><div class="inner">
+  ① 地球自轉：從北極上空看是逆時鐘，請學生說出臺灣什麼時候「轉進」白天、太陽從哪一邊出現。② 手電筒（探討活動 7-1）：直射 vs 斜射。③ 四季模擬：依序按春分、夏至、秋分、冬至，讀出直射點、臺灣正午太陽高度、白天長度。④ 資優擂台：夏天熱是因為離太陽近嗎？最後把自轉軸傾角拉到 0 度。
+</div></details>
+
+<div class="grid2 even">
+  <div class="card">
+    <h3>🌍 地球自轉（從北極上空往下看）</h3>
+    <canvas class="sim" id="c7spin" style="background:#05070F"></canvas>
+    <div class="btnrow" style="margin-top:8px"><button class="btn" id="c7spinGo">▶ 轉動</button><span class="note" id="c7spinT"></span></div>
+  </div>
+  <div class="card">
+    <h3>🔦 直射與斜射（探討活動 7-1）</h3>
+    <canvas class="sim" id="c7torch" style="background:#fff"></canvas>
+    <div class="ctl"><label>光線和地面的夾角 <output for="c7ang"></output></label><input type="range" id="c7ang" min="15" max="90" value="90"></div>
+    <div class="readout" id="c7torchR"></div>
+  </div>
+</div>
+
+<div class="card">
+  <h3>🌞 四季模擬器</h3>
+  <div class="btnrow" style="margin-bottom:8px">
+    <button class="btn ghost" data-d="80">春分 3/21</button><button class="btn ghost" data-d="173">夏至 6/22</button><button class="btn ghost" data-d="266">秋分 9/23</button><button class="btn ghost" data-d="356">冬至 12/22</button>
+  </div>
+  <div class="grid2 even">
+    <canvas class="sim" id="c7orbit" style="background:#05070F"></canvas>
+    <canvas class="sim" id="c7side" style="background:#05070F"></canvas>
+  </div>
+  <div class="grid2" style="margin-top:10px">
+    <div class="controls">
+      <div class="ctl"><label>日期 <output for="c7day"></output></label><input type="range" id="c7day" min="0" max="364" value="173"></div>
+      <div class="ctl"><label>🟣 自轉軸傾角 <output for="c7tilt"></output></label><input type="range" id="c7tilt" min="0" max="60" value="23.5" step="0.5"></div>
+    </div>
+    <div class="readout" id="c7seasonR"></div>
+  </div>
+</div>
+
+<div class="card">
+  <h3>☀️ 太陽在嘉義天空走的路（課本圖 7-10）</h3>
+  <canvas class="sim" id="c7sky" style="background:#EAF4FC;max-width:640px;margin:0 auto"></canvas>
+  <p class="note">嘉義位在北回歸線上（北緯 23.5 度）。灰線是夏至、冬至；彩色線是上面選的日期。</p>
+</div>
+
+<div data-guess="t3"></div>
+
+<div class="cases">
+  <div class="case world">
+    <div class="where">🌍 國際｜冰島、北極圈</div>
+    <h4>半夜也看得到太陽</h4>
+    <p>夏至前後，北極圈以北的地方太陽整天不落下，叫做「永晝」（課本圖 7-9）；冬至前後則整天見不到太陽，叫做「永夜」。在四季模擬器按「夏至」，看看北極圈內是不是整圈都在亮面。</p>
+  </div>
+  <div class="case">
+    <div class="where">🇹🇼 臺灣｜嘉義 北回歸線</div>
+    <h4>一年只有一天「沒有影子」</h4>
+    <p>夏至那天正午，太陽直射北回歸線，嘉義的太陽幾乎在頭頂正上方，直立的竿子影子幾乎消失。嘉義的北回歸線標誌，就是為了這條特別的緯線而建的。</p>
+    <p class="ask">想一想：臺北（北緯 25 度）一年中會不會有「太陽在正頭頂」的時候？</p>
+  </div>
+</div>
+
+<details class="deep"><summary>🧠 資優挑戰｜迷思擂台：夏天熱，是因為地球離太陽比較近？</summary><div class="inner">
+  <div data-arena="t3"></div>
+</div></details>
+
+<div class="takeaway">💬 <b>一句話帶走：</b>晝夜是因為地球______；四季是因為地球______加上自轉軸______ 23.5 度，讓陽光直射的位置一年中來回移動。</div>

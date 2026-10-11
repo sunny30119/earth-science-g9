@@ -1,0 +1,68 @@
+<!--NAV: 潮汐-->
+<div class="pagehead">
+  <span class="ref">課本 p.209–210｜7-3 ③ 潮汐＋地科 In my life</span>
+  <h2>海水一天漲退兩次：誰在拉？</h2>
+  <p class="hook"><b>課本 In my life：</b>阿翰和琳琳走過一條海上步道去小島，回頭時路竟然不見了！他們什麼時候才能走回去？</p>
+</div>
+
+<details class="teacher"><summary>👩‍🏫 教學提示</summary><div class="inner">
+  ① 按播放，讓學生數「一天臺灣經過幾次隆起」→ 一天約兩次滿潮。② 把農曆拉到初一、十五，再拉到初八、廿三，比較潮差（大潮、小潮）。③ 摩西分海任務：在潮汐圖上找出「可以走過去」的時段。④ 資優擂台：為什麼背對月亮的那一邊也會漲潮。
+</div></details>
+
+<div data-guess="t6"></div>
+
+<div class="card">
+  <h3>🌊 潮汐模擬器 <span class="tag note">從北極上空看，海水隆起被誇大很多倍</span></h3>
+  <div class="grid2 even">
+    <canvas class="sim" id="c7tide" style="background:#05070F"></canvas>
+    <div>
+      <canvas class="sim" id="c7tideG" style="background:#fff"></canvas>
+      <div class="readout" id="c7tideR" style="margin-top:8px"></div>
+    </div>
+  </div>
+  <div class="grid2" style="margin-top:10px">
+    <div class="controls">
+      <div class="ctl"><label>農曆日期（月相） <output for="c7tday"></output></label><input type="range" id="c7tday" min="0" max="29" value="0" step="0.5"></div>
+      <div class="btnrow"><button class="btn" id="c7tidePlay">▶ 時間前進</button><label class="note"><input type="checkbox" id="c7sun" checked> 加上太陽的影響</label><label class="note"><input type="checkbox" id="c7moses"> 🚶 摩西分海任務</label></div>
+    </div>
+    <div class="callout" id="c7tideTxt"></div>
+  </div>
+</div>
+
+<div class="cases">
+  <div class="case">
+    <div class="where">🇹🇼 臺灣｜澎湖 奎壁山</div>
+    <h4>摩西分海</h4>
+    <p>退潮時，奎壁山和外海的赤嶼之間會露出一條玄武岩礫石步道，可以走過去；漲潮時步道又被海水淹沒。觀光客要查潮汐表、算好時間，不然就會像阿翰和琳琳一樣被困在島上。</p>
+    <p class="ask">勾選上面的「摩西分海任務」，找出可以走過去的時段。</p>
+    <div class="links"><a href="https://www.google.com/search?tbm=isch&q=%E5%A5%8E%E5%A3%81%E5%B1%B1+%E6%91%A9%E8%A5%BF%E5%88%86%E6%B5%B7" target="_blank" rel="noopener">📷 看照片</a><a href="https://www.google.com/search?q=%E4%B8%AD%E5%A4%AE%E6%B0%A3%E8%B1%A1%E7%BD%B2+%E6%BD%AE%E6%B1%90%E9%A0%90%E5%A0%B1+%E6%BE%8E%E6%B9%96+%E6%B9%96%E8%A5%BF" target="_blank" rel="noopener">🔎 氣象署潮汐預報</a></div>
+  </div>
+  <div class="case">
+    <div class="where">🇹🇼 臺灣｜澎湖 七美</div>
+    <h4>雙心石滬：利用潮汐的老智慧</h4>
+    <p>先民用石頭在潮間帶堆出圍牆。漲潮時，魚群游進石滬裡覓食；退潮時海水從石縫流走，魚被困在裡面，漁民就能撿魚（課本圖 7-16）。</p>
+  </div>
+  <div class="case world">
+    <div class="where">🌍 國際｜加拿大 芬地灣</div>
+    <h4>世界最大的潮差：十幾公尺</h4>
+    <p>芬地灣的形狀像一個長長的漏斗，海水來回晃動的節奏剛好和潮汐「同步」，讓潮差最大可達約 16 公尺（大約 5 層樓高）。全世界海洋平均的潮差只有約 1 公尺。</p>
+    <p class="ask">想一想：為什麼課本說「潮汐週期和潮差會受到海岸與海底地形影響」？</p>
+    <div class="links"><a href="https://en.wikipedia.org/wiki/Bay_of_Fundy" target="_blank" rel="noopener">維基百科（英）</a></div>
+  </div>
+</div>
+
+<details class="deep"><summary>🧠 資優挑戰｜迷思擂台：背對月亮的那一邊，為什麼也會漲潮？</summary><div class="inner">
+  <div class="card" style="margin:0 0 10px">
+    <h3>🧲 月球的拉力差</h3>
+    <div class="grid2">
+      <canvas class="sim" id="c7pull" style="background:#05070F"></canvas>
+      <div class="controls">
+        <div class="chips" id="c7pullMode"><button class="chip on" data-m="raw">① 月球對三個點的拉力</button><button class="chip" data-m="rel">② 扣掉地球中心的拉力後</button></div>
+        <div class="callout" id="c7pullTxt"></div>
+      </div>
+    </div>
+  </div>
+  <div data-arena="t6"></div>
+</div></details>
+
+<div class="takeaway">💬 <b>一句話帶走：</b>潮汐主要是______的引力造成的；同一地點一天大約有______次滿潮。初一、十五潮差最大，叫做______。</div>

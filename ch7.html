@@ -1,0 +1,2006 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第七章 浩瀚的宇宙｜互動課本</title>
+<style>
+/* ====== 地科互動課本 共用樣式 ====== */
+:root {
+  --primary: #24584A;      /* 主色：深青綠 */
+  --primary-2: #3B7D6B;
+  --accent: #C46A28;       /* 強調：赭橘 */
+  --deep: #6A3FA0;         /* 資優層：紫 */
+  --deep-bg: #F5F0FB;
+  --bg: #F4F1EA;
+  --card: #FFFFFF;
+  --ink: #23302B;
+  --muted: #66736E;
+  --line: #DDD6C8;
+  --ok: #2E7D32;
+  --bad: #C62828;
+  --tw: #1F6FB2;           /* 臺灣案例 */
+  --world: #8A5A12;        /* 國際案例 */
+  --fs: 17px;
+}
+* { box-sizing: border-box; }
+html { font-size: var(--fs); }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+  line-height: 1.65;
+}
+body.proj { --fs: 21px; }
+body.proj .teacher { display: none !important; }
+body.proj .grid2:not(.even) { grid-template-columns: 1fr; }   /* 投影時：單張模擬圖佔滿整行；成對的圖（.even）保持左右並排 */
+body.proj canvas.sim { max-width: min(100%, calc((100vh - 170px) * var(--ar, 2))) !important; margin-left: auto; margin-right: auto; }   /* 用寬度限制高度：高度不超過一個螢幕 */
+
+/* ---------- 頁首 ---------- */
+header.top {
+  position: sticky; top: 0; z-index: 50;
+  background: var(--primary); color: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,.18);
+}
+.top-row { display: flex; align-items: center; gap: 12px; padding: 8px 16px; flex-wrap: wrap; }
+.top-row h1 { font-size: 1.15rem; margin: 0; white-space: nowrap; }
+.top-row h1 small { font-weight: normal; opacity: .8; font-size: .8rem; margin-left: 6px; }
+.top-tools { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.seg { display: inline-flex; background: rgba(255,255,255,.15); border-radius: 999px; padding: 3px; }
+.seg button {
+  border: 0; background: transparent; color: #fff; padding: 4px 12px; border-radius: 999px;
+  font-size: .85rem; cursor: pointer; font-family: inherit;
+}
+.seg button.on { background: #fff; color: var(--primary); font-weight: bold; }
+.seg button.on.deepon { color: var(--deep); }
+.tool-btn {
+  border: 1px solid rgba(255,255,255,.45); background: transparent; color: #fff;
+  border-radius: 8px; padding: 4px 10px; font-size: .85rem; cursor: pointer; font-family: inherit;
+}
+.tool-btn:hover { background: rgba(255,255,255,.12); }
+nav.tabs {
+  display: flex; gap: 4px; padding: 0 12px; overflow-x: auto; scrollbar-width: thin;
+  background: var(--primary-2);
+}
+nav.tabs button {
+  flex: 0 0 auto; border: 0; background: transparent; color: rgba(255,255,255,.85);
+  padding: 9px 12px 8px; font-size: .9rem; cursor: pointer; font-family: inherit;
+  border-bottom: 3px solid transparent;
+}
+nav.tabs button .n { display: inline-block; min-width: 1.4em; opacity: .7; }
+nav.tabs button.active { color: #fff; font-weight: bold; border-bottom-color: #FFD27A; }
+
+/* ---------- 主內容 ---------- */
+main { max-width: 1180px; margin: 0 auto; padding: 16px; }
+.panel { display: none; }
+.panel.active { display: block; animation: fadein .25s ease; }
+@keyframes fadein { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; } }
+
+.pagehead { margin: 4px 0 14px; }
+.pagehead .ref {
+  display: inline-block; font-size: .78rem; color: var(--primary); border: 1px solid var(--primary);
+  border-radius: 999px; padding: 0 10px; margin-bottom: 4px;
+}
+.pagehead h2 { margin: 2px 0 4px; font-size: 1.55rem; }
+.hook {
+  background: #FFF7E8; border-left: 5px solid var(--accent); padding: 8px 14px; border-radius: 0 8px 8px 0;
+  margin: 8px 0 0;
+}
+.hook b { color: var(--accent); }
+
+.card {
+  background: var(--card); border-radius: 12px; padding: 16px 18px; margin-bottom: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.08), 0 0 0 1px rgba(0,0,0,.03);
+}
+.card h3 { margin: 0 0 8px; font-size: 1.15rem; }
+.card h3 .tag { font-size: .72rem; font-weight: normal; vertical-align: middle; margin-left: 6px; }
+.grid2 { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(260px, 1fr); gap: 16px; align-items: start; }
+.grid2.even { grid-template-columns: 1fr 1fr; }
+@media (max-width: 860px) { .grid2, .grid2.even { grid-template-columns: 1fr; } }
+
+canvas.sim { width: 100%; display: block; border-radius: 10px; background: #EAF3F8; touch-action: none; }
+.controls { display: flex; flex-direction: column; gap: 12px; }
+.ctl label { display: flex; justify-content: space-between; font-size: .9rem; color: var(--muted); }
+.ctl label output { color: var(--ink); font-weight: bold; }
+.ctl input[type=range] { width: 100%; accent-color: var(--primary); height: 28px; }
+.btnrow { display: flex; flex-wrap: wrap; gap: 8px; }
+.btn {
+  border: 0; border-radius: 8px; padding: 8px 14px; font-size: .9rem; cursor: pointer; font-family: inherit;
+  background: var(--primary); color: #fff;
+}
+.btn:hover { filter: brightness(1.08); }
+.btn.ghost { background: transparent; color: var(--primary); border: 1px solid var(--primary); }
+.btn.warn { background: var(--accent); }
+.btn.deepb { background: var(--deep); }
+.btn.sel { outline: 3px solid #FFD27A; }
+.readout {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px;
+}
+.readout div { background: #F3F6F4; border-radius: 8px; padding: 6px 10px; }
+.readout b { display: block; font-size: 1.2rem; color: var(--primary); }
+.readout span { font-size: .78rem; color: var(--muted); }
+.note { font-size: .85rem; color: var(--muted); }
+.callout { background: #EEF6F2; border-radius: 10px; padding: 10px 14px; margin-top: 10px; }
+.callout.warn { background: #FDECEA; }
+.callout.good { background: #E8F5E9; }
+.big { font-size: 1.15rem; font-weight: bold; }
+
+/* ---------- 猜一猜（全班） ---------- */
+.guess { border: 2px dashed #E7C08E; background: #FFFBF4; }
+.guess .q { font-weight: bold; margin-bottom: 8px; }
+.opts { display: flex; flex-direction: column; gap: 6px; }
+.opt {
+  display: flex; align-items: center; gap: 10px; border: 1px solid var(--line); background: #fff;
+  border-radius: 8px; padding: 7px 12px; cursor: pointer; text-align: left; font-size: .95rem; font-family: inherit;
+  color: var(--ink);
+}
+.opt:hover { background: #F7F3EA; }
+.opt .letter {
+  flex: 0 0 auto; width: 26px; height: 26px; border-radius: 50%; background: #EFE7D8; display: grid;
+  place-items: center; font-weight: bold;
+}
+.opt .bar { margin-left: auto; display: flex; align-items: center; gap: 6px; font-size: .8rem; color: var(--muted); white-space: nowrap; }
+.opt .t { flex: 1 1 auto; }
+.opt.picked { outline: 3px solid #FFD27A; }
+.opt .bar i { display: block; height: 8px; background: var(--accent); border-radius: 4px; min-width: 2px; }
+.opt.right { border-color: var(--ok); background: #EEF8EE; }
+.opt.right .letter { background: var(--ok); color: #fff; }
+.opt.wrong { border-color: #E3B4B4; background: #FFF4F4; }
+.vote-ctl { display: flex; gap: 4px; margin-left: 6px; }
+.vote-ctl button { border: 1px solid var(--line); background: #fff; border-radius: 6px; width: 26px; height: 26px; cursor: pointer; }
+.reveal { display: none; margin-top: 10px; }
+.reveal.show { display: block; animation: fadein .3s; }
+
+/* ---------- 資優：迷思擂台 ---------- */
+details.deep {
+  border: 2px solid var(--deep); border-radius: 12px; background: var(--deep-bg); margin-bottom: 16px;
+}
+details.deep > summary {
+  cursor: pointer; padding: 10px 16px; color: var(--deep); font-weight: bold; list-style: none;
+}
+details.deep > summary::-webkit-details-marker { display: none; }
+details.deep > summary::before { content: "▸ "; }
+details.deep[open] > summary::before { content: "▾ "; }
+details.deep > .inner { padding: 0 16px 16px; }
+.arena { background: #fff; border-radius: 10px; padding: 14px 16px; margin-top: 10px; }
+.arena h4 { margin: 0 0 6px; color: var(--deep); font-size: 1.05rem; }
+.steps { display: flex; gap: 6px; margin: 8px 0 12px; flex-wrap: wrap; }
+.steps span {
+  font-size: .78rem; padding: 3px 10px; border-radius: 999px; background: #ECE4F6; color: #8A72AB;
+}
+.steps span.now { background: var(--deep); color: #fff; }
+.steps span.done { background: #D9CCEB; color: var(--deep); }
+.stage { display: none; }
+.stage.show { display: block; animation: fadein .3s; }
+.clash {
+  background: #FFF0F0; border-left: 5px solid var(--bad); padding: 8px 14px; border-radius: 0 8px 8px 0; margin: 8px 0;
+}
+.hint { background: #F4EEFB; border-radius: 8px; padding: 6px 12px; margin: 6px 0; display: none; }
+.hint.show { display: block; animation: fadein .3s; }
+.explain { background: #EDE7F6; border-radius: 8px; padding: 10px 14px; margin-top: 8px; }
+
+/* ---------- 真實案例 ---------- */
+.cases { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; margin-bottom: 16px; }
+.case { background: #fff; border-radius: 12px; padding: 14px 16px; border-top: 5px solid var(--tw); box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+.case.world { border-top-color: var(--world); }
+.case .where { font-size: .75rem; font-weight: bold; color: var(--tw); }
+.case.world .where { color: var(--world); }
+.case h4 { margin: 2px 0 6px; font-size: 1.02rem; }
+.case p { margin: 4px 0; font-size: .92rem; }
+.case .num { font-size: 1.35rem; font-weight: bold; color: var(--accent); }
+.case .links { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; }
+.case .links a {
+  font-size: .78rem; text-decoration: none; border: 1px solid var(--line); border-radius: 999px; padding: 2px 10px; color: var(--primary);
+}
+.case .links a:hover { background: #F3F6F4; }
+.case .ask { margin-top: 6px; font-size: .88rem; color: var(--deep); }
+
+/* ---------- 一句話帶走 / 教學提示 ---------- */
+.takeaway {
+  background: var(--primary); color: #fff; border-radius: 12px; padding: 12px 18px; margin-bottom: 20px;
+}
+.takeaway b { color: #FFD27A; }
+details.teacher {
+  border: 1px dashed #B9B2A3; border-radius: 10px; background: #FBFAF6; margin-bottom: 16px; font-size: .88rem;
+}
+details.teacher summary { cursor: pointer; padding: 6px 12px; color: var(--muted); }
+details.teacher .inner { padding: 0 14px 10px; }
+
+/* ---------- 小元件 ---------- */
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 4px 12px; cursor: pointer;
+  font-size: .88rem; font-family: inherit; color: var(--ink);
+}
+.chip.on { background: var(--primary); color: #fff; border-color: var(--primary); }
+.sortq { display: grid; gap: 8px; }
+.sortq .item { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 6px 10px; background: #F7F5EF; border-radius: 8px; }
+.sortq .item .txt { flex: 1 1 260px; }
+.sortq .item.ok { background: #E8F5E9; }
+.sortq .item.no { background: #FDECEA; }
+table.simple { border-collapse: collapse; width: 100%; font-size: .9rem; }
+table.simple th, table.simple td { border: 1px solid var(--line); padding: 5px 8px; text-align: center; }
+table.simple th { background: #EFEBE1; }
+.picker { position: fixed; inset: 0; background: rgba(0,0,0,.55); display: none; place-items: center; z-index: 100; }
+.picker.show { display: grid; }
+.picker .box { background: #fff; border-radius: 16px; padding: 24px 36px; text-align: center; min-width: 280px; }
+.picker .num { font-size: 5rem; font-weight: bold; color: var(--accent); line-height: 1.1; }
+kbd { background: #eee; border-radius: 4px; padding: 0 5px; font-size: .8em; border: 1px solid #ccc; }
+.footer { text-align: center; font-size: .78rem; color: var(--muted); padding: 10px 0 30px; }
+@media print { header.top, .btn, details.teacher { display: none !important; } .panel { display: block !important; } }
+
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-row">
+    <h1>🌌 第七章 浩瀚的宇宙<small>國三上自然・地科｜互動電子課本</small></h1>
+    <div class="top-tools">
+      <div class="seg" id="modeSeg" title="資優班會自動展開所有紫色的「資優挑戰」">
+        <button data-mode="normal">一般班</button><button data-mode="deep" class="deepon">資優班</button>
+      </div>
+      <button class="tool-btn" id="pickBtn" title="隨機抽座號">🎲 抽號</button>
+      <button class="tool-btn" id="projBtn" title="字放大、隱藏教師提示">📽 投影模式</button>
+      <button class="tool-btn" id="fsBtn" title="全螢幕">⛶</button>
+    </div>
+  </div>
+  <nav class="tabs">
+    <button data-tab="t0"><span class="n">0</span>開場：韋伯望遠鏡</button>
+    <button data-tab="t1"><span class="n">1</span>宇宙的層級與光年</button>
+    <button data-tab="t2"><span class="n">2</span>太陽系</button>
+    <button data-tab="t3"><span class="n">3</span>晝夜與四季</button>
+    <button data-tab="t4"><span class="n">4</span>月相變化</button>
+    <button data-tab="t5"><span class="n">5</span>日食與月食</button>
+    <button data-tab="t6"><span class="n">6</span>潮汐</button>
+    <button data-tab="t7"><span class="n">7</span>總複習</button>
+  </nav>
+</header>
+
+<main>
+<section class="panel" id="p-t0">
+<!--NAV: 開場：韋伯望遠鏡-->
+<div class="pagehead">
+  <span class="ref">課本 p.190–192｜章首</span>
+  <h2>三張照片，誰最遠？誰最大？</h2>
+  <p class="hook"><b>探究提問：</b>詹姆斯・韋伯太空望遠鏡（2021 年發射）拍了三張照片：木星、車輪星系、深空影像。請判斷它們和地球的遠近，以及它們在空間上的大小。</p>
+</div>
+
+<details class="teacher"><summary>👩‍🏫 教學提示（投影模式會自動隱藏）</summary><div class="inner">
+  5 分鐘。先讓全班用舉手投票排順序，再按「看答案」。常見錯誤：以為照片裡「看起來最大」的就是最大。收尾：要回答這題，需要「宇宙的層級」和「光年」——就是 7-1 要學的。
+</div></details>
+
+<div class="card">
+  <h3>🔭 韋伯的三張照片 <span class="tag note">示意圖（真實照片請點連結）</span></h3>
+  <canvas class="sim" id="c7jw" style="background:#05070F"></canvas>
+  <div class="grid2 even" style="margin-top:12px">
+    <div>
+      <div class="note">① 和地球的距離：由<b>近</b>到<b>遠</b>，依序點選</div>
+      <div class="chips" id="c7r1"></div><div id="c7r1o" class="big" style="margin-top:6px"></div>
+    </div>
+    <div>
+      <div class="note">② 天體（照片主角）本身的大小：由<b>小</b>到<b>大</b>，依序點選</div>
+      <div class="chips" id="c7r2"></div><div id="c7r2o" class="big" style="margin-top:6px"></div>
+    </div>
+  </div>
+  <div class="btnrow" style="margin-top:10px"><button class="btn warn" id="c7jwAns">看答案</button><button class="btn ghost" id="c7jwReset">重來</button></div>
+  <div class="reveal callout good" id="c7jwTxt">
+    <b>遠近：</b>木星（太陽系內，光幾十分鐘就到）＜ 車輪星系（約 5 億光年）＜ 深空影像中最遠的星系（光走了約 95 億年）。<br>
+    <b>大小：</b>木星（一顆行星）＜ 車輪星系（一個星系，有上千億顆恆星）＜ 深空影像（一張照片裡就有<b>數千個</b>星系）。<br>
+    照片裡看起來一樣大，不代表真的一樣大——離得愈遠，看起來愈小。
+  </div>
+  <div class="btnrow" style="margin-top:8px">
+    <a class="btn ghost" href="https://webbtelescope.org/images" target="_blank" rel="noopener">🔭 韋伯望遠鏡官方影像集（英）</a>
+  </div>
+</div>
+
+<div class="card">
+  <h3>📚 這一章的三條線</h3>
+  <p style="margin:0">
+    <b>7-1 宇宙與太陽系</b>：我們在宇宙的哪裡？宇宙有多大？<br>
+    <b>7-2 晝夜與四季</b>：地球自轉、公轉，加上自轉軸傾斜 23.5 度<br>
+    <b>7-3 日地月的相對運動</b>：月相、日食與月食、潮汐
+  </p>
+</div>
+
+<div class="takeaway">💬 <b>一句話帶走：</b>照片裡看起來一樣大的東西，真實的距離和大小可能差了______倍。</div>
+
+</section>
+<section class="panel" id="p-t1">
+<!--NAV: 宇宙的層級與光年-->
+<div class="pagehead">
+  <span class="ref">課本 p.193–194｜7-1 ①②</span>
+  <h2>從地球一路放大到宇宙</h2>
+  <p class="hook"><b>課本 tell me why：</b>咻——流星劃過天際，那是星星掉下來嗎？我們先搞清楚：天上的「星星」到底是什麼、在多遠的地方。</p>
+</div>
+
+<details class="teacher"><summary>👩‍🏫 教學提示</summary><div class="inner">
+  ① 用「宇宙放大鏡」慢慢拉，每一層停下來請學生說出「這一層的成員是什麼」。② 光年：先投票「光年是時間還是距離」，再用「光的時光機」——把天文距離和歷史、第六章的地質年代接起來。
+</div></details>
+
+<div class="card">
+  <h3>🔭 宇宙放大鏡</h3>
+  <div class="grid2">
+    <canvas class="sim" id="c7zoom" style="background:#05070F"></canvas>
+    <div class="controls">
+      <div class="ctl"><label>往外拉 <output for="c7z"></output></label><input type="range" id="c7z" min="0" max="500" value="0" step="any"></div>
+      <div class="callout" id="c7zTxt" style="min-height:150px"></div>
+    </div>
+  </div>
+</div>
+
+<div data-guess="t1"></div>
+
+<div class="card">
+  <h3>⏳ 光的時光機：你現在看到的，是它多久以前的樣子？</h3>
+  <div class="chips" id="c7ly"></div>
+  <div class="grid2" style="margin-top:10px">
+    <canvas class="sim" id="c7lyc" style="background:#05070F"></canvas>
+    <div class="callout" id="c7lyTxt" style="min-height:140px"></div>
+  </div>
+</div>
+
+<div class="cases">
+  <div class="case world">
+    <div class="where">🌍 太空｜詹姆斯・韋伯太空望遠鏡</div>
+    <h4>看得愈遠，就是看到愈早以前</h4>
+    <p>韋伯的任務之一，是尋找宇宙中「第一批」恆星和星系的光。那些光從很遠的地方出發，走了一百多億年才到達望遠鏡——所以看得愈遠，等於「看見」愈早期的宇宙。</p>
+    <p>為了接收微弱的光，韋伯被放在背對太陽和地球的位置，離地球約 150 萬公里。</p>
+    <div class="links"><a href="https://science.nasa.gov/mission/webb/" target="_blank" rel="noopener">NASA 韋伯任務（英）</a></div>
+  </div>
+</div>
+
+<details class="deep"><summary>🧠 資優挑戰｜迷思擂台：今晚看到的星星，現在一定還在嗎？</summary><div class="inner">
+  <div data-arena="t1"></div>
+</div></details>
+
+<div class="takeaway">💬 <b>一句話帶走：</b>宇宙的層級：宇宙 ＞ ______ ＞ 恆星 ＞ ______ ＞ 衛星。1 光年是光走一年的______，不是時間。</div>
+
+</section>
+<section class="panel" id="p-t2">
+<!--NAV: 太陽系-->
+<div class="pagehead">
+  <span class="ref">課本 p.194–198｜7-1 ③ 太陽系</span>
+  <h2>太陽系的家族成員</h2>
+  <p class="hook"><b>關鍵問題：</b>八大行星可以分成哪兩類？冥王星為什麼不再是行星？流星真的是「星星」掉下來嗎？</p>
+</div>
+
+<details class="teacher"><summary>👩‍🏫 教學提示</summary><div class="inner">
+  ① 縮小模型：選「太陽 = 籃球」，問學生「地球要放在操場的哪裡？」再看答案（約 26 公尺外的一粒芝麻）。② 密度水缸：先猜哪一顆行星會浮起來。③ 行星判定器：用三條準則，討論冥王星。④ 資優班：流星擂台。
+</div></details>
+
+<div class="card">
+  <h3>🏀 太陽系縮小模型</h3>
+  <div class="chips" id="c7scale"><button class="chip on" data-s="0.24">太陽 ＝ 籃球（24 公分）</button><button class="chip" data-s="1.5">太陽 ＝ 1.5 公尺的大球</button></div>
+  <canvas class="sim" id="c7model" style="background:#0B1020;margin-top:8px"></canvas>
+  <table class="simple" id="c7mt" style="margin-top:10px"></table>
+</div>
+
+<div data-guess="t2"></div>
+
+<div class="grid2 even">
+  <div class="card">
+    <h3>🛁 行星密度水缸</h3>
+    <div class="chips" id="c7pl"></div>
+    <canvas class="sim" id="c7tank" style="background:#fff;margin-top:8px"></canvas>
+    <div class="callout" id="c7tankTxt" style="min-height:80px"></div>
+  </div>
+  <div class="card">
+    <h3>⚖️ 行星判定器（國際天文聯合會 2006 年準則）</h3>
+    <div class="chips" id="c7obj"></div>
+    <div id="c7crit" style="margin-top:10px"></div>
+    <div class="callout" id="c7critTxt" style="min-height:80px"></div>
+  </div>
+</div>
+
+<div class="cases">
+  <div class="case">
+    <div class="where">🇹🇼 臺灣｜2024 年 合歡山</div>
+    <h4>紫金山－阿特拉斯彗星</h4>
+    <p>2024 年秋天，這顆彗星接近地球，在臺灣合歡山拍得到長長的彗尾（課本圖 7-3）。彗星主要由冰雪和塵埃組成，靠近太陽時冰被加熱、噴出氣體和塵埃，看起來像拖著一條尾巴，所以俗稱「掃帚星」。</p>
+    <div class="links"><a href="https://www.google.com/search?tbm=isch&q=%E7%B4%AB%E9%87%91%E5%B1%B1+%E9%98%BF%E7%89%B9%E6%8B%89%E6%96%AF%E5%BD%97%E6%98%9F+%E5%90%88%E6%AD%A1%E5%B1%B1" target="_blank" rel="noopener">📷 看照片</a></div>
+  </div>
+  <div class="case world">
+    <div class="where">🌍 國際｜俄羅斯 車里雅賓斯克（2013 年）</div>
+    <h4>一顆比太陽還亮的流星</h4>
+    <p>2013 年 2 月 15 日早上，一顆大約 20 公尺的小天體衝進大氣層，在空中爆炸，亮度一度超過太陽。爆炸的衝擊波震碎了大量窗戶玻璃，約 1500 人受傷，碎片落地成為隕石。</p>
+    <p class="ask">想一想：它算流星還是隕石？</p>
+    <div class="links"><a href="https://www.youtube.com/results?search_query=Chelyabinsk+meteor+2013" target="_blank" rel="noopener">🎬 行車記錄器畫面</a></div>
+  </div>
+  <div class="case">
+    <div class="where">📅 每年 12 月中旬</div>
+    <h4>雙子座流星雨</h4>
+    <p>地球每年都會穿過同一團太空碎屑，所以流星雨每年大約同一時間出現。雙子座流星雨是每年最穩定、最壯觀的流星雨之一（課本圖 7-4 在合歡山拍攝）。</p>
+  </div>
+</div>
+
+<details class="deep"><summary>🧠 資優挑戰｜流星模擬＋迷思擂台：流星是星星掉下來嗎？</summary><div class="inner">
+  <div class="card" style="margin:0 0 10px">
+    <h3>☄️ 流星還是隕石？</h3>
+    <div class="grid2">
+      <canvas class="sim" id="c7met" style="background:#0B1020"></canvas>
+      <div class="controls">
+        <div class="ctl"><label>太空碎石的大小 <output for="c7msz"></output></label><input type="range" id="c7msz" min="0" max="100" value="20"></div>
+        <div class="btnrow"><button class="btn deepb" id="c7mgo">☄️ 衝進大氣層</button></div>
+        <div class="callout" id="c7mTxt"></div>
+      </div>
+    </div>
+  </div>
+  <div data-arena="t2"></div>
+</div></details>
+
+<div class="takeaway">💬 <b>一句話帶走：</b>類地行星：體積小、密度______、有岩石外殼；類木行星：體積大、密度______、主要由氣體組成。</div>
+
+</section>
+<section class="panel" id="p-t3">
+<!--NAV: 晝夜與四季-->
+<div class="pagehead">
+  <span class="ref">課本 p.199–202｜7-2 晝夜與四季＋探討活動 7-1</span>
+  <h2>為什麼有白天黑夜？為什麼有春夏秋冬？</h2>
+  <p class="hook"><b>課本 tell me why：</b>隨著季節交替，景色跟著改變。地球為什麼會有四季？</p>
+</div>
+
+<details class="teacher"><summary>👩‍🏫 教學提示</summary><div class="inner">
+  ① 地球自轉：從北極上空看是逆時鐘，請學生說出臺灣什麼時候「轉進」白天、太陽從哪一邊出現。② 手電筒（探討活動 7-1）：直射 vs 斜射。③ 四季模擬：依序按春分、夏至、秋分、冬至，讀出直射點、臺灣正午太陽高度、白天長度。④ 資優擂台：夏天熱是因為離太陽近嗎？最後把自轉軸傾角拉到 0 度。
+</div></details>
+
+<div class="grid2 even">
+  <div class="card">
+    <h3>🌍 地球自轉（從北極上空往下看）</h3>
+    <canvas class="sim" id="c7spin" style="background:#05070F"></canvas>
+    <div class="btnrow" style="margin-top:8px"><button class="btn" id="c7spinGo">▶ 轉動</button><span class="note" id="c7spinT"></span></div>
+  </div>
+  <div class="card">
+    <h3>🔦 直射與斜射（探討活動 7-1）</h3>
+    <canvas class="sim" id="c7torch" style="background:#fff"></canvas>
+    <div class="ctl"><label>光線和地面的夾角 <output for="c7ang"></output></label><input type="range" id="c7ang" min="15" max="90" value="90"></div>
+    <div class="readout" id="c7torchR"></div>
+  </div>
+</div>
+
+<div class="card">
+  <h3>🌞 四季模擬器</h3>
+  <div class="btnrow" style="margin-bottom:8px">
+    <button class="btn ghost" data-d="80">春分 3/21</button><button class="btn ghost" data-d="173">夏至 6/22</button><button class="btn ghost" data-d="266">秋分 9/23</button><button class="btn ghost" data-d="356">冬至 12/22</button>
+  </div>
+  <div class="grid2 even">
+    <canvas class="sim" id="c7orbit" style="background:#05070F"></canvas>
+    <canvas class="sim" id="c7side" style="background:#05070F"></canvas>
+  </div>
+  <div class="grid2" style="margin-top:10px">
+    <div class="controls">
+      <div class="ctl"><label>日期 <output for="c7day"></output></label><input type="range" id="c7day" min="0" max="364" value="173"></div>
+      <div class="ctl"><label>🟣 自轉軸傾角 <output for="c7tilt"></output></label><input type="range" id="c7tilt" min="0" max="60" value="23.5" step="0.5"></div>
+    </div>
+    <div class="readout" id="c7seasonR"></div>
+  </div>
+</div>
+
+<div class="card">
+  <h3>☀️ 太陽在嘉義天空走的路（課本圖 7-10）</h3>
+  <canvas class="sim" id="c7sky" style="background:#EAF4FC;max-width:640px;margin:0 auto"></canvas>
+  <p class="note">嘉義位在北回歸線上（北緯 23.5 度）。灰線是夏至、冬至；彩色線是上面選的日期。</p>
+</div>
+
+<div data-guess="t3"></div>
+
+<div class="cases">
+  <div class="case world">
+    <div class="where">🌍 國際｜冰島、北極圈</div>
+    <h4>半夜也看得到太陽</h4>
+    <p>夏至前後，北極圈以北的地方太陽整天不落下，叫做「永晝」（課本圖 7-9）；冬至前後則整天見不到太陽，叫做「永夜」。在四季模擬器按「夏至」，看看北極圈內是不是整圈都在亮面。</p>
+  </div>
+  <div class="case">
+    <div class="where">🇹🇼 臺灣｜嘉義 北回歸線</div>
+    <h4>一年只有一天「沒有影子」</h4>
+    <p>夏至那天正午，太陽直射北回歸線，嘉義的太陽幾乎在頭頂正上方，直立的竿子影子幾乎消失。嘉義的北回歸線標誌，就是為了這條特別的緯線而建的。</p>
+    <p class="ask">想一想：臺北（北緯 25 度）一年中會不會有「太陽在正頭頂」的時候？</p>
+  </div>
+</div>
+
+<details class="deep"><summary>🧠 資優挑戰｜迷思擂台：夏天熱，是因為地球離太陽比較近？</summary><div class="inner">
+  <div data-arena="t3"></div>
+</div></details>
+
+<div class="takeaway">💬 <b>一句話帶走：</b>晝夜是因為地球______；四季是因為地球______加上自轉軸______ 23.5 度，讓陽光直射的位置一年中來回移動。</div>
+
+</section>
+<section class="panel" id="p-t4">
+<!--NAV: 月相變化-->
+<div class="pagehead">
+  <span class="ref">課本 p.203–205｜7-3 ① 月相變化＋實驗 7-1</span>
+  <h2>月亮為什麼會「變形」？</h2>
+  <p class="hook"><b>關鍵事實：</b>月亮自己不會發光，它的光芒是反射的太陽光。月球永遠有一半被太陽照亮——那為什麼我們看到的形狀每天都不一樣？</p>
+</div>
+
+<details class="teacher"><summary>👩‍🏫 教學提示</summary><div class="inner">
+  建議先做實體的實驗 7-1（黑黃球），再用這裡「放慢、對照」。左圖是從北極上空看（上帝視角），右圖是從臺灣看到的樣子，兩邊同步。請學生預測：拖到某個位置時，右邊會看到什麼月相？什麼時候升起？
+</div></details>
+
+<div data-guess="t4"></div>
+
+<div class="card">
+  <h3>🌙 月相模擬器 <span class="tag note">拖曳左圖的月球，或按播放</span></h3>
+  <div class="grid2 even">
+    <canvas class="sim" id="c7moonTop" style="background:#05070F"></canvas>
+    <canvas class="sim" id="c7moonView" style="background:#0B1530"></canvas>
+  </div>
+  <div class="grid2" style="margin-top:10px">
+    <div class="controls">
+      <div class="ctl"><label>農曆日期 <output for="c7lday"></output></label><input type="range" id="c7lday" min="0" max="29.5" value="7.4" step="0.1"></div>
+      <div class="btnrow"><button class="btn" id="c7moonPlay">▶ 播放一個月</button><label class="note"><input type="checkbox" id="c7shadow"> 顯示地球的影子</label></div>
+    </div>
+    <div class="readout" id="c7moonR"></div>
+  </div>
+</div>
+
+<div class="card">
+  <h3>📋 月相整理</h3>
+  <table class="simple">
+    <tr><th>月相</th><th>農曆</th><th>日、地、月的位置</th><th>亮面朝向</th><th>大約何時升起</th></tr>
+    <tr><td>新月（朔）</td><td>初一</td><td>月球在太陽和地球之間</td><td>看不到</td><td>清晨（和太陽一起）</td></tr>
+    <tr><td>上弦月</td><td>初七、初八</td><td>三者成直角</td><td>朝西</td><td>中午</td></tr>
+    <tr><td>滿月（望）</td><td>十五</td><td>地球在太陽和月球之間</td><td>整個亮</td><td>傍晚（日落時）</td></tr>
+    <tr><td>下弦月</td><td>二十二、二十三</td><td>三者成直角</td><td>朝東</td><td>半夜</td></tr>
+  </table>
+  <p class="note">月相變化一輪約 29.5 天，所以農曆一個月大約 29 或 30 天。</p>
+</div>
+
+<div class="cases">
+  <div class="case">
+    <div class="where">🇹🇼 生活｜中秋節</div>
+    <h4>為什麼中秋節一定是滿月（或接近滿月）？</h4>
+    <p>農曆是依照月相訂的：初一是新月，十五前後是滿月。中秋節是農曆八月十五，所以月亮又圓又亮，而且傍晚就從東方升起，整晚都看得到。</p>
+    <p class="ask">想一想：如果有人說「我在中秋節中午看到滿月掛在天頂」，可能嗎？</p>
+  </div>
+  <div class="case world">
+    <div class="where">🌍 歷史｜1969 年 阿波羅 11 號</div>
+    <h4>人類第一次踏上月球</h4>
+    <p>美國太空人阿姆斯壯首度踏上月球表面（課本 p.203）。太空人在月球上回頭看地球，也會看到地球有「地相」變化——當地球上看到新月時，月球上看到的是「滿地」。</p>
+  </div>
+</div>
+
+<details class="deep"><summary>🧠 資優挑戰｜為什麼月球永遠同一面朝地球？＋迷思擂台：月相是地球的影子造成的？</summary><div class="inner">
+  <div class="card" style="margin:0 0 10px">
+    <h3>🔄 月球的自轉（課本探究提問 p.204）</h3>
+    <div class="grid2">
+      <canvas class="sim" id="c7lock" style="background:#05070F"></canvas>
+      <div class="controls">
+        <div class="chips" id="c7lockMode"><button class="chip on" data-m="sync">自轉一圈＝公轉一圈（真實）</button><button class="chip" data-m="none">假設：月球不自轉</button></div>
+        <div class="btnrow"><button class="btn deepb" id="c7lockGo">▶ 播放</button></div>
+        <div class="callout" id="c7lockTxt"></div>
+      </div>
+    </div>
+  </div>
+  <div data-arena="t4"></div>
+</div></details>
+
+<div class="takeaway">💬 <b>一句話帶走：</b>月相是因為月球繞地球公轉，我們看到它「被太陽照亮那一半」的______不同；不是地球的______。</div>
+
+</section>
+<section class="panel" id="p-t5">
+<!--NAV: 日食與月食-->
+<div class="pagehead">
+  <span class="ref">課本 p.206–208｜7-3 ② 日食與月食＋探討活動 7-2</span>
+  <h2>天狗食日？其實是影子在玩遊戲</h2>
+  <p class="hook"><b>課本 tell me why：</b>古人以為日食是「天狗把太陽吃掉」，要敲鑼打鼓嚇跑天狗。日食究竟是怎麼發生的？</p>
+</div>
+
+<details class="teacher"><summary>👩‍🏫 教學提示</summary><div class="inner">
+  ① 日食：拉動「月球離地球的距離」，看月影的尖端能不能碰到地球 → 日全食／日環食；再看地球上不同位置看到什麼。② 月食：把月球從地球影子外移到影子中央。③ 資優班：「一年中的 12 次新月」，把軌道夾角從 5 度改成 0 度。<br>⚠️ 提醒學生：觀察日食一定要用專用的日食眼鏡，絕對不能直視太陽。
+</div></details>
+
+<div data-guess="t5"></div>
+
+<div class="card">
+  <h3>🌑 日食與月食模擬器 <span class="tag note">側視圖，大小與距離沒有照比例</span></h3>
+  <div class="chips" id="c7eMode"><button class="chip on" data-m="solar">☀️ 日食：月球在太陽和地球之間</button><button class="chip" data-m="lunar">🌕 月食：地球在太陽和月球之間</button></div>
+  <canvas class="sim" id="c7ecl" style="background:#05070F;margin-top:8px"></canvas>
+  <div class="grid2" style="margin-top:10px">
+    <div class="controls">
+      <div class="ctl" id="c7eDistBox"><label>月球離地球的距離 <output for="c7eDist"></output></label><input type="range" id="c7eDist" min="0" max="100" value="95"></div>
+      <div class="ctl" id="c7eObsBox"><label>觀察者在地球上的位置 <output for="c7eObs"></output></label><input type="range" id="c7eObs" min="-100" max="100" value="0"></div>
+      <div class="ctl" id="c7eMoonBox" style="display:none"><label>月球的位置（上下） <output for="c7eMoonY"></output></label><input type="range" id="c7eMoonY" min="-100" max="100" value="0"></div>
+    </div>
+    <div style="display:flex;gap:12px;align-items:center">
+      <canvas class="sim" id="c7eSee" style="background:#0B1530;max-width:180px !important"></canvas>
+      <div class="callout" id="c7eTxt" style="flex:1"></div>
+    </div>
+  </div>
+</div>
+
+<div class="cases">
+  <div class="case">
+    <div class="where">🇹🇼 臺灣｜2020 年 6 月 21 日（夏至）</div>
+    <h4>環食帶橫跨臺灣</h4>
+    <p>日環食的環食帶從金門、澎湖北側一路經過雲林南部、嘉義、臺南北側到花東。嘉義是最佳觀測地點之一，金色的「火環」大約只維持了 1 分鐘。</p>
+    <div class="links"><a href="https://www.google.com/search?tbm=isch&q=2020+%E6%97%A5%E7%92%B0%E9%A3%9F+%E5%98%89%E7%BE%A9" target="_blank" rel="noopener">📷 看照片</a></div>
+  </div>
+  <div class="case">
+    <div class="where">🇹🇼 臺灣｜2025/9/8 凌晨、2026/3/3 元宵節</div>
+    <h4>兩次全程可見的「紅月」</h4>
+    <p>2025 年 9 月 8 日凌晨的月全食，全食階段長達約 1 小時 23 分。2026 年 3 月 3 日的月全食剛好落在元宵節，月亮在晚上 7 點多變成紅色——上一次元宵節遇上月全食是 1990 年，下一次要等到 2072 年。</p>
+    <p class="ask">算算看：你下一次在臺灣能全程看到月全食，是哪一天？（天文館：2028 年 12 月 31 日跨年夜，紅月出現在 2029 年元旦凌晨）</p>
+    <div class="links"><a href="https://www.google.com/search?q=%E8%87%BA%E5%8C%97%E5%B8%82%E7%AB%8B%E5%A4%A9%E6%96%87%E7%A7%91%E5%AD%B8%E6%95%99%E8%82%B2%E9%A4%A8+%E6%9C%88%E5%85%A8%E9%A3%9F" target="_blank" rel="noopener">🔎 臺北天文館月食資訊</a></div>
+  </div>
+  <div class="case world">
+    <div class="where">🌍 國際｜2027 年 8 月 2 日 埃及路克索</div>
+    <h4>本世紀陸地上最長的日全食</h4>
+    <p>月球那時正好很靠近地球（月影比較大），日全食在埃及路克索附近可以維持約 <span class="num">6 分 23 秒</span>。這是到 2114 年以前，在陸地上能看到的最長日全食。</p>
+    <p class="ask">對照模擬器：月球「近」還是「遠」的時候，日全食會比較長？</p>
+  </div>
+</div>
+
+<details class="deep"><summary>🧠 資優挑戰｜一年中的 12 次新月＋迷思擂台：為什麼不是每個月都有日食？</summary><div class="inner">
+  <div class="card" style="margin:0 0 10px">
+    <h3>📅 一年中的 12 次新月（從側面看）</h3>
+    <canvas class="sim" id="c7nodes" style="background:#05070F"></canvas>
+    <div class="ctl" style="margin-top:8px"><label>月球軌道面和地球軌道面的夾角 <output for="c7inc"></output></label><input type="range" id="c7inc" min="0" max="10" value="5" step="0.5"></div>
+    <p class="note">每一格是一次新月。黃線是地球繞太陽的軌道面；月球太高或太低，影子就打不到地球。🟣 真實情況：兩個軌道面的交線會慢慢轉動，所以「容易發生日食的季節」每年大約提早 19 天，不是固定在某幾個月。</p>
+  </div>
+  <div data-arena="t5"></div>
+</div></details>
+
+<div class="takeaway">💬 <b>一句話帶走：</b>日食：______在中間，只發生在______；月食：______在中間，只發生在______。</div>
+
+</section>
+<section class="panel" id="p-t6">
+<!--NAV: 潮汐-->
+<div class="pagehead">
+  <span class="ref">課本 p.209–210｜7-3 ③ 潮汐＋地科 In my life</span>
+  <h2>海水一天漲退兩次：誰在拉？</h2>
+  <p class="hook"><b>課本 In my life：</b>阿翰和琳琳走過一條海上步道去小島，回頭時路竟然不見了！他們什麼時候才能走回去？</p>
+</div>
+
+<details class="teacher"><summary>👩‍🏫 教學提示</summary><div class="inner">
+  ① 按播放，讓學生數「一天臺灣經過幾次隆起」→ 一天約兩次滿潮。② 把農曆拉到初一、十五，再拉到初八、廿三，比較潮差（大潮、小潮）。③ 摩西分海任務：在潮汐圖上找出「可以走過去」的時段。④ 資優擂台：為什麼背對月亮的那一邊也會漲潮。
+</div></details>
+
+<div data-guess="t6"></div>
+
+<div class="card">
+  <h3>🌊 潮汐模擬器 <span class="tag note">從北極上空看，海水隆起被誇大很多倍</span></h3>
+  <div class="grid2 even">
+    <canvas class="sim" id="c7tide" style="background:#05070F"></canvas>
+    <div>
+      <canvas class="sim" id="c7tideG" style="background:#fff"></canvas>
+      <div class="readout" id="c7tideR" style="margin-top:8px"></div>
+    </div>
+  </div>
+  <div class="grid2" style="margin-top:10px">
+    <div class="controls">
+      <div class="ctl"><label>農曆日期（月相） <output for="c7tday"></output></label><input type="range" id="c7tday" min="0" max="29" value="0" step="0.5"></div>
+      <div class="btnrow"><button class="btn" id="c7tidePlay">▶ 時間前進</button><label class="note"><input type="checkbox" id="c7sun" checked> 加上太陽的影響</label><label class="note"><input type="checkbox" id="c7moses"> 🚶 摩西分海任務</label></div>
+    </div>
+    <div class="callout" id="c7tideTxt"></div>
+  </div>
+</div>
+
+<div class="cases">
+  <div class="case">
+    <div class="where">🇹🇼 臺灣｜澎湖 奎壁山</div>
+    <h4>摩西分海</h4>
+    <p>退潮時，奎壁山和外海的赤嶼之間會露出一條玄武岩礫石步道，可以走過去；漲潮時步道又被海水淹沒。觀光客要查潮汐表、算好時間，不然就會像阿翰和琳琳一樣被困在島上。</p>
+    <p class="ask">勾選上面的「摩西分海任務」，找出可以走過去的時段。</p>
+    <div class="links"><a href="https://www.google.com/search?tbm=isch&q=%E5%A5%8E%E5%A3%81%E5%B1%B1+%E6%91%A9%E8%A5%BF%E5%88%86%E6%B5%B7" target="_blank" rel="noopener">📷 看照片</a><a href="https://www.google.com/search?q=%E4%B8%AD%E5%A4%AE%E6%B0%A3%E8%B1%A1%E7%BD%B2+%E6%BD%AE%E6%B1%90%E9%A0%90%E5%A0%B1+%E6%BE%8E%E6%B9%96+%E6%B9%96%E8%A5%BF" target="_blank" rel="noopener">🔎 氣象署潮汐預報</a></div>
+  </div>
+  <div class="case">
+    <div class="where">🇹🇼 臺灣｜澎湖 七美</div>
+    <h4>雙心石滬：利用潮汐的老智慧</h4>
+    <p>先民用石頭在潮間帶堆出圍牆。漲潮時，魚群游進石滬裡覓食；退潮時海水從石縫流走，魚被困在裡面，漁民就能撿魚（課本圖 7-16）。</p>
+  </div>
+  <div class="case world">
+    <div class="where">🌍 國際｜加拿大 芬地灣</div>
+    <h4>世界最大的潮差：十幾公尺</h4>
+    <p>芬地灣的形狀像一個長長的漏斗，海水來回晃動的節奏剛好和潮汐「同步」，讓潮差最大可達約 16 公尺（大約 5 層樓高）。全世界海洋平均的潮差只有約 1 公尺。</p>
+    <p class="ask">想一想：為什麼課本說「潮汐週期和潮差會受到海岸與海底地形影響」？</p>
+    <div class="links"><a href="https://en.wikipedia.org/wiki/Bay_of_Fundy" target="_blank" rel="noopener">維基百科（英）</a></div>
+  </div>
+</div>
+
+<details class="deep"><summary>🧠 資優挑戰｜迷思擂台：背對月亮的那一邊，為什麼也會漲潮？</summary><div class="inner">
+  <div class="card" style="margin:0 0 10px">
+    <h3>🧲 月球的拉力差</h3>
+    <div class="grid2">
+      <canvas class="sim" id="c7pull" style="background:#05070F"></canvas>
+      <div class="controls">
+        <div class="chips" id="c7pullMode"><button class="chip on" data-m="raw">① 月球對三個點的拉力</button><button class="chip" data-m="rel">② 扣掉地球中心的拉力後</button></div>
+        <div class="callout" id="c7pullTxt"></div>
+      </div>
+    </div>
+  </div>
+  <div data-arena="t6"></div>
+</div></details>
+
+<div class="takeaway">💬 <b>一句話帶走：</b>潮汐主要是______的引力造成的；同一地點一天大約有______次滿潮。初一、十五潮差最大，叫做______。</div>
+
+</section>
+<section class="panel" id="p-t7">
+<!--NAV: 總複習-->
+<div class="pagehead">
+  <span class="ref">全章統整｜課本 p.211–212 圖解 point</span>
+  <h2>總複習：先想，再翻牌</h2>
+  <p class="hook"><b>玩法：</b>每張卡先蓋著。抽一位同學說出卡片內容，說完再翻開對答案——先「想出來」，比「看一遍」記得牢。</p>
+</div>
+
+<details class="teacher"><summary>👩‍🏫 教學提示</summary><div class="inner">
+  ① 心智圖翻牌（15 分鐘）：配合學生 A3 心智圖，一個分支一個分支翻，翻完讓學生補自己的圖。② 快問快答：按 🎲 抽題＋右上角 🎲 抽號，答對的人可以抽下一位。③ 資優班最後看「迷思總整理」，請學生用自己的話說出每一條為什麼錯。
+</div></details>
+
+<div class="card">
+  <h3>🧠 心智圖翻牌</h3>
+  <div class="btnrow" style="margin-bottom:10px"><button class="btn ghost" id="t8hide">全部蓋起來</button><button class="btn ghost" id="t8show">全部翻開</button></div>
+  <div id="t8map"></div>
+</div>
+
+<div class="card">
+  <h3>⚡ 快問快答 <span class="tag note" id="t8count"></span></h3>
+  <div class="chips" style="margin-bottom:10px" id="t8filter">
+    <button class="chip on" data-f="all">全部</button><button class="chip" data-f="7-1">7-1</button><button class="chip" data-f="7-2">7-2</button><button class="chip" data-f="7-3">7-3</button><button class="chip" data-f="deep">🟣 加深</button>
+  </div>
+  <div id="t8q" style="min-height:240px"></div>
+  <div class="btnrow" style="margin-top:10px"><button class="btn warn" id="t8draw">🎲 抽一題</button><button class="btn" id="t8ans">公布答案</button></div>
+</div>
+
+<details class="deep"><summary>🧠 資優挑戰｜迷思總整理</summary><div class="inner">
+  <div class="card" style="margin:0">
+    <table class="simple" id="t8myth"></table>
+    <p class="note">挑戰：遮住右邊那一欄，用自己的話說出「為什麼錯」，再翻回來對照。</p>
+  </div>
+</div></details>
+
+<div class="takeaway">💬 <b>全章一句話：</b>從宇宙到地球：自轉、公轉、月球公轉，造成晝夜、四季、月相、日月食和潮汐。</div>
+
+</section>
+<div class="footer">鍵盤 <kbd>←</kbd> <kbd>→</kbd> 或簡報筆可以換分頁｜課本：115 學年度國中自然 3 上 第 7 章｜案例資料查證日期：2026-10-11</div>
+</main>
+
+<div class="picker" id="picker"><div class="box">
+  <div>🎲 抽到的座號</div><div class="num" id="pickNum">?</div>
+  <div class="note">全班人數 <input id="pickMax" type="number" value="30" min="2" max="60" style="width:60px"></div>
+  <div class="btnrow" style="justify-content:center;margin-top:12px"><button class="btn" id="pickAgain">再抽一次</button><button class="btn ghost" id="pickClose">關閉</button></div>
+</div></div>
+
+<script>
+const STORE_KEY = 'geo-ch7-v1';
+/* ==== core.js ==== */
+/* =====================================================================
+   地科互動課本 共用引擎
+   - 分頁切換、一般班／資優班、投影模式、抽號、鍵盤翻頁
+   - 畫布工具 stage()／loop()
+   - 「猜一猜」(全班) 與「迷思擂台」(資優) 兩種互動元件
+   ===================================================================== */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const lerp = (a, b, t) => a + (b - a) * t;
+
+/* ---------- 存檔（只存介面偏好，壞掉也不影響使用） ---------- */
+const store = {
+  get() { try { return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; } catch { return {}; } },
+  set(o) { try { localStorage.setItem(STORE_KEY, JSON.stringify({ ...store.get(), ...o })); } catch {} },
+};
+
+/* ---------- 分頁 ---------- */
+const SIMS = {};
+let curTab = null;
+function registerSim(tab, obj) {
+  (SIMS[tab] ||= []).push(obj);
+  if (curTab === tab && obj.start) obj.start();
+}
+function showTab(id) {
+  if (!document.getElementById('p-' + id)) return;
+  if (curTab && SIMS[curTab]) SIMS[curTab].forEach(s => s.stop && s.stop());
+  $$('nav.tabs button').forEach(b => b.classList.toggle('active', b.dataset.tab === id));
+  $$('.panel').forEach(p => p.classList.toggle('active', p.id === 'p-' + id));
+  curTab = id;
+  requestAnimationFrame(() => (SIMS[id] || []).forEach(s => s.start && s.start()));
+  store.set({ tab: id });
+  window.scrollTo({ top: 0 });
+  const b = $(`nav.tabs button[data-tab="${id}"]`);
+  if (b) b.scrollIntoView({ inline: 'center', block: 'nearest' });
+}
+function stepTab(d) {
+  const ids = $$('nav.tabs button').map(b => b.dataset.tab);
+  const i = ids.indexOf(curTab);
+  showTab(ids[clamp(i + d, 0, ids.length - 1)]);
+}
+
+/* ---------- 一般班 / 資優班 ---------- */
+function setMode(m) {
+  $$('#modeSeg button').forEach(b => b.classList.toggle('on', b.dataset.mode === m));
+  $$('details.deep').forEach(d => d.open = (m === 'deep'));
+  document.body.dataset.mode = m;
+  store.set({ mode: m });
+}
+
+/* ---------- 畫布工具：用固定的邏輯座標 W×H 作畫，自動配合螢幕寬度 ---------- */
+function stage(cv, W, H) {
+  cv.style.aspectRatio = `${W} / ${H}`;
+  cv.style.setProperty('--ar', W / H);
+  const ctx = cv.getContext('2d');
+  const s = { cv, ctx, W, H, fit() {
+    const dpr = window.devicePixelRatio || 1;
+    const cw = cv.clientWidth || 600;
+    const pw = Math.round(cw * dpr), ph = Math.round(cw * H / W * dpr);
+    if (cv.width !== pw || cv.height !== ph) { cv.width = pw; cv.height = ph; }
+    ctx.setTransform(pw / W, 0, 0, ph / H, 0, 0);
+  }, pt(e) {
+    const r = cv.getBoundingClientRect();
+    return { x: (e.clientX - r.left) / r.width * W, y: (e.clientY - r.top) / r.height * H };
+  } };
+  return s;
+}
+/* 動畫迴圈：分頁不在畫面上就停，省電 */
+function loop(fn) {
+  let id = null, last = 0;
+  return {
+    start() {
+      if (id) return; last = performance.now();
+      const f = t => { const dt = Math.min(0.05, (t - last) / 1000); last = t; fn(dt); id = requestAnimationFrame(f); };
+      id = requestAnimationFrame(f);
+    },
+    stop() { cancelAnimationFrame(id); id = null; },
+  };
+}
+/* 滑桿綁定：<input id> + <output for=id> */
+function bindRange(id, fmt, onChange) {
+  const el = document.getElementById(id);
+  const out = $(`output[for="${id}"]`);
+  const lab = () => { if (out) out.textContent = fmt ? fmt(+el.value) : el.value; };
+  el.addEventListener('input', () => { lab(); onChange && onChange(+el.value); });
+  lab();   // 一開始只更新文字，不觸發重畫（畫布可能還沒準備好）
+  return el;
+}
+/* 常用繪圖 */
+function rrect(ctx, x, y, w, h, r) {
+  ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+}
+function label(ctx, txt, x, y, opt = {}) {
+  ctx.save();
+  const sz = Math.max(13, opt.size || 15);   // 投影時畫布會縮小，文字至少 13
+  ctx.font = `${opt.bold ? 'bold ' : ''}${sz}px "PingFang TC","Microsoft JhengHei",sans-serif`;
+  ctx.textAlign = opt.align || 'left'; ctx.textBaseline = opt.base || 'middle';
+  if (opt.bg) {
+    const w = ctx.measureText(txt).width, h = sz + 8;
+    const x0 = opt.align === 'center' ? x - w / 2 - 6 : opt.align === 'right' ? x - w - 6 : x - 6;
+    ctx.fillStyle = opt.bg; rrect(ctx, x0, y - h / 2, w + 12, h, 5); ctx.fill();
+  }
+  ctx.fillStyle = opt.color || '#23302B'; ctx.fillText(txt, x, y);
+  ctx.restore();
+}
+function arrow(ctx, x1, y1, x2, y2, color = '#333', w = 2, head = 9) {
+  const a = Math.atan2(y2 - y1, x2 - x1);
+  ctx.save(); ctx.strokeStyle = ctx.fillStyle = color; ctx.lineWidth = w;
+  ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2 - Math.cos(a) * head * .6, y2 - Math.sin(a) * head * .6); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x2, y2);
+  ctx.lineTo(x2 - head * Math.cos(a - .45), y2 - head * Math.sin(a - .45));
+  ctx.lineTo(x2 - head * Math.cos(a + .45), y2 - head * Math.sin(a + .45)); ctx.closePath(); ctx.fill();
+  ctx.restore();
+}
+/* 可重現的亂數（同一個種子每次畫出一樣的圖） */
+function rng(seed) { let s = seed >>> 0 || 1; return () => (s = (s * 1664525 + 1013904223) >>> 0) / 4294967296; }
+
+/* ---------- 投票選項（老師數舉手，點 + / −） ---------- */
+function voteList(host, opts, onPick) {
+  const counts = opts.map(() => 0);
+  host.innerHTML = '';
+  const wrap = document.createElement('div'); wrap.className = 'opts';
+  const rows = opts.map((t, i) => {
+    const row = document.createElement('div'); row.className = 'opt'; row.tabIndex = 0;
+    row.innerHTML = `<span class="letter">${'ABCDEF'[i]}</span><span class="t">${t}</span>
+      <span class="bar"><i style="width:0"></i><em>0 人</em></span>
+      <span class="vote-ctl"><button title="少一票">−</button><button title="多一票">＋</button></span>`;
+    const [minus, plus] = $$('.vote-ctl button', row);
+    const upd = () => {
+      const tot = counts.reduce((a, b) => a + b, 0) || 1;
+      rows.forEach((r, k) => { $('.bar i', r).style.width = (counts[k] / tot * 90) + 'px'; $('.bar em', r).textContent = counts[k] + ' 人'; });
+    };
+    plus.onclick = e => { e.stopPropagation(); counts[i]++; upd(); };
+    minus.onclick = e => { e.stopPropagation(); counts[i] = Math.max(0, counts[i] - 1); upd(); };
+    row.onclick = () => { rows.forEach(r => r.classList.remove('picked')); row.classList.add('picked'); onPick && onPick(i); };
+    wrap.appendChild(row);
+    return row;
+  });
+  host.appendChild(wrap);
+  return {
+    counts,
+    reveal(ans) { rows.forEach((r, k) => r.classList.add(k === ans ? 'right' : 'wrong')); },
+  };
+}
+
+/* ---------- 猜一猜（全班版：先猜 → 操作模擬 → 公布） ---------- */
+function mountGuess(host, g) {
+  host.classList.add('card', 'guess');
+  host.innerHTML = `<h3>🤔 猜一猜 <span class="tag note">先舉手投票，再用這一頁的模擬驗證</span></h3>
+    <div class="q">${g.q}</div><div class="vl"></div>
+    <div class="btnrow" style="margin-top:10px"><button class="btn warn">公布答案</button></div>
+    <div class="reveal callout good">${g.after}</div>`;
+  const v = voteList($('.vl', host), g.opts);
+  $('.btn', host).onclick = () => { v.reveal(g.ans); $('.reveal', host).classList.add('show'); };
+}
+
+/* ---------- 迷思擂台（資優版：先賭 → 跑模擬 → 撞牆 → 重建 → 再考） ---------- */
+function mountArena(host, a) {
+  const names = ['① 先賭', '② 跑模擬', '③ 撞牆', '④ 重建', '⑤ 換情境再考'];
+  host.classList.add('arena');
+  host.innerHTML = `<h4>⚔️ ${a.title}</h4>
+    <div class="steps">${names.map(n => `<span>${n}</span>`).join('')}</div>
+    <div class="stage s0"><div class="q big" style="margin-bottom:8px">${a.q}</div><div class="vl"></div>
+      <div class="btnrow" style="margin-top:10px"><button class="btn deepb go1">鎖定預測，去驗證 →</button></div></div>
+    <div class="stage s1"><div class="callout">${a.sim}</div>
+      <div class="btnrow" style="margin-top:10px"><button class="btn deepb go2">做完了，對照全班的預測 →</button></div></div>
+    <div class="stage s2"><div class="clash"><b>結果：</b><span class="stat"></span><br>${a.clash}</div>
+      <div class="btnrow"><button class="btn deepb go3">我們來把它想清楚 →</button></div></div>
+    <div class="stage s3">${a.hints.map((h, i) => `<div class="hint">💡 提示 ${i + 1}：${h}</div>`).join('')}
+      <div class="btnrow" style="margin-top:8px"><button class="btn ghost more">下一個提示</button>
+      <button class="btn deepb go4" style="display:none">看完整解釋 →</button></div>
+      <div class="explain" style="display:none">${a.explain}</div>
+      <div class="btnrow" style="margin-top:10px"><button class="btn deepb go5" style="display:none">換個情境考考你 →</button></div></div>
+    <div class="stage s4"><div class="q big" style="margin-bottom:8px">${a.transfer.q}</div><div class="vt"></div>
+      <div class="reveal explain tw">${a.transfer.why}</div>
+      <div class="btnrow" style="margin-top:10px"><button class="btn ghost restart">↺ 重新開始這一關</button></div></div>`;
+  const stages = $$('.stage', host), chips = $$('.steps span', host);
+  const go = (n, quiet) => {
+    stages.forEach((s, i) => s.classList.toggle('show', i <= n));
+    chips.forEach((c, i) => { c.classList.toggle('now', i === n); c.classList.toggle('done', i < n); });
+    if (!quiet) stages[n].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  };
+  const v = voteList($('.vl', host), a.opts);
+  $('.go1', host).onclick = () => go(1);
+  $('.go2', host).onclick = () => {
+    const tot = v.counts.reduce((x, y) => x + y, 0);
+    const right = v.counts[a.ans];
+    $('.stat', host).innerHTML = tot
+      ? `全班 ${tot} 人中，有 <b>${right}</b> 人選了正確答案（${Math.round(right / tot * 100)}%）。正確答案是 <b>${'ABCDEF'[a.ans]}</b>。`
+      : `正確答案是 <b>${'ABCDEF'[a.ans]}</b>。`;
+    v.reveal(a.ans); go(2);
+  };
+  let hi = 0;
+  const hints = $$('.hint', host);
+  const showHint = () => {
+    if (hi < hints.length) hints[hi++].classList.add('show');
+    if (hi >= hints.length) { $('.more', host).style.display = 'none'; $('.go4', host).style.display = ''; }
+  };
+  $('.go3', host).onclick = () => { go(3); if (hi === 0) showHint(); };
+  $('.more', host).onclick = showHint;
+  $('.go4', host).onclick = () => { $('.explain', host).style.display = 'block'; $('.go5', host).style.display = ''; };
+  $('.go5', host).onclick = () => go(4);
+  const t = a.transfer;
+  const vt = voteList($('.vt', host), t.opts, () => { vt.reveal(t.ans); $('.tw', host).classList.add('show'); });
+  $('.restart', host).onclick = () => mountArena(host, a);
+  go(0, true);
+}
+
+/* ---------- 分類小遊戲：每列一個敘述，點選它屬於哪一類 ---------- */
+function mountSort(host, cats, items) {
+  host.classList.add('sortq');
+  host.innerHTML = items.map((it, i) => `<div class="item" data-i="${i}"><span class="txt">${it[0]}</span>
+     <span class="chips">${cats.map((c, k) => `<button class="chip" data-k="${k}">${c}</button>`).join('')}</span></div>`).join('')
+    + `<div class="note">點錯也沒關係，會顯示原因。</div>`;
+  $$('.item', host).forEach(row => {
+    const it = items[+row.dataset.i];
+    $$('.chip', row).forEach(ch => ch.onclick = () => {
+      $$('.chip', row).forEach(c => c.classList.remove('on')); ch.classList.add('on');
+      const ok = +ch.dataset.k === it[1];
+      row.classList.toggle('ok', ok); row.classList.toggle('no', !ok);
+      let why = $('.why', row);
+      if (!why) { why = document.createElement('div'); why.className = 'why note'; why.style.flexBasis = '100%'; row.appendChild(why); }
+      why.textContent = (ok ? '✔ ' : '✘ ') + (it[2] || '');
+    });
+  });
+}
+
+/* ---------- 啟動 ---------- */
+function boot() {
+  $$('nav.tabs button').forEach(b => b.addEventListener('click', () => showTab(b.dataset.tab)));
+  $$('#modeSeg button').forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
+  $('#projBtn').onclick = () => { document.body.classList.toggle('proj'); store.set({ proj: document.body.classList.contains('proj') }); window.dispatchEvent(new Event('resize')); };
+  $('#fsBtn').onclick = () => document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen?.();
+  // 抽號
+  const pk = $('#picker');
+  $('#pickBtn').onclick = () => { pk.classList.add('show'); spin(); };
+  const spin = () => {
+    const max = +$('#pickMax').value || 30; let n = 0;
+    const t = setInterval(() => { $('#pickNum').textContent = 1 + Math.floor(Math.random() * max); if (++n > 14) clearInterval(t); }, 60);
+  };
+  $('#pickAgain').onclick = spin;
+  $('#pickClose').onclick = () => pk.classList.remove('show');
+  // 鍵盤：← → 翻分頁（正在拖滑桿或打字時不搶）
+  document.addEventListener('keydown', e => {
+    const tag = (e.target.tagName || '').toLowerCase();
+    if (['input', 'textarea', 'select'].includes(tag)) return;
+    if (e.key === 'ArrowRight' || e.key === 'PageDown') { stepTab(1); e.preventDefault(); }
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') { stepTab(-1); e.preventDefault(); }
+  });
+  // 掛上「猜一猜」「迷思擂台」
+  $$('[data-guess]').forEach(h => mountGuess(h, GUESS[h.dataset.guess]));
+  $$('[data-arena]').forEach(h => mountArena(h, ARENA[h.dataset.arena]));
+  // 紫色卡片打開時，裡面的畫布要重畫（收合時寬度是 0）
+  $$('details').forEach(d => d.addEventListener('toggle', () => window.dispatchEvent(new Event('resize'))));
+  window.addEventListener('resize', () => (SIMS[curTab] || []).forEach(s => s.resize ? s.resize() : (s.stop && s.stop(), s.start && s.start())));
+  const st = store.get();
+  if (st.proj) document.body.classList.add('proj');
+  setMode(st.mode || 'normal');
+  showTab(st.tab && document.getElementById('p-' + st.tab) ? st.tab : $$('nav.tabs button')[0].dataset.tab);
+}
+
+/* ==== taiwan.js ==== */
+/* ===== 共用地理資料：臺灣海岸線（經度, 緯度），示意精度 ===== */
+const TW_COAST = [[121.54,25.30],[121.62,25.27],[121.70,25.20],[121.75,25.14],[121.87,25.12],[122.00,25.01],[121.92,24.95],
+  [121.83,24.86],[121.82,24.70],[121.86,24.60],[121.84,24.45],[121.72,24.25],[121.62,24.02],[121.57,23.80],[121.50,23.50],
+  [121.40,23.15],[121.27,22.95],[121.15,22.75],[121.00,22.55],[120.90,22.35],[120.87,22.10],[120.85,21.90],[120.78,21.93],
+  [120.72,21.95],[120.70,22.05],[120.62,22.30],[120.55,22.40],[120.40,22.50],[120.28,22.62],[120.18,22.90],[120.12,23.05],
+  [120.07,23.15],[120.13,23.40],[120.18,23.60],[120.25,23.80],[120.32,24.05],[120.48,24.25],[120.60,24.45],[120.75,24.65],
+  [120.90,24.85],[121.02,25.00],[121.15,25.08],[121.40,25.18]];
+/* 點是否在多邊形內 */
+function inPoly(pt, poly) {
+  let c = false;
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    const [xi, yi] = poly[i], [xj, yj] = poly[j];
+    if (((yi > pt[1]) !== (yj > pt[1])) && (pt[0] < (xj - xi) * (pt[1] - yi) / (yj - yi) + xi)) c = !c;
+  }
+  return c;
+}
+/* 臺灣主要城市（經度, 緯度） */
+const TW_CITY = [['臺北', 121.52, 25.04], ['基隆', 121.74, 25.13], ['宜蘭', 121.75, 24.75], ['新竹', 120.97, 24.80], ['臺中', 120.68, 24.15],
+  ['南投', 120.68, 23.91], ['花蓮', 121.60, 23.98], ['嘉義', 120.45, 23.48], ['臺南', 120.21, 22.99], ['臺東', 121.15, 22.76], ['高雄', 120.30, 22.63], ['恆春', 120.74, 22.00]];
+
+/* ==== 00_data.js ==== */
+/* ===== 第七章：「猜一猜」與「迷思擂台」題目資料 ===== */
+const GUESS = {};
+const ARENA = {};
+
+/* ---------- 分頁 1 ---------- */
+GUESS.t1 = {
+  q: '「光年」是什麼單位？',
+  opts: ['時間單位，代表很多年', '距離單位：光在真空中走一年的距離', '亮度單位', '一年中日照的時數'], ans: 1,
+  after: '答案是 <b>距離單位</b>（課本 p.194）。光一秒可以繞地球 7 圈半，走一年大約是 9.5 兆公里。宇宙太大了，用公里算數字會長得嚇人，所以天文學家用光年。<br>例：北極星距離地球約 400 光年 → 它的光要走約 400 年才到地球。',
+};
+ARENA.t1 = {
+  short: '我們看到的是星星過去發出的光，它現在不一定還在。',
+  title: '迷思 1：今晚看到的星星，現在一定還在嗎？',
+  q: '你今晚看到一顆距離 600 光年的星星。這顆星星「現在」一定還存在嗎？',
+  opts: ['一定還在，我明明看到了', '不一定：我們看到的是它 600 年前發出的光', '星星不會消失，所以一定在'], ans: 1,
+  sim: '在「光的時光機」依序點北極星、仙女座星系、車輪星系。注意每一個「光走了多久」。',
+  clash: '我們「看到」一個東西，其實是看到它<b>發出的光到達眼睛</b>的那一刻。光從那顆星出發時是 600 年前——這 600 年裡它發生什麼事，我們都還不知道！',
+  hints: [
+    '你看到太陽時，看到的是幾分鐘前的太陽？',
+    '恆星也有生命週期，有些大質量的恆星最後會爆炸（超新星）。',
+    '如果一顆 600 光年外的星星「昨天」爆炸了，地球上的人要多久以後才看得到？',
+  ],
+  explain: '我們看到的天體，都是它<b>過去</b>的樣子：距離幾光年，就是幾年前的樣子。一顆幾百光年外的恆星就算已經不在了，它「生前」發出的光還在路上，我們今晚照樣看得到。<br>例：獵戶座的參宿四是一顆接近生命末期的紅超巨星，距離地球幾百光年。如果它今晚爆炸，地球上要幾百年後才看得到。<br>🔬 所以天文學家說：望遠鏡也是「時光機」——看得愈遠，看到的是愈早的宇宙。',
+  transfer: {
+    q: '如果太陽突然消失了，地球上的人大約多久後才會發現天黑了？',
+    opts: ['立刻', '約 8 分鐘', '約 1 年', '約 400 年'], ans: 1,
+    why: '太陽到地球約 1 億 5 千萬公里，光要走約 8 分 20 秒。太陽消失後，最後一批陽光還在路上，所以要約 8 分鐘後天才會黑。（有趣的是，地球繞太陽轉的引力變化也是以光速傳遞，所以地球也要約 8 分鐘後才會「感覺」到。）',
+  },
+};
+
+/* ---------- 分頁 2 ---------- */
+GUESS.t2 = {
+  q: '如果有一個超級大的水缸，哪一顆行星放進去會「浮」起來？',
+  opts: ['地球', '木星', '土星', '火星'], ans: 2,
+  after: '答案是 <b>土星</b>。土星的密度約 0.69 g/cm³，比水（1 g/cm³）還小（課本 p.196）。類木行星主要由氫、氦等氣體組成，所以密度小；類地行星由岩石和金屬組成，密度大（地球約 5.51）。用這一頁的「行星密度水缸」一顆一顆試試看。',
+};
+ARENA.t2 = {
+  short: '流星是沙粒到小石頭大小的太空碎屑在大氣中燃燒，不是恆星。',
+  title: '迷思 2：流星是天上的星星掉下來？',
+  q: '晚上看到一道「流星」劃過天空。它其實是什麼？',
+  opts: ['天上的恆星掉下來', '太空中的小石塊或塵埃，進入大氣層和空氣摩擦燃燒發光', '人造衛星爆炸', '星星眨眼睛'], ans: 1,
+  sim: '用上面的「流星還是隕石？」：先選「沙粒大小」按衝進大氣層，再選「一棟房子」試一次。',
+  clash: '一顆沙粒大小的東西，就能劃出一道明亮的流星！如果流星真的是「恆星」掉下來，那會發生什麼事？',
+  hints: [
+    '恆星是什麼？太陽就是一顆恆星。它比地球大多少？',
+    '如果一顆恆星「掉」到地球……地球會怎樣？',
+    '流星的亮光是怎麼來的？想想摩擦生熱：太空碎石的速度每秒可達數十公里。',
+  ],
+  explain: '流星的本體大多只有<b>沙粒到小石頭</b>大小，是在太空中繞太陽運行的微小天體。它以極高速度衝進大氣層，和空氣摩擦（加上壓縮空氣）產生高溫而燃燒發光。沒燒完、掉到地面的叫<b>隕石</b>（課本 p.198）。<br>而「星星」（恆星）是像太陽一樣巨大的發光天體，離我們好幾光年，不可能「掉」下來。<br>🔬 流星雨：地球每年穿過彗星或小行星沿軌道留下的碎屑帶，就會看到大量流星，例如每年 12 月的雙子座流星雨（來自一顆小行星的碎屑）。',
+  transfer: {
+    q: '月球表面布滿了坑洞（隕石坑），地球表面卻少很多。最主要的原因是？',
+    opts: ['月球比較倒楣', '地球有大氣層，小天體大多在空中燒掉；而且風化、侵蝕會把舊的坑洞抹平', '地球的引力比較小', '月球會自己長出坑洞'], ans: 1,
+    why: '月球幾乎沒有大氣，小天體直接撞上月面；月球也沒有風、水和板塊運動，坑洞可以保存幾十億年。地球有大氣層當「保護罩」，就算有隕石坑，也會被第五章的外營力（風化、侵蝕）和第六章的板塊運動慢慢抹去。',
+  },
+};
+
+/* ---------- 分頁 3 ---------- */
+GUESS.t3 = {
+  q: '（課本例題 7-1）12 月 31 日跨年夜，在雪梨（南緯 34°）跨年的人，和在臺北（北緯 25°）比，會發現？',
+  opts: ['雪梨的白天比臺北長', '雪梨的白天比臺北短', '雪梨的白天和夜晚大約一樣長', '兩地白天、夜晚的長度都一樣'], ans: 0,
+  after: '答案是 <b>雪梨的白天比臺北長</b>。12 月底接近冬至，太陽直射南回歸線：北半球晝短夜長（臺北是冬天），南半球晝長夜短（雪梨是夏天）。在四季模擬器按「冬至」，對照「臺灣白天長度」和「雪梨白天長度」。',
+};
+ARENA.t3 = {
+  short: '四季是自轉軸傾斜造成的；北半球夏天時，地球反而離太陽最遠。',
+  title: '迷思 3：夏天熱，是因為地球離太陽比較近？',
+  q: '臺灣 7 月很熱、1 月比較冷。最主要的原因是？',
+  opts: ['7 月時地球離太陽比較近', '自轉軸傾斜，讓 7 月時陽光比較直射、白天比較長', '7 月太陽燒得比較旺', '7 月地球自轉比較慢'], ans: 1,
+  sim: '在四季模擬器把日期拉到「1 月初」和「7 月初」，比較最後一格「🟣 地球到太陽的距離」。再比較「嘉義正午太陽高度」和「臺灣白天長度」。',
+  clash: '地球最<b>靠近</b>太陽是在 <b>1 月初</b>（約 1.471 億公里），最<b>遠</b>是在 <b>7 月初</b>（約 1.521 億公里）——臺灣卻是 7 月比較熱！「離太陽近所以熱」說不通。',
+  hints: [
+    '距離只差了約 3%。再看看 7 月和 1 月，正午太陽高度差了多少度？',
+    '想想手電筒的實驗：直射和斜射，每單位面積得到的能量差多少？',
+    '還有一個線索：如果是「距離」造成季節，那南半球和北半球應該同時是夏天。但 12 月時雪梨是什麼季節？',
+  ],
+  explain: '四季的主因是<b>自轉軸傾斜 23.5 度</b>加上<b>公轉</b>：<br>① 夏天陽光比較<b>直射</b>，每單位面積接收的能量多；② 夏天<b>白天比較長</b>，接收陽光的時間多。兩個效果加在一起，就比較熱（課本 p.200–201）。<br>地球和太陽的距離一年中只差約 3%，影響很小——而且北半球的夏天，反而是地球離太陽最遠的時候。<br>🔬 證據：南北半球的季節<b>相反</b>。如果季節是由距離決定，全世界應該同時是夏天。',
+  transfer: {
+    q: '如果地球的自轉軸「完全不傾斜」（0 度），臺灣會怎樣？',
+    opts: ['四季變得更明顯', '幾乎沒有四季變化，而且每天晝夜等長', '永遠是夏天', '永遠是冬天'], ans: 1,
+    why: '把四季模擬器的「自轉軸傾角」拉到 0 度：直射點永遠在赤道，每個地方一年到頭的正午太陽高度都一樣，白天都是 12 小時——就沒有四季了。反過來，把傾角拉大，四季會變得非常極端。',
+  },
+};
+
+/* ---------- 分頁 4 ---------- */
+GUESS.t4 = {
+  q: '中秋節（農曆十五）的滿月，大約在什麼時候從東方升起？',
+  opts: ['清晨，太陽出來的時候', '中午', '傍晚，太陽下山的時候', '半夜 12 點'], ans: 2,
+  after: '答案是 <b>傍晚</b>。滿月時，地球在太陽和月球中間，月球在太陽的「正對面」。所以太陽從西邊下山時，滿月剛好從東邊升起，整晚都看得到。用月相模擬器拖到「十五」，看看右下角的「月出時間」。',
+};
+ARENA.t4 = {
+  short: '月相是看到亮半球比例的變化，不是地球的影子。',
+  title: '迷思 4：月亮缺一角，是被地球的影子擋住了？',
+  q: '上弦月只看得到一半的亮面。另一半為什麼看不到？',
+  opts: ['被地球的影子遮住了', '那一半沒有被太陽照到，而且我們只看得到月球朝向地球的那一半', '被雲擋住了', '月球的另一半不會反光'], ans: 1,
+  sim: '在月相模擬器勾選「顯示地球的影子」，再把月球拖到「初八」（上弦月）。月球有沒有在影子裡？',
+  clash: '上弦月時，月球在地球的「旁邊」，離地球的影子遠得很！影子只會出現在背對太陽的那一側。所以「影子遮住」說不通。',
+  hints: [
+    '月球隨時都有一半被太陽照亮（左圖月球的黃色那一半）。',
+    '站在地球上，我們只看得到月球「朝向地球」的那一半（左圖藍色的弧）。',
+    '月相其實是：「被照亮的那一半」和「朝向我們的那一半」重疊了多少。',
+  ],
+  explain: '月球永遠有一半被太陽照亮（亮半球），另一半是暗半球。月球繞地球公轉時，我們從地球看到「亮半球」的比例跟著改變：全部看到是滿月、完全看不到是新月、看到一半是上弦或下弦——這就是月相（課本 p.205）。<br>地球的影子只在背對太陽的方向。只有在<b>滿月</b>時、而且三者剛好排成一直線，月球才會進入地球影子——那叫做<b>月食</b>，不是月相。',
+  transfer: {
+    q: '如果在某次滿月時，月球剛好進入地球的影子，會發生什麼事？',
+    opts: ['日食', '月食', '變成新月', '變成上弦月'], ans: 1,
+    why: '月球被地球影子遮住，就是月食（下一分頁）。這也說明：月食只可能發生在滿月（望）的時候。月全食時月亮還會變成紅銅色——因為有一點陽光穿過地球大氣層、被折射到月球上。',
+  },
+};
+
+/* ---------- 分頁 5 ---------- */
+GUESS.t5 = {
+  q: '日食一定發生在哪一種月相的時候？',
+  opts: ['新月（朔）', '上弦月', '滿月（望）', '下弦月'], ans: 0,
+  after: '答案是 <b>新月</b>。日食時月球在太陽和地球中間，月球暗的那一面朝向地球——正是新月（朔）的位置。反過來，月食時地球在中間，月球在太陽對面，一定是<b>滿月</b>（望）。',
+};
+ARENA.t5 = {
+  short: '月球軌道面和地球軌道面有約 5 度夾角，大部分新月時影子錯開。',
+  title: '迷思 5：每個月都有新月，為什麼不是每個月都有日食？',
+  q: '每個月都有一次新月（月球跑到太陽和地球之間）。為什麼日食一年只有少少幾次？',
+  opts: ['因為月球太小，常常遮不到', '因為月球的公轉軌道面和地球的公轉軌道面有約 5 度的夾角', '因為日食大多發生在晚上看不到', '其實每個月都有，只是沒人注意'], ans: 1,
+  sim: '打開上面的「一年中的 12 次新月」：先看夾角 5 度時，有幾個月會發生日食；再把夾角拉到 0 度。',
+  clash: '夾角 5 度時，大部分新月的月球不是跑到太陽「上面」就是「下面」，影子打不到地球；只有一年中的兩段時間剛好對齊。夾角變成 0 度後，竟然每個月都有日食！',
+  hints: [
+    '從「側面」看，月球的軌道和地球的軌道是不是在同一個平面上？（課本圖 7-12）',
+    '月球的影子很細長，只要月球偏一點點，影子就從地球的上方或下方擦過去。',
+    '兩個軌道面的交線方向，一年中會對準太陽幾次？',
+  ],
+  explain: '月球繞地球的軌道面和地球繞太陽的軌道面有約 <b>5 度</b>的夾角（課本 p.206）。大部分的朔（新月）和望（滿月），月球在太陽–地球連線的上方或下方，影子錯開，就不會發生日食或月食。<br>只有當朔或望剛好發生在兩個軌道面的<b>交線附近</b>時，日、地、月才排成一直線——這種「對齊的季節」一年大約出現兩次，所以日食、月食一年只有幾次。<br>🔬 另一個驚人的巧合：太陽直徑約是月球的 400 倍，距離也剛好約是 400 倍，所以兩者「看起來」差不多大，才會有日全食和日環食的差別。',
+  transfer: {
+    q: '為什麼日全食只有地球上很小的一塊地方看得到，月全食卻是半個地球（夜晚那一半）都看得到？',
+    opts: ['因為太陽比月球亮', '日全食要站在月球細小的本影裡；月全食是月球本身變暗，所有看得到月亮的人都看得到', '因為月全食比較久', '因為地球在自轉'], ans: 1,
+    why: '日食是「月球的影子落在地球上」，本影落在地表只有一小塊（寬度常常只有一兩百公里），所以要追著環食帶或全食帶跑。月食是「月球進入地球的影子」，月亮本身變暗了，地球上所有正在夜晚、看得到月亮的人都能看到。',
+  },
+};
+
+/* ---------- 分頁 6 ---------- */
+GUESS.t6 = {
+  q: '同一個海港，一天之中大約會有幾次「滿潮」？',
+  opts: ['1 次', '2 次', '4 次', '12 次'], ans: 1,
+  after: '答案是 <b>約 2 次</b>（課本 p.209）。地球上有兩個海水隆起處（朝向月球和背對月球），地球自轉一圈，港口會經過兩次隆起。因為月球也在繞地球轉，兩次滿潮大約相隔 12 小時 25 分，所以每天的滿潮時間會往後延。對照課本例題 7-2 的臺中港潮汐圖數數看。',
+};
+ARENA.t6 = {
+  short: '月球對近側、遠側的拉力不同（拉力差），兩側都會隆起。',
+  title: '迷思 6：月球在這邊拉，背對月球的那一邊為什麼也漲潮？',
+  q: '月球的引力把面向月球那一側的海水「拉」高了。那地球「背對」月球的那一側，海水會怎樣？',
+  opts: ['被地球擋住，海水降低', '也會隆起、漲潮', '完全不受影響', '要看那邊是白天還是晚上'], ans: 1,
+  sim: '先看潮汐模擬器：海水是不是兩邊都隆起？再打開上面的「月球的拉力差」，依序按 ① 和 ②。',
+  clash: '背對月球的那一側竟然也隆起了！月球明明是往「這邊」拉，那一邊的水為什麼會「往外」跑？',
+  hints: [
+    '萬有引力會隨距離變小。A（近側）、B（地心）、C（遠側）離月球的距離一樣嗎？',
+    '地球整體是跟著「地心 B」受的拉力在移動的。站在地心的角度看，A 和 C 分別被拉得比自己「多」還是「少」？',
+    '想像三個人在操場上排成一列，被同一個方向、但不同力氣拉：前面的人被拉最快、後面的人最慢——隊伍會怎樣？',
+  ],
+  explain: '潮汐靠的是月球拉力的<b>差</b>（潮汐力）：近側 A 被拉得比地心多 → 往月球方向隆起；遠側 C 被拉得比地心少 → 相對於地心「被留在後面」，也形成隆起。所以地球像被往兩頭拉長的橄欖球，<b>兩側同時漲潮</b>，兩側中間的地方是乾潮。<br>太陽也有同樣的效果，但因為太遠，只有月球的一半左右。初一、十五日月同一直線，兩股效果疊加 → <b>大潮</b>；初八、廿三兩者垂直、互相抵消一部分 → <b>小潮</b>。',
+  transfer: {
+    q: '在潮汐模擬器取消勾選「加上太陽的影響」，再把農曆從初一拉到初八。潮差會怎樣？',
+    opts: ['初一比較大', '初八比較大', '幾乎一樣'], ans: 2,
+    why: '沒有太陽時，只剩月球的潮汐，不管月相如何潮差都差不多。所以「大潮、小潮」的差別，正是<b>太陽</b>造成的：日月對齊時加強、互相垂直時減弱。這也是為什麼漁民和海邊遊客看潮汐，一定要對照農曆。',
+  },
+};
+
+/* ==== t0.js ==== */
+/* ===== 第七章 分頁 0：韋伯三張照片排序 ===== */
+(() => {
+  const cv = document.getElementById('c7jw'); if (!cv) return;
+  const S = stage(cv, 780, 260), ctx = S.ctx;
+  const ITEMS = ['木星', '車輪星系', '深空影像'];
+  function draw() {
+    S.fit(); ctx.fillStyle = '#05070F'; ctx.fillRect(0, 0, S.W, S.H);
+    const r = rng(5);
+    for (let i = 0; i < 250; i++) { ctx.fillStyle = `rgba(255,255,255,${r() * .6})`; ctx.fillRect(r() * S.W, r() * S.H, 1.2, 1.2); }
+    // 木星
+    const jx = 130, jy = 120;
+    ctx.save(); ctx.beginPath(); ctx.arc(jx, jy, 80, 0, 7); ctx.clip();
+    ['#D9B38C', '#B8865B', '#E8CFA8', '#A4714A', '#E2C49C', '#B07B52', '#D9B38C'].forEach((c, i) => { ctx.fillStyle = c; ctx.fillRect(jx - 80, jy - 80 + i * 23, 160, 24); });
+    ctx.fillStyle = '#C0563A'; ctx.beginPath(); ctx.ellipse(jx + 25, jy + 28, 18, 10, 0, 0, 7); ctx.fill(); ctx.restore();
+    ctx.strokeStyle = 'rgba(120,200,255,.5)'; ctx.lineWidth = 3; ctx.beginPath(); ctx.ellipse(jx, jy - 74, 26, 7, 0, 0, 7); ctx.stroke();
+    // 車輪星系
+    const gx = 390, gy = 120;
+    const g = ctx.createRadialGradient(gx, gy, 5, gx, gy, 85); g.addColorStop(0, 'rgba(255,230,180,.95)'); g.addColorStop(.25, 'rgba(255,200,150,.25)'); g.addColorStop(.7, 'rgba(120,160,255,.1)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(gx, gy, 85, 0, 7); ctx.fill();
+    ctx.strokeStyle = 'rgba(150,190,255,.85)'; ctx.lineWidth = 9; ctx.beginPath(); ctx.ellipse(gx, gy, 78, 58, .3, 0, 7); ctx.stroke();
+    for (let i = 0; i < 12; i++) { const a = i / 12 * Math.PI * 2; ctx.strokeStyle = 'rgba(255,170,120,.3)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(gx + Math.cos(a) * 12, gy + Math.sin(a) * 9); ctx.lineTo(gx + Math.cos(a) * 70, gy + Math.sin(a) * 52); ctx.stroke(); }
+    // 深空影像
+    const dx = 650;
+    for (let i = 0; i < 90; i++) { const x = dx - 100 + r() * 200, y = 30 + r() * 180, s = 1 + r() * 5; ctx.fillStyle = ['#FFD8A8', '#FFB3B3', '#B3D1FF', '#FFFFFF'][Math.floor(r() * 4)]; ctx.globalAlpha = .5 + r() * .5; ctx.beginPath(); ctx.ellipse(x, y, s, s * (.4 + r() * .6), r() * 3, 0, 7); ctx.fill(); }
+    ctx.globalAlpha = 1;
+    [['木星', jx], ['車輪星系', gx], ['深空影像（數千個星系）', dx]].forEach(([t, x]) => label(ctx, t, x, 240, { align: 'center', color: '#fff', bold: true, size: 15 }));
+  }
+  function ranker(boxId, outId) {
+    const box = document.getElementById(boxId), out = document.getElementById(outId); let pick = [];
+    const render = () => { box.innerHTML = ITEMS.map(n => `<button class="chip" ${pick.includes(n) ? 'disabled style="opacity:.35"' : ''}>${n}</button>`).join(''); out.textContent = pick.join(' ＜ ');
+      box.querySelectorAll('.chip').forEach(b => b.onclick = () => { pick.push(b.textContent); render(); }); };
+    render(); return () => { pick = []; render(); };
+  }
+  const r1 = ranker('c7r1', 'c7r1o'), r2 = ranker('c7r2', 'c7r2o');
+  document.getElementById('c7jwAns').onclick = () => document.getElementById('c7jwTxt').classList.add('show');
+  document.getElementById('c7jwReset').onclick = () => { r1(); r2(); document.getElementById('c7jwTxt').classList.remove('show'); };
+  registerSim('t0', { start: draw, resize: draw });
+})();
+
+/* ==== t1.js ==== */
+/* ===== 第七章 分頁 1：宇宙放大鏡、光的時光機 ===== */
+(() => {
+  const cv = document.getElementById('c7zoom'); if (!cv) return;
+  const S = stage(cv, 480, 400), ctx = S.ctx;
+  const LV = [
+    ['地球', '約 1 萬 3 千公里', '<b>行星</b>：繞著恆星公轉、自己不發光。地球是太陽系的一顆行星。'],
+    ['地球與月球', '約 80 萬公里', '<b>衛星</b>：繞著行星公轉的天體。月球繞地球公轉，距離約 38 萬公里。'],
+    ['太陽系', '約 90 億公里（60 天文單位）', '<b>太陽系</b>：太陽（恆星）＋八大行星＋衛星、矮行星、小行星、彗星。1 天文單位（AU）＝地球到太陽的平均距離。'],
+    ['太陽的鄰居', '約 20 光年', '<b>恆星</b>：自己會發光發熱的天體。離太陽最近的恆星也要約 4 光年——光要走 4 年！'],
+    ['銀河系', '約 15 萬光年', '<b>星系</b>：由恆星、氣體與塵埃構成的系統，是組成宇宙的基本單位。銀河系約有兩千多億顆恆星，太陽只是其中一顆。'],
+    ['宇宙', '數十億光年', '<b>宇宙</b>：所有時空的總和（四面八方謂之「宇」，古往今來謂之「宙」）。宇宙中有數不清的星系。'],
+  ];
+  const z = bindRange('c7z', v => LV[Math.min(5, Math.round(v / 100))][0], () => draw());
+  const r = rng(11), stars = Array.from({ length: 400 }, () => [r(), r(), r()]);
+  function scene(i, a) {
+    if (a <= 0.01) return;
+    ctx.save(); ctx.globalAlpha = a;
+    const cx = 240, cy = 200;
+    if (i === 0) { const g = ctx.createRadialGradient(cx - 30, cy - 30, 10, cx, cy, 130); g.addColorStop(0, '#6FB6FF'); g.addColorStop(1, '#0B3D91'); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, 130, 0, 7); ctx.fill();
+      ctx.fillStyle = 'rgba(90,170,90,.85)'; [[-40, -30, 40], [30, 20, 30], [-10, 60, 22]].forEach(([dx, dy, rr]) => { ctx.beginPath(); ctx.arc(cx + dx, cy + dy, rr, 0, 7); ctx.fill(); }); }
+    if (i === 1) { ctx.fillStyle = '#3E7CC0'; ctx.beginPath(); ctx.arc(cx - 150, cy, 10, 0, 7); ctx.fill(); ctx.strokeStyle = 'rgba(255,255,255,.3)'; ctx.beginPath(); ctx.arc(cx - 150, cy, 300 * .66, -.5, .5); ctx.stroke();
+      ctx.fillStyle = '#ccc'; ctx.beginPath(); ctx.arc(cx + 48, cy, 3, 0, 7); ctx.fill(); label(ctx, '月球', cx + 56, cy - 12, { color: '#fff', size: 13 }); label(ctx, '地球', cx - 150, cy + 24, { color: '#fff', size: 13, align: 'center' });
+      label(ctx, '← 38 萬公里 →', cx - 50, cy + 30, { color: '#aaa', size: 12, align: 'center' }); }
+    if (i === 2) { ctx.fillStyle = '#FFD54F'; ctx.beginPath(); ctx.arc(cx, cy, 8, 0, 7); ctx.fill();
+      [0.39, 0.72, 1, 1.52, 5.2, 9.5, 19.2, 30].forEach((au, k) => { const rr = Math.sqrt(au) * 33; ctx.strokeStyle = 'rgba(255,255,255,.25)'; ctx.beginPath(); ctx.arc(cx, cy, rr, 0, 7); ctx.stroke(); const ang = k * 1.7; ctx.fillStyle = ['#aaa', '#e8c27a', '#4a90e2', '#d0623d', '#d9b38c', '#e8d39a', '#8fd3e8', '#4f6fd8'][k]; ctx.beginPath(); ctx.arc(cx + Math.cos(ang) * rr, cy + Math.sin(ang) * rr, k > 3 ? 5 : 3, 0, 7); ctx.fill(); });
+      label(ctx, '（距離已壓縮，否則外行星會跑出畫面）', cx, 385, { color: '#999', size: 11, align: 'center' }); }
+    if (i === 3) { stars.slice(0, 40).forEach(([x, y, b]) => { ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(x * 480, y * 400, 1 + b * 2.5, 0, 7); ctx.fill(); }); ctx.fillStyle = '#FFD54F'; ctx.beginPath(); ctx.arc(cx, cy, 4, 0, 7); ctx.fill(); label(ctx, '太陽', cx + 8, cy - 8, { color: '#FFD54F', size: 13 }); label(ctx, '比鄰星（約 4.2 光年）', cx + 70, cy + 40, { color: '#fff', size: 12 }); ctx.fillStyle = '#ff8a65'; ctx.beginPath(); ctx.arc(cx + 66, cy + 40, 2.5, 0, 7); ctx.fill(); }
+    if (i === 4) { for (let k = 0; k < 1400; k++) { const t = k / 1400 * 14, arm = k % 2 ? Math.PI : 0, rr = 8 + t * 12, a2 = t * .9 + arm; const rr2 = rr + (stars[k % 400][0] - .5) * 18; ctx.fillStyle = `rgba(${200 + stars[k % 400][1] * 55},${190 + stars[k % 400][2] * 50},255,.55)`; ctx.fillRect(cx + Math.cos(a2) * rr2, cy + Math.sin(a2) * rr2 * .8, 1.5, 1.5); }
+      const g = ctx.createRadialGradient(cx, cy, 2, cx, cy, 40); g.addColorStop(0, 'rgba(255,240,200,.9)'); g.addColorStop(1, 'rgba(255,240,200,0)'); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, 40, 0, 7); ctx.fill();
+      ctx.strokeStyle = '#FFD54F'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cx + 95, cy + 45, 6, 0, 7); ctx.stroke(); label(ctx, '太陽在這裡（不是中心！）', cx + 104, cy + 60, { color: '#FFD54F', size: 12, bold: true }); }
+    if (i === 5) { stars.forEach(([x, y, b], k) => { ctx.fillStyle = `hsla(${200 + b * 60},70%,80%,.8)`; ctx.beginPath(); ctx.ellipse(x * 480, y * 400, 1 + b * 4, (1 + b * 4) * .5, k, 0, 7); ctx.fill(); }); label(ctx, '每一個光點都是一個星系', 240, 380, { color: '#fff', size: 13, align: 'center' }); }
+    ctx.restore();
+  }
+  function draw() {
+    S.fit(); ctx.fillStyle = '#05070F'; ctx.fillRect(0, 0, S.W, S.H);
+    const v = +z.value / 100, i = Math.floor(v), f = v - i;
+    scene(i, 1 - f); if (i < 5) scene(i + 1, f);
+    const L = LV[Math.min(5, Math.round(v))];
+    label(ctx, `畫面寬度：${L[1]}`, 10, 18, { color: '#fff', size: 13, bg: 'rgba(0,0,0,.5)' });
+    document.getElementById('c7zTxt').innerHTML = `<span class="big">${L[0]}</span><br>${L[2]}`;
+  }
+  registerSim('t1', { start: draw, resize: draw });
+
+  /* ---------- 光的時光機 ---------- */
+  const OBJ = [
+    ['月球', 1.3 / 31557600, '約 1.3 秒', '你看到的是「1 秒多以前」的月亮——幾乎就是現在。'],
+    ['太陽', 8.3 / 525960, '約 8 分 20 秒', '太陽光要走約 8 分鐘才到地球。你看到的太陽是 8 分鐘前的太陽。'],
+    ['北極星', 400, '約 400 年', '北極星的光約 400 年前出發。那時候大約是明朝末年，荷蘭人剛來到臺灣南部。'],
+    ['仙女座星系', 2.5e6, '約 250 萬年', '肉眼看得到最遠的天體之一。光出發時，地球上的人類祖先才剛出現（第六章：第四紀）。'],
+    ['車輪星系', 5e8, '約 5 億年', '光出發時，地球正處在古生代，海裡滿是三葉蟲（第六章！）。'],
+    ['韋伯深空影像中最遠的星系', 9.5e9, '約 95 億年', '光出發時，太陽和地球都還沒誕生（地球約 46 億歲）。'],
+  ];
+  let sel = 2;
+  const box = document.getElementById('c7ly');
+  OBJ.forEach((o, i) => { const b = document.createElement('button'); b.className = 'chip' + (i === sel ? ' on' : ''); b.textContent = o[0]; b.onclick = () => { box.querySelectorAll('.chip').forEach(x => x.classList.remove('on')); b.classList.add('on'); sel = i; drawLy(); }; box.appendChild(b); });
+  const LC = stage(document.getElementById('c7lyc'), 420, 200), lx = LC.ctx;
+  let t0 = performance.now();
+  function drawLy() {
+    LC.fit(); lx.fillStyle = '#05070F'; lx.fillRect(0, 0, LC.W, LC.H);
+    const o = OBJ[sel];
+    // 對數尺：1 秒 ～ 100 億年
+    const pos = Math.log10(o[1] * 31557600) / Math.log10(1e10 * 31557600);
+    const x0 = 30, x1 = 390, xp = x0 + (x1 - x0) * clamp(pos, 0, 1);
+    lx.strokeStyle = '#555'; lx.lineWidth = 2; lx.beginPath(); lx.moveTo(x0, 150); lx.lineTo(x1, 150); lx.stroke();
+    [['1 秒', 0], ['1 年', Math.log10(31557600) / Math.log10(1e10 * 31557600)], ['1 萬年', Math.log10(1e4 * 31557600) / Math.log10(1e10 * 31557600)], ['100 億年', 1]].forEach(([t, p]) => { const x = x0 + (x1 - x0) * p; lx.fillStyle = '#888'; lx.fillRect(x - 1, 144, 2, 12); label(lx, t, x, 172, { color: '#aaa', size: 11, align: 'center' }); });
+    lx.fillStyle = '#4A90E2'; lx.beginPath(); lx.arc(x0, 150, 8, 0, 7); lx.fill(); label(lx, '地球', x0, 128, { color: '#fff', size: 12, align: 'center' });
+    lx.fillStyle = '#FFD54F'; lx.beginPath(); lx.arc(xp, 150, 7, 0, 7); lx.fill(); label(lx, o[0], xp, 128, { color: '#FFD54F', size: 12, align: 'center', bold: true });
+    const ph = ((performance.now() - t0) / 2500) % 1;
+    lx.fillStyle = '#fff'; lx.beginPath(); lx.arc(xp - (xp - x0) * ph, 150, 3, 0, 7); lx.fill();
+    label(lx, '（距離用「對數尺」：每一大格都差很多倍）', 210, 192, { color: '#777', size: 10, align: 'center' });
+    label(lx, `光走了 ${o[2]}`, 210, 40, { color: '#fff', size: 20, bold: true, align: 'center' });
+    document.getElementById('c7lyTxt').innerHTML = `<span class="big">${o[0]}</span><br>距離約 ${o[1] >= 1 ? o[1].toLocaleString() + ' 光年' : o[2].replace('約 ', '約 ') + '的光程'}。<br>${o[3]}`;
+  }
+  const L = loop(drawLy);
+  registerSim('t1', { start() { L.start(); }, stop() { L.stop(); } });
+})();
+
+/* ==== t2.js ==== */
+/* ===== 第七章 分頁 2：太陽系縮小模型、密度水缸、行星判定器、流星模擬 ===== */
+(() => {
+  const cv = document.getElementById('c7model'); if (!cv) return;
+  // [名稱, 直徑(km), 距離(AU), 相對質量, 密度, 類型, 顏色, 特色]
+  const PL = [
+    ['水星', 4879, .39, .06, 5.43, '類地', '#A8A8A8', '幾乎沒有大氣，日夜溫差很大（約 −180～430 °C）。'],
+    ['金星', 12104, .72, .82, 5.24, '類地', '#E8C27A', '大氣濃密、以二氧化碳為主，溫室效應強，平均溫度高達約 470 °C。'],
+    ['地球', 12742, 1, 1, 5.51, '類地', '#4A90E2', '大氣以氮氣、氧氣為主，平均溫度約 15 °C，目前唯一發現水三態並存的行星。'],
+    ['火星', 6779, 1.52, .11, 3.93, '類地', '#D0623D', '大氣稀薄，以二氧化碳為主，溫度變化大。'],
+    ['木星', 139820, 5.2, 317.83, 1.33, '類木', '#D9B38C', '太陽系最大的行星，主要由氫氣和氦氣組成，有大紅斑。'],
+    ['土星', 116460, 9.57, 95.16, .69, '類木', '#E8D39A', '第二大的行星，有明顯的環；密度比水還小！'],
+    ['天王星', 50724, 19.18, 14.54, 1.28, '類木', '#8FD3E8', '主要由各種冰（水、氨、甲烷）組成，自轉軸幾乎「躺著」。'],
+    ['海王星', 49244, 30.07, 17.15, 1.64, '類木', '#4F6FD8', '離太陽最遠的行星，主要由各種冰組成。'],
+  ];
+  const SUN_D = 1392700, AU_KM = 1.496e8;
+  let ball = .24;
+  const S = stage(cv, 780, 200), ctx = S.ctx;
+  const fmtLen = m => m >= 1000 ? (m / 1000).toFixed(2) + ' 公里' : m >= 1 ? m.toFixed(m < 10 ? 1 : 0) + ' 公尺' : m >= .01 ? (m * 100).toFixed(1) + ' 公分' : (m * 1000).toFixed(1) + ' 公釐';
+  const things = d => d < .001 ? '一粒細沙' : d < .003 ? '一粒芝麻' : d < .006 ? '一粒綠豆' : d < .02 ? '一顆彈珠' : d < .04 ? '一顆乒乓球' : d < .1 ? '一顆網球' : '一顆小西瓜';
+  function drawModel() {
+    S.fit(); ctx.fillStyle = '#0B1020'; ctx.fillRect(0, 0, S.W, S.H);
+    const k = ball / (SUN_D * 1000);   // 每公尺真實長度 → 模型公尺
+    const maxD = 30.07 * AU_KM * 1000 * k, x0 = 30, x1 = 760, X = m => x0 + m / maxD * (x1 - x0);
+    ctx.fillStyle = '#FFD54F'; ctx.beginPath(); ctx.arc(x0, 100, 10, 0, 7); ctx.fill(); label(ctx, '太陽', x0, 130, { color: '#FFD54F', size: 12, align: 'center' });
+    ctx.strokeStyle = 'rgba(255,255,255,.25)'; ctx.beginPath(); ctx.moveTo(x0, 100); ctx.lineTo(x1, 100); ctx.stroke();
+    PL.forEach(([n, d, au, , , , c], i) => { const x = X(au * AU_KM * 1000 * k); ctx.fillStyle = c; ctx.beginPath(); ctx.arc(x, 100, i > 3 ? 5 : 3, 0, 7); ctx.fill(); if (i >= 3 || i === 0) label(ctx, n, x, i % 2 ? 80 : 120, { color: '#fff', size: 12, align: 'center' }); });
+    label(ctx, '←（這 4 顆擠在一起）', X(1.5 * AU_KM * 1000 * k) + 14, 60, { color: '#aaa', size: 11 });
+    label(ctx, `海王星在 ${fmtLen(maxD)} 外`, x1, 175, { color: '#fff', size: 13, align: 'right', bold: true });
+    document.getElementById('c7mt').innerHTML = '<tr><th>行星</th><th>模型中的大小</th><th>像什麼</th><th>離「太陽」多遠</th></tr>' +
+      PL.map(([n, d, au]) => { const md = d * 1000 * k, ms = au * AU_KM * 1000 * k; return `<tr><td>${n}</td><td>${fmtLen(md)}</td><td>${things(md)}</td><td>${fmtLen(ms)}</td></tr>`; }).join('');
+  }
+  document.querySelectorAll('#c7scale .chip').forEach(b => b.onclick = () => { document.querySelectorAll('#c7scale .chip').forEach(x => x.classList.remove('on')); b.classList.add('on'); ball = +b.dataset.s; drawModel(); });
+  registerSim('t2', { start: drawModel, resize: drawModel });
+
+  /* ---------- 密度水缸 ---------- */
+  const T = stage(document.getElementById('c7tank'), 360, 240), tx = T.ctx;
+  let selP = 5, drop = 1;
+  const plBox = document.getElementById('c7pl');
+  PL.forEach((p, i) => { const b = document.createElement('button'); b.className = 'chip' + (i === selP ? ' on' : ''); b.textContent = p[0]; b.onclick = () => { plBox.querySelectorAll('.chip').forEach(x => x.classList.remove('on')); b.classList.add('on'); selP = i; drop = 0; }; plBox.appendChild(b); });
+  function tank(dt) {
+    drop = Math.min(1, drop + (dt || 0) * .7);
+    T.fit(); tx.clearRect(0, 0, T.W, T.H);
+    const [n, , , , D, typ, c, f] = PL[selP];
+    const surf = 90, bottom = 220, r = 26, floats = D < 1;
+    tx.fillStyle = '#BFE3F7'; tx.fillRect(40, surf, 280, bottom - surf);
+    tx.strokeStyle = '#555'; tx.lineWidth = 3; tx.beginPath(); tx.moveTo(40, 40); tx.lineTo(40, bottom); tx.lineTo(320, bottom); tx.lineTo(320, 40); tx.stroke();
+    const target = floats ? surf - r + 2 * r * D : bottom - r - 2;
+    const y = lerp(10, target, drop * drop);
+    tx.fillStyle = c; tx.beginPath(); tx.arc(180, y, r, 0, 7); tx.fill();
+    if (n === '土星') { tx.strokeStyle = '#C9B37A'; tx.lineWidth = 4; tx.beginPath(); tx.ellipse(180, y, 44, 10, -.2, 0, 7); tx.stroke(); }
+    label(tx, '水（密度 1 g/cm³）', 50, bottom - 12, { size: 12, color: '#0D47A1' });
+    document.getElementById('c7tankTxt').innerHTML = `<b>${n}</b>（${typ}行星）密度 <b>${D}</b> g/cm³ → ${drop < 1 ? '……' : floats ? '<b style="color:#2E7D32">浮起來了！</b>' : '沉下去。'}<br>${f}`;
+  }
+  const TL = loop(tank);
+  registerSim('t2', { start() { TL.start(); }, stop() { TL.stop(); } });
+
+  /* ---------- 行星判定器 ---------- */
+  const OBJ = [['地球', [1, 1, 1]], ['木星', [1, 1, 1]], ['冥王星', [1, 1, 0]], ['穀神星', [1, 1, 0]], ['月球', [0, 1, 0]], ['哈雷彗星', [1, 0, 0]], ['小行星帶裡的小行星', [1, 0, 0]]];
+  const CRIT = ['① 繞著恆星（太陽）運轉', '② 質量夠大，形狀接近球體', '③ 能清除軌道上的其他小天體'];
+  let selO = 2;
+  const oBox = document.getElementById('c7obj');
+  OBJ.forEach((o, i) => { const b = document.createElement('button'); b.className = 'chip' + (i === selO ? ' on' : ''); b.textContent = o[0]; b.onclick = () => { oBox.querySelectorAll('.chip').forEach(x => x.classList.remove('on')); b.classList.add('on'); selO = i; judge(); }; oBox.appendChild(b); });
+  function judge() {
+    const [n, c] = OBJ[selO];
+    document.getElementById('c7crit').innerHTML = CRIT.map((t, i) => `<div class="item" style="padding:4px 0">${c[i] ? '✅' : '❌'} ${t}</div>`).join('');
+    const res = n === '月球' ? '<b>衛星</b>：它不是繞太陽，而是繞著行星（地球）公轉。' : c[2] ? '<b>行星</b>：三條都符合。' : c[1] ? '<b>矮行星</b>：符合 ①②，但無法清除軌道上的其他小天體。冥王星在 2006 年就是因此從「行星」改為「矮行星」。' : '<b>太陽系小天體</b>：只符合第 ① 條。';
+    document.getElementById('c7critTxt').innerHTML = `${n} → ${res}`;
+  }
+  judge();
+
+  /* ---------- 流星模擬 ---------- */
+  const M = stage(document.getElementById('c7met'), 420, 280), mx = M.ctx;
+  const msz = bindRange('c7msz', v => v < 20 ? '沙粒大小' : v < 60 ? '拳頭大小' : v < 90 ? '一台汽車' : '一棟房子（約 20 公尺）');
+  let met = null;
+  function metStep(dt) {
+    M.fit(); mx.fillStyle = '#0B1020'; mx.fillRect(0, 0, M.W, M.H);
+    const g = mx.createLinearGradient(0, 120, 0, 280); g.addColorStop(0, 'rgba(70,130,200,0)'); g.addColorStop(1, 'rgba(70,130,200,.55)'); mx.fillStyle = g; mx.fillRect(0, 120, M.W, 160);
+    mx.fillStyle = '#3E5B2E'; mx.fillRect(0, 262, M.W, 18);
+    label(mx, '大氣層', 10, 150, { color: '#9cc3ee', size: 12 }); label(mx, '地面', 10, 271, { color: '#cfe', size: 12 });
+    if (met) {
+      met.t += dt; const p = met.t / 2.2, x = 60 + p * 300, y = 10 + p * 260;
+      const inAir = y > 120, size = +msz.value;
+      met.mass = inAir ? met.mass - dt * 1.4 : met.mass;
+      if (met.mass > 0 || !inAir) {
+        if (inAir) { for (let k = 0; k < 14; k++) { mx.strokeStyle = `rgba(255,${200 - k * 10},120,${.6 - k * .04})`; mx.lineWidth = 3 + size / 25; mx.beginPath(); mx.moveTo(x - k * 7, y - k * 6); mx.lineTo(x - (k + 1) * 7, y - (k + 1) * 6); mx.stroke(); } }
+        mx.fillStyle = inAir ? '#FFF3C4' : '#888'; mx.beginPath(); mx.arc(x, y, 2 + size / 30, 0, 7); mx.fill();
+      }
+      if (y >= 262 && met.mass > 0 && !met.done) { met.done = true; met.hit = x; }
+      if (met.done) { mx.fillStyle = '#5D4037'; mx.beginPath(); mx.ellipse(met.hit, 264, 14, 4, 0, 0, 7); mx.fill(); label(mx, '隕石！', met.hit, 245, { color: '#FFD27A', bold: true, size: 14, align: 'center' }); }
+      if (met.t > 2.6 && !met.msg) { met.msg = true; document.getElementById('c7mTxt').innerHTML = met.done ? '一部分沒有燒完，掉到地面 → <b>隕石</b>。' : '在大氣層中和空氣摩擦，燒得一乾二淨，只留下一道亮光 → <b>流星</b>。'; }
+    }
+  }
+  document.getElementById('c7mgo').onclick = () => { const s = +msz.value; met = { t: 0, mass: s < 20 ? .3 : s < 60 ? .9 : s < 90 ? 1.8 : 3, done: false }; document.getElementById('c7mTxt').textContent = ''; };
+  const ML = loop(metStep);
+  registerSim('t2', { start() { ML.start(); }, stop() { ML.stop(); } });
+})();
+
+/* ==== t3.js ==== */
+/* ===== 第七章 分頁 3：地球自轉、直射斜射、四季模擬器、太陽軌跡 =====
+   直射點緯度 δ = 傾角 × sin(2π(日−80)/365)（第 80 天約為春分）。
+   白天長度 = 2·acos(−tanφ·tanδ) / 15° 小時；正午太陽高度 = 90° − |φ − δ|。 */
+(() => {
+  const D2R = Math.PI / 180;
+  const MONTH = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  const dateStr = d => { let m = 0; d = Math.round(d); while (d >= MONTH[m]) { d -= MONTH[m]; m++; } return `${m + 1}/${d + 1}`; };
+
+  /* ---------- 地球自轉 ---------- */
+  const sc = document.getElementById('c7spin'); if (!sc) return;
+  const SP = stage(sc, 360, 300), sx = SP.ctx;
+  let rot = Math.PI, spinning = false;   // rot = 臺灣的經度角（相對太陽方向）
+  function drawSpin() {
+    SP.fit(); sx.fillStyle = '#05070F'; sx.fillRect(0, 0, SP.W, SP.H);
+    const cx = 190, cy = 150, R = 110;
+    for (let k = 0; k < 5; k++) arrow(sx, 8, 60 + k * 45, 60, 60 + k * 45, 'rgba(255,213,79,.8)', 2, 8);
+    label(sx, '陽光', 10, 30, { color: '#FFD54F', size: 13, bold: true });
+    sx.fillStyle = '#1B2A4A'; sx.beginPath(); sx.arc(cx, cy, R, 0, 7); sx.fill();
+    sx.fillStyle = '#4A90E2'; sx.beginPath(); sx.arc(cx, cy, R, Math.PI / 2, Math.PI * 1.5); sx.fill();
+    sx.fillStyle = '#fff'; sx.beginPath(); sx.arc(cx, cy, 5, 0, 7); sx.fill(); label(sx, '北極', cx + 8, cy - 8, { color: '#fff', size: 12 });
+    arrow(sx, cx + 70, cy - 95, cx + 20, cy - 115, '#fff', 2, 9); label(sx, '逆時鐘', cx + 76, cy - 100, { color: '#fff', size: 12 });
+    const tx = cx + Math.cos(rot) * R * .62, ty = cy + Math.sin(rot) * R * .62;
+    sx.fillStyle = '#FF7043'; sx.beginPath(); sx.arc(tx, ty, 7, 0, 7); sx.fill(); label(sx, '臺灣', tx + 10, ty, { color: '#fff', size: 13, bold: true });
+    // 時刻：rot = π 時正午（正對太陽）
+    let h = ((Math.PI - rot) / (2 * Math.PI) * 24 + 12) % 24; if (h < 0) h += 24;
+    const hh = Math.floor(h), mm = Math.floor((h - hh) * 60);
+    const phase = h >= 5.5 && h < 6.5 ? '🌅 日出：太陽從東方升起' : h >= 17.5 && h < 18.5 ? '🌇 日落：太陽往西方落下' : h >= 6.5 && h < 17.5 ? '☀️ 白天' : '🌙 夜晚';
+    document.getElementById('c7spinT').textContent = `臺灣時間約 ${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}　${phase}`;
+  }
+  const SL = loop(dt => { if (spinning) { rot -= dt * .8; } drawSpin(); });   // 畫面 y 向下，逆時鐘＝角度遞減
+  document.getElementById('c7spinGo').onclick = e => { spinning = !spinning; e.target.textContent = spinning ? '⏸ 暫停' : '▶ 轉動'; };
+  registerSim('t3', { start() { SL.start(); }, stop() { SL.stop(); } });
+
+  /* ---------- 直射與斜射 ---------- */
+  const TC = stage(document.getElementById('c7torch'), 360, 230), tcx = TC.ctx;
+  const ang = bindRange('c7ang', v => v + '°' + (v === 90 ? '（直射）' : '（斜射）'), () => drawTorch());
+  function drawTorch() {
+    TC.fit(); tcx.clearRect(0, 0, TC.W, TC.H);
+    const a = +ang.value * D2R, gy = 190, cx = 180, beam = 40, L = 130;
+    // 方格紙
+    tcx.fillStyle = '#F7F7F2'; tcx.fillRect(20, gy, 320, 30); tcx.strokeStyle = '#ccc';
+    for (let x = 20; x <= 340; x += 20) { tcx.beginPath(); tcx.moveTo(x, gy); tcx.lineTo(x, gy + 30); tcx.stroke(); }
+    const spread = beam / Math.sin(a);
+    const g = tcx.createLinearGradient(0, 0, 0, gy); g.addColorStop(0, 'rgba(255,220,80,.85)'); g.addColorStop(1, `rgba(255,220,80,${.25 + .6 * Math.sin(a)})`);
+    const dx = Math.cos(a), dy = -Math.sin(a);
+    const p1 = [cx - spread / 2, gy], p2 = [cx + spread / 2, gy];
+    const t1 = [cx - beam / 2 * Math.sin(a) + dx * L - beam / 2 * 0, gy - L * Math.sin(a)];
+    const sxp = cx + dx * L, syp = gy + dy * L, nx = -dy, ny = dx;
+    tcx.fillStyle = g; tcx.beginPath(); tcx.moveTo(sxp - nx * beam / 2, syp - ny * beam / 2); tcx.lineTo(sxp + nx * beam / 2, syp + ny * beam / 2); tcx.lineTo(...p2); tcx.lineTo(...p1); tcx.closePath(); tcx.fill();
+    tcx.fillStyle = `rgba(255,200,0,${.25 + .7 * Math.sin(a)})`; tcx.fillRect(p1[0], gy, spread, 30);
+    tcx.save(); tcx.translate(sxp, syp); tcx.rotate(Math.atan2(-dy, -dx)); tcx.fillStyle = '#455A64'; tcx.fillRect(-10, -26, 50, 52); tcx.restore();
+    label(tcx, '手電筒', sxp, syp - 40, { align: 'center', size: 12, bold: true });
+    document.getElementById('c7torchR').innerHTML = `<div><b>${(1 / Math.sin(a)).toFixed(1)} 倍</b><span>亮區面積（和直射比）</span></div><div><b>${(Math.sin(a) * 100).toFixed(0)}%</b><span>每單位面積接收的能量</span></div>`;
+  }
+  registerSim('t3', { start: drawTorch, resize: drawTorch });
+
+  /* ---------- 四季模擬器 ---------- */
+  const OC = stage(document.getElementById('c7orbit'), 380, 340), ox = OC.ctx;
+  const SC = stage(document.getElementById('c7side'), 380, 340), cx2 = SC.ctx;
+  const day = bindRange('c7day', v => dateStr(v), () => drawSeason());
+  const tilt = bindRange('c7tilt', v => v + '°' + (v === 23.5 ? '（真實值）' : ''), () => drawSeason());
+  const decl = d => +tilt.value * Math.sin(2 * Math.PI * (d - 80) / 365);
+  const dayLen = (phi, del) => { const x = -Math.tan(phi * D2R) * Math.tan(del * D2R); return x <= -1 ? 24 : x >= 1 ? 0 : 2 * Math.acos(x) / D2R / 15; };
+  const dist = d => 1.496 * (1 - .0167 * Math.cos(2 * Math.PI * (d - 3) / 365));   // 億公里
+  function drawSeason() {
+    const d = +day.value, del = decl(d);
+    // 俯視公轉
+    OC.fit(); ox.fillStyle = '#05070F'; ox.fillRect(0, 0, OC.W, OC.H);
+    const c = [190, 170], Ro = 120;
+    ox.strokeStyle = 'rgba(255,255,255,.25)'; ox.beginPath(); ox.ellipse(c[0], c[1], Ro, Ro * .98, 0, 0, 7); ox.stroke();
+    ox.fillStyle = '#FFD54F'; ox.beginPath(); ox.arc(...c, 16, 0, 7); ox.fill();
+    [[173, '夏至'], [266, '秋分'], [356, '冬至'], [80, '春分']].forEach(([dd, n]) => { const a = Math.PI + 2 * Math.PI * (dd - 173) / 365; label(ox, n, c[0] + Math.cos(a) * (Ro + 26), c[1] - Math.sin(a) * (Ro + 22), { color: '#aaa', size: 12, align: 'center' }); });
+    const a = Math.PI + 2 * Math.PI * (d - 173) / 365, ex = c[0] + Math.cos(a) * Ro, ey = c[1] - Math.sin(a) * Ro;
+    ox.fillStyle = '#4A90E2'; ox.beginPath(); ox.arc(ex, ey, 11, 0, 7); ox.fill();
+    // 自轉軸（俯視投影永遠指向同一方向：右邊）
+    const tl = 14 + +tilt.value * .5; arrow(ox, ex - tl * .3, ey, ex + tl, ey, '#fff', 2, 7);
+    label(ox, '北極', ex + tl + 4, ey, { color: '#fff', size: 11 });
+    label(ox, '北極上空看：逆時鐘公轉，軸指向不變', 190, 330, { color: '#999', size: 12, align: 'center' });
+    { const ap = Math.PI + 2 * Math.PI * (3 - 173) / 365, px = c[0] + Math.cos(ap) * Ro, py = c[1] - Math.sin(ap) * Ro; ox.fillStyle = '#90A4AE'; ox.beginPath(); ox.arc(px, py, 3, 0, 7); ox.fill(); label(ox, '1 月初最靠近太陽', px + 8, py + 14, { color: '#90A4AE', size: 12 }); }
+    // 側視：太陽在左
+    SC.fit(); cx2.fillStyle = '#05070F'; cx2.fillRect(0, 0, SC.W, SC.H);
+    const C = [210, 170], R = 120, dr = del * D2R;
+    for (let k = 0; k < 7; k++) arrow(cx2, 6, 50 + k * 40, 70, 50 + k * 40, 'rgba(255,213,79,.7)', 2, 8);
+    cx2.fillStyle = '#1B2A4A'; cx2.beginPath(); cx2.arc(...C, R, 0, 7); cx2.fill();
+    cx2.save(); cx2.beginPath(); cx2.arc(...C, R, 0, 7); cx2.clip(); cx2.fillStyle = '#4A90E2'; cx2.fillRect(C[0] - R, C[1] - R, R, 2 * R); cx2.restore();
+    const ax = [-Math.sin(dr), -Math.cos(dr)], pp = [Math.cos(dr), -Math.sin(dr)];
+    const latLine = (phi, col, w, txt) => {
+      const s = Math.sin(phi * D2R), co = Math.cos(phi * D2R);
+      const m = [C[0] + R * s * ax[0], C[1] + R * s * ax[1]];
+      cx2.strokeStyle = col; cx2.lineWidth = w; cx2.beginPath(); cx2.moveTo(m[0] - R * co * pp[0], m[1] - R * co * pp[1]); cx2.lineTo(m[0] + R * co * pp[0], m[1] + R * co * pp[1]); cx2.stroke();
+      if (txt) label(cx2, txt, m[0] + R * co * pp[0] + 6, m[1] + R * co * pp[1], { color: col, size: 11 });
+      return [m[0] - R * co * pp[0], m[1] - R * co * pp[1]];
+    };
+    const T = +tilt.value;   // 回歸線的緯度＝傾角；極圈＝90°−傾角
+    if (T > 0) { latLine(90 - T, 'rgba(255,255,255,.45)', 1, '北極圈'); latLine(-(90 - T), 'rgba(255,255,255,.45)', 1, '南極圈');
+    latLine(T, 'rgba(255,170,120,.7)', 1, '北回歸線'); latLine(-T, 'rgba(255,170,120,.7)', 1, '南回歸線'); }
+    latLine(0, 'rgba(255,255,255,.8)', 1.5, '赤道');
+    const tw = latLine(23.5, 'rgba(0,0,0,0)', 0);
+    cx2.fillStyle = '#FF7043'; cx2.beginPath(); cx2.arc(...tw, 5, 0, 7); cx2.fill(); label(cx2, '臺灣（正午）', tw[0] + 8, tw[1] + 12, { color: '#FFAB91', size: 11, bold: true });
+    cx2.strokeStyle = '#fff'; cx2.lineWidth = 2; cx2.beginPath(); cx2.moveTo(C[0] + ax[0] * (R + 22), C[1] + ax[1] * (R + 22)); cx2.lineTo(C[0] - ax[0] * (R + 22), C[1] - ax[1] * (R + 22)); cx2.stroke();
+    label(cx2, 'N', C[0] + ax[0] * (R + 32), C[1] + ax[1] * (R + 32), { color: '#fff', size: 12, align: 'center', bold: true });
+    // 直射點
+    arrow(cx2, 20, C[1], C[0] - R - 2, C[1], '#FFD54F', 4, 12);
+    label(cx2, `直射：${del >= 0 ? '北' : '南'}緯 ${Math.abs(del).toFixed(1)}°`, 22, C[1] - 16, { color: '#FFD54F', size: 13, bold: true });
+    const N = d >= 80 && d < 173 ? '春' : d >= 173 && d < 266 ? '夏' : d >= 266 && d < 356 ? '秋' : '冬';
+    const Sd = { 春: '秋', 夏: '冬', 秋: '春', 冬: '夏' }[N];
+    const arc = dayLen(70, del);
+    document.getElementById('c7seasonR').innerHTML = `
+      <div><b>${N}季 / ${Sd}季</b><span>北半球 / 南半球</span></div>
+      <div><b>${(90 - Math.abs(23.5 - del)).toFixed(1)}°</b><span>嘉義正午太陽高度</span></div>
+      <div><b>${dayLen(23.5, del).toFixed(1)} 小時</b><span>臺灣白天長度</span></div>
+      <div><b>${dayLen(-34, del).toFixed(1)} 小時</b><span>雪梨（南緯 34°）白天長度</span></div>
+      <div><b>${arc >= 24 ? '永晝' : arc <= 0 ? '永夜' : arc.toFixed(1) + ' 小時'}</b><span>北緯 70°（北極圈內）</span></div>
+      <div><b>${dist(d).toFixed(3)} 億公里</b><span>🟣 地球到太陽的距離</span></div>`;
+    drawSky(del);
+  }
+  document.querySelectorAll('#p-t3 [data-d]').forEach(b => b.onclick = () => { day.value = b.dataset.d; day.dispatchEvent(new Event('input')); });
+
+  /* ---------- 太陽軌跡（嘉義） ---------- */
+  const KC = stage(document.getElementById('c7sky'), 760, 300), kx = KC.ctx;
+  function sunPath(del) {
+    const phi = 23.5 * D2R, dl = del * D2R, pts = [];
+    for (let H = -180; H <= 180; H += 2) {
+      const h = H * D2R, alt = Math.asin(Math.sin(phi) * Math.sin(dl) + Math.cos(phi) * Math.cos(dl) * Math.cos(h));
+      const az = Math.atan2(Math.sin(h), Math.cos(h) * Math.sin(phi) - Math.tan(dl) * Math.cos(phi)) / D2R + 180;   // 0=北、90=東、180=南
+      if (alt > -.02) pts.push([az, alt / D2R]);
+    }
+    return pts;
+  }
+  function drawSky(del) {
+    KC.fit(); kx.clearRect(0, 0, KC.W, KC.H);
+    // 天空半球：觀察者站在南邊往北看，東在右、西在左、南在前（下）、北在後（上）
+    const cx = 380, cy = 200, R = 190, k = .3;
+    const P3 = (az, alt) => { const a = az * D2R, h = alt * D2R, e = Math.cos(h) * Math.sin(a), n = Math.cos(h) * Math.cos(a), u = Math.sin(h); return [cx + R * e, cy - R * u * .9 - R * n * k]; };
+    kx.fillStyle = '#EAF4FC'; kx.fillRect(0, 0, KC.W, KC.H);
+    kx.fillStyle = '#C5E1A5'; kx.beginPath(); kx.ellipse(cx, cy, R, R * k, 0, 0, 7); kx.fill(); kx.strokeStyle = '#7CB342'; kx.stroke();
+    kx.strokeStyle = 'rgba(0,0,0,.12)'; kx.beginPath(); kx.ellipse(cx, cy, R, R * .9, 0, Math.PI, 2 * Math.PI); kx.stroke();
+    [['北', 0], ['東', 90], ['南', 180], ['西', 270]].forEach(([n, az]) => { const [x, y] = P3(az, 0); label(kx, n, x + (az === 90 ? 14 : az === 270 ? -14 : 0), y + (az === 180 ? 14 : az === 0 ? -10 : 0), { align: 'center', size: 14, bold: true, color: '#33691E' }); });
+    kx.fillStyle = '#5D4037'; kx.fillRect(cx - 2, cy - 14, 4, 14); label(kx, '你', cx + 6, cy - 4, { size: 11 });
+    const tl = +tilt.value;
+    [[tl, '#BDBDBD', '夏至'], [-tl, '#BDBDBD', '冬至'], [del, '#F9A825', '']].forEach(([dd, col, nm], i) => {
+      const p = sunPath(dd); if (!p.length) return;
+      kx.strokeStyle = col; kx.lineWidth = i === 2 ? 4 : 2; kx.beginPath(); p.forEach(([az, al], j) => { const [x, y] = P3(az, al); j ? kx.lineTo(x, y) : kx.moveTo(x, y); }); kx.stroke();
+      if (nm) { const top = p.reduce((a, b) => b[1] > a[1] ? b : a); const [x, y] = P3(top[0], top[1]); label(kx, nm, x + 24, y, { size: 11, color: '#888' }); }
+      if (i === 2) { const top = p.reduce((a, b) => b[1] > a[1] ? b : a), [x, y] = P3(top[0], top[1]); kx.fillStyle = '#FFB300'; kx.beginPath(); kx.arc(x, y, 10, 0, 7); kx.fill(); label(kx, `正午太陽高度 ${top[1].toFixed(0)}°`, x + 14, y - 12, { size: 12, bold: true });
+        const rise = p[0][0], [rx, ry] = P3(rise, 0); kx.fillStyle = '#E65100'; kx.beginPath(); kx.arc(rx, ry, 5, 0, 7); kx.fill(); label(kx, `日出：${rise < 88 ? '東偏北' : rise > 92 ? '東偏南' : '正東'}`, rx + 8, ry + 14, { size: 12, bold: true, color: '#E65100', bg: 'rgba(255,255,255,.8)' }); }
+    });
+  }
+  registerSim('t3', { start: drawSeason, resize: drawSeason });
+})();
+
+/* ==== t4.js ==== */
+/* ===== 第七章 分頁 4：月相模擬器（俯視＋從臺灣看）、潮汐鎖定 =====
+   俯視圖：太陽在右邊很遠的地方，陽光從右往左。月球逆時鐘繞地球。
+   θ = 2π × 農曆日 / 29.5（0 = 新月，月球在地球和太陽之間＝右邊）。 */
+(() => {
+  const tc = document.getElementById('c7moonTop'); if (!tc) return;
+  const T = stage(tc, 380, 380), tx = T.ctx;
+  const V = stage(document.getElementById('c7moonView'), 380, 380), vx = V.ctx;
+  const lunarName = v => { const n = Math.min(30, Math.round(v) + 1); return n <= 10 ? '初' + '一二三四五六七八九十'[n - 1] : n < 20 ? '十' + '一二三四五六七八九'[n - 11] : n === 20 ? '二十' : n < 30 ? '廿' + '一二三四五六七八九'[n - 21] : '三十'; };
+  const lday = bindRange('c7lday', v => '農曆' + lunarName(v), () => drawAll());
+  const shadow = document.getElementById('c7shadow');
+  let play = false;
+  const C = [190, 190], RO = 120;
+  const theta = () => +lday.value / 29.5 * 2 * Math.PI;
+  const mpos = th => [C[0] + Math.cos(th) * RO, C[1] - Math.sin(th) * RO];
+  function name(d) {
+    if (d < 1 || d > 28.5) return ['新月（朔）', '初一'];
+    if (d < 6.4) return ['眉月（蛾眉月）', '初三、初四'];
+    if (d < 8.4) return ['上弦月', '初七、初八'];
+    if (d < 13.8) return ['盈凸月', '初十左右'];
+    if (d < 15.8) return ['滿月（望）', '十五'];
+    if (d < 21.2) return ['虧凸月', '十八左右'];
+    if (d < 23.2) return ['下弦月', '二十二、二十三'];
+    return ['殘月', '二十六左右'];
+  }
+  function drawTop() {
+    T.fit(); tx.fillStyle = '#05070F'; tx.fillRect(0, 0, T.W, T.H);
+    for (let k = 0; k < 8; k++) arrow(tx, 375, 30 + k * 46, 330, 30 + k * 46, 'rgba(255,213,79,.6)', 2, 8);
+    label(tx, '陽光 ←（太陽在右邊很遠處）', 370, 14, { color: '#FFD54F', size: 12, align: 'right' });
+    tx.strokeStyle = 'rgba(255,255,255,.25)'; tx.beginPath(); tx.arc(...C, RO, 0, 7); tx.stroke();
+    if (shadow.checked) { tx.fillStyle = 'rgba(0,0,0,.6)'; tx.beginPath(); tx.moveTo(C[0], C[1] - 22); tx.lineTo(0, C[1] - 14); tx.lineTo(0, C[1] + 14); tx.lineTo(C[0], C[1] + 22); tx.fill(); tx.strokeStyle = 'rgba(255,120,120,.6)'; tx.setLineDash([4, 4]); tx.strokeRect(0, C[1] - 18, C[0], 36); tx.setLineDash([]); label(tx, '地球的影子', 40, C[1] - 28, { color: '#FF8A80', size: 12, bold: true }); }
+    // 地球（右半亮）
+    tx.fillStyle = '#1B2A4A'; tx.beginPath(); tx.arc(...C, 22, 0, 7); tx.fill();
+    tx.fillStyle = '#4A90E2'; tx.beginPath(); tx.arc(...C, 22, -Math.PI / 2, Math.PI / 2); tx.fill();
+    label(tx, '地球', C[0], C[1] + 36, { color: '#fff', size: 12, align: 'center' });
+    // 月球位置與名稱環
+    [[0, '初一'], [Math.PI / 2, '初八'], [Math.PI, '十五'], [Math.PI * 1.5, '廿三']].forEach(([a, n]) => { const [x, y] = mpos(a); label(tx, n, x + Math.cos(a) * 28, y - Math.sin(a) * 22, { color: '#888', size: 11, align: 'center' }); });
+    const th = theta(), [mx, my] = mpos(th);
+    tx.fillStyle = '#333'; tx.beginPath(); tx.arc(mx, my, 14, 0, 7); tx.fill();
+    tx.fillStyle = '#F5E9B8'; tx.beginPath(); tx.arc(mx, my, 14, -Math.PI / 2, Math.PI / 2); tx.fill();   // 永遠右半（朝太陽）亮
+    // 從地球看月球的視線，標出「看到的那一半」
+    tx.strokeStyle = 'rgba(255,255,255,.35)'; tx.setLineDash([3, 4]); tx.beginPath(); tx.moveTo(...C); tx.lineTo(mx, my); tx.stroke(); tx.setLineDash([]);
+    tx.strokeStyle = '#80DEEA'; tx.lineWidth = 3; tx.beginPath(); const fa = Math.atan2(C[1] - my, C[0] - mx); tx.arc(mx, my, 18, fa - Math.PI / 2, fa + Math.PI / 2); tx.stroke(); tx.lineWidth = 1;
+    label(tx, '藍弧＝地球上看得到的半邊', 10, 370, { color: '#80DEEA', size: 11 });
+    label(tx, '從北極上空看（逆時鐘公轉）', 10, 352, { color: '#aaa', size: 11 });
+  }
+  function drawView() {
+    V.fit(); vx.fillStyle = '#0B1530'; vx.fillRect(0, 0, V.W, V.H);
+    const r = rng(2); for (let i = 0; i < 60; i++) { vx.fillStyle = `rgba(255,255,255,${r() * .7})`; vx.fillRect(r() * 380, r() * 300, 1.4, 1.4); }
+    const th = theta(), cx = 190, cy = 160, R = 95;
+    const k = Math.cos(th);              // 1 = 新月、−1 = 滿月
+    const waxing = th < Math.PI;         // 盈：亮面在右（西）
+    vx.fillStyle = '#2A2A30'; vx.beginPath(); vx.arc(cx, cy, R, 0, 7); vx.fill();
+    vx.fillStyle = '#F5E9B8'; vx.beginPath();
+    // 亮的半圓（右或左）＋ 晨昏線橢圓
+    vx.arc(cx, cy, R, -Math.PI / 2, Math.PI / 2, !waxing);
+    vx.ellipse(cx, cy, Math.max(.5, Math.abs(k) * R), R, 0, Math.PI / 2, -Math.PI / 2, waxing === (k > 0));   // 眉月：晨昏線凹向亮面；凸月：凸向暗面
+    vx.fill();
+    // 月面坑洞（淡淡的，增加真實感）
+    vx.fillStyle = 'rgba(0,0,0,.08)'; [[-30, -20, 16], [20, 30, 12], [35, -35, 9], [-10, 45, 10]].forEach(([dx, dy, rr]) => { vx.beginPath(); vx.arc(cx + dx, cy + dy, rr, 0, 7); vx.fill(); });
+    // 地平線
+    vx.fillStyle = '#1E3320'; vx.fillRect(0, 300, V.W, 80);
+    label(vx, '東', 16, 320, { color: '#cfe', size: 13, bold: true }); label(vx, '南', 190, 320, { color: '#cfe', size: 13, bold: true, align: 'center' }); label(vx, '西', 364, 320, { color: '#cfe', size: 13, bold: true, align: 'right' });
+    label(vx, '從臺灣面向南方看到的月亮', 190, 360, { color: '#aaa', size: 12, align: 'center' });
+    const [n, lunar] = name(+lday.value), d = +lday.value;
+    const frac = (1 - k) / 2;
+    const riseH = (6 + d / 29.5 * 24) % 24;
+    const at18 = d < 1 || d > 28.5 ? '和太陽一起落下，看不到' : d < 6 ? '西方低空' : d < 10 ? '南方天空' : d < 13.5 ? '東南方天空' : d < 16 ? '東方剛升起' : '還沒升起';
+    document.getElementById('c7moonR').innerHTML = `<div><b>${n}</b><span>月相（農曆約${lunar}）</span></div>
+      <div><b>${Math.round(frac * 100)}%</b><span>看到的亮面比例</span></div>
+      <div><b>約 ${String(Math.floor(riseH)).padStart(2, '0')}:${String(Math.round((riseH % 1) * 60) % 60).padStart(2, '0')}</b><span>月出時間</span></div>
+      <div><b>${at18}</b><span>傍晚 6 點時月亮在</span></div>`;
+  }
+  function drawAll() { drawTop(); drawView(); }
+  let drag = false;
+  tc.addEventListener('pointerdown', e => { drag = true; tc.setPointerCapture(e.pointerId); setFrom(e); });
+  tc.addEventListener('pointermove', e => { if (drag) setFrom(e); });
+  tc.addEventListener('pointerup', () => drag = false);
+  function setFrom(e) { const p = T.pt(e); let a = Math.atan2(C[1] - p.y, p.x - C[0]); if (a < 0) a += 2 * Math.PI; lday.value = (a / (2 * Math.PI) * 29.5).toFixed(1); lday.dispatchEvent(new Event('input')); }
+  shadow.onchange = drawAll;
+  const pb = document.getElementById('c7moonPlay');
+  pb.onclick = () => { play = !play; pb.textContent = play ? '⏸ 暫停' : '▶ 播放一個月'; };
+  const L = loop(dt => { if (play) { lday.value = ((+lday.value + dt * 2.5) % 29.5).toFixed(2); lday.dispatchEvent(new Event('input')); } });
+  registerSim('t4', { start() { drawAll(); L.start(); }, stop() { L.stop(); }, resize: drawAll });
+
+  /* ---------- 潮汐鎖定 ---------- */
+  const K = stage(document.getElementById('c7lock'), 360, 300), kx = K.ctx;
+  let mode = 'sync', lk = 0, lkPlay = false;
+  function drawLock() {
+    K.fit(); kx.fillStyle = '#05070F'; kx.fillRect(0, 0, K.W, K.H);
+    const c = [180, 150], ro = 105;
+    kx.strokeStyle = 'rgba(255,255,255,.2)'; kx.beginPath(); kx.arc(...c, ro, 0, 7); kx.stroke();
+    kx.fillStyle = '#4A90E2'; kx.beginPath(); kx.arc(...c, 18, 0, 7); kx.fill();
+    // 畫出四個時刻的月球
+    for (let i = 0; i < 4; i++) {
+      const a = lk + i * Math.PI / 2, mx = c[0] + Math.cos(a) * ro, my = c[1] - Math.sin(a) * ro;
+      kx.globalAlpha = i === 0 ? 1 : .35;
+      kx.fillStyle = '#CFCFCF'; kx.beginPath(); kx.arc(mx, my, 16, 0, 7); kx.fill();
+      const face = mode === 'sync' ? Math.atan2(c[1] - my, c[0] - mx) : Math.PI;   // 紅點：月球上的「臉」
+      kx.fillStyle = '#E53935'; kx.beginPath(); kx.arc(mx + Math.cos(face) * 10, my + Math.sin(face) * 10, 4.5, 0, 7); kx.fill();
+    }
+    kx.globalAlpha = 1;
+    document.getElementById('c7lockTxt').innerHTML = mode === 'sync'
+      ? '紅點（月球上的同一塊地方）<b>永遠朝向地球</b>。因為月球自轉一圈的時間，剛好等於它繞地球公轉一圈的時間（約 27.3 天）。這叫做<b>同步自轉</b>（潮汐鎖定）。'
+      : '如果月球完全不自轉，紅點會一直朝同一個方向，地球上的人就會輪流看到月球的每一面——但真實情況不是這樣！所以「永遠同一面」反而證明月球<b>有在自轉</b>。';
+  }
+  document.querySelectorAll('#c7lockMode .chip').forEach(b => b.onclick = () => { document.querySelectorAll('#c7lockMode .chip').forEach(x => x.classList.remove('on')); b.classList.add('on'); mode = b.dataset.m; drawLock(); });
+  document.getElementById('c7lockGo').onclick = e => { lkPlay = !lkPlay; e.target.textContent = lkPlay ? '⏸ 暫停' : '▶ 播放'; };
+  const KL = loop(dt => { if (lkPlay) lk += dt * .6; drawLock(); });
+  registerSim('t4', { start() { KL.start(); }, stop() { KL.stop(); } });
+})();
+
+/* ==== t5.js ==== */
+/* ===== 第七章 分頁 5：日食／月食模擬器（本影、半影）、12 次新月與 5° 夾角 ===== */
+(() => {
+  const cv = document.getElementById('c7ecl'); if (!cv) return;
+  const S = stage(cv, 780, 300), ctx = S.ctx;
+  const SEE = stage(document.getElementById('c7eSee'), 180, 180), sx = SEE.ctx;
+  let mode = 'solar';
+  const dist = bindRange('c7eDist', v => v < 35 ? '遠（遠地點）' : v < 70 ? '中等' : '近（近地點）', () => draw());
+  const obs = bindRange('c7eObs', v => v === 0 ? '正中央' : v > 0 ? '偏南' : '偏北', () => draw());
+  const my = bindRange('c7eMoonY', v => v === 0 ? '正對影子中央' : Math.abs(v) < 40 ? '稍微偏離' : '偏離很多', () => draw());
+  const CY = 150;
+  // 兩圓的外公切線交點（本影尖端）與內公切線交點
+  function tips(x1, r1, x2, r2) { return { ext: x2 + r2 * (x2 - x1) / (r1 - r2), int: x1 + r1 * (x2 - x1) / (r1 + r2) }; }
+  function cone(x1, r1, x2, r2, xEnd, fill, inner) {
+    // 從物體 2 往右延伸的陰影：inner=false 畫本影（外公切線），true 畫半影（內公切線）
+    const t = tips(x1, r1, x2, r2);
+    ctx.fillStyle = fill; ctx.beginPath();
+    if (!inner) {
+      const k = (xEnd - t.ext) / (x2 - t.ext);
+      ctx.moveTo(x2, CY - r2); ctx.lineTo(xEnd, CY - r2 * k); ctx.lineTo(xEnd, CY + r2 * k); ctx.lineTo(x2, CY + r2);
+    } else {
+      const k = (xEnd - t.int) / (x2 - t.int);
+      ctx.moveTo(x2, CY - r2); ctx.lineTo(xEnd, CY - r2 * k); ctx.lineTo(xEnd, CY + r2 * k); ctx.lineTo(x2, CY + r2);
+    }
+    ctx.closePath(); ctx.fill(); return t;
+  }
+  function draw() {
+    S.fit(); ctx.fillStyle = '#05070F'; ctx.fillRect(0, 0, S.W, S.H);
+    const sunX = 70, sunR = 60;
+    const g = ctx.createRadialGradient(sunX, CY, 10, sunX, CY, sunR + 20); g.addColorStop(0, '#FFF59D'); g.addColorStop(.75, '#FFB300'); g.addColorStop(1, 'rgba(255,152,0,0)');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(sunX, CY, sunR + 20, 0, 7); ctx.fill(); label(ctx, '太陽', sunX, CY + 95, { color: '#FFD54F', size: 13, align: 'center' });
+    let txt = '', see = {};
+    if (mode === 'solar') {
+      const eX = 690, eR = 55, mR = 9, mX = lerp(470, 560, +dist.value / 100);
+      const t = tips(sunX, sunR, mX, mR);
+      // 半影（淡）＋本影（深）
+      cone(sunX, sunR, mX, mR, 780, 'rgba(120,120,160,.25)', true);
+      const umbraEnd = Math.min(t.ext, 780);
+      ctx.fillStyle = 'rgba(0,0,0,.9)'; ctx.beginPath(); ctx.moveTo(mX, CY - mR); ctx.lineTo(umbraEnd, CY - mR * (t.ext - umbraEnd) / (t.ext - mX)); ctx.lineTo(umbraEnd, CY + mR * (t.ext - umbraEnd) / (t.ext - mX)); ctx.lineTo(mX, CY + mR); ctx.fill();
+      ctx.strokeStyle = 'rgba(255,255,255,.35)'; ctx.setLineDash([4, 4]); ctx.beginPath(); ctx.moveTo(mX, CY - mR); ctx.lineTo(t.ext, CY); ctx.lineTo(mX, CY + mR); ctx.stroke();
+      if (t.ext < eX - eR) { ctx.beginPath(); ctx.moveTo(t.ext, CY); ctx.lineTo(eX, CY - mR * (eX - t.ext) / (t.ext - mX)); ctx.moveTo(t.ext, CY); ctx.lineTo(eX, CY + mR * (eX - t.ext) / (t.ext - mX)); ctx.stroke(); }
+      ctx.setLineDash([]);
+      // 地球
+      ctx.fillStyle = '#4A90E2'; ctx.beginPath(); ctx.arc(eX, CY, eR, Math.PI / 2, Math.PI * 1.5); ctx.fill(); ctx.fillStyle = '#1B2A4A'; ctx.beginPath(); ctx.arc(eX, CY, eR, -Math.PI / 2, Math.PI / 2); ctx.fill();
+      ctx.fillStyle = '#9E9E9E'; ctx.beginPath(); ctx.arc(mX, CY, mR, 0, 7); ctx.fill(); label(ctx, '月球', mX, CY - 22, { color: '#ddd', size: 12, align: 'center' });
+      label(ctx, '地球', eX + 10, CY + eR + 18, { color: '#fff', size: 12, align: 'center' });
+      // 觀察者
+      const oy = CY + (+obs.value / 100) * eR * .95, ox = eX - Math.sqrt(Math.max(0, eR * eR - (oy - CY) ** 2));
+      ctx.fillStyle = '#FF7043'; ctx.beginPath(); ctx.arc(ox, oy, 5, 0, 7); ctx.fill();
+      // 判斷觀察者在哪個影子裡
+      const halfU = Math.abs(mR * (t.ext - ox) / (t.ext - mX));             // 本影（或偽本影）半徑
+      const tp = tips(sunX, sunR, mX, mR).int, halfP = Math.abs(mR * (ox - tp) / (mX - tp));
+      const dy = Math.abs(oy - CY);
+      const moonApp = (mR / (ox - mX)) / (sunR / (ox - sunX));   // 月球和太陽的「看起來大小」比：>1 遮得住、<1 遮不住
+      if (dy < halfU) { if (t.ext >= ox) { txt = '<b>日全食</b>：你在月球的<b>本影</b>裡，太陽被完全遮住，白天突然變暗，看得到日冕。'; see = { cover: 1, app: moonApp, off: 0 }; } else { txt = '<b>日環食</b>：月球離地球太遠，看起來比太陽小，本影碰不到地球。太陽中間被遮住，外圈留下一個金色的「火環」。'; see = { cover: 1, app: moonApp, off: 0 }; } }
+      else if (dy < halfP) { txt = '<b>日偏食</b>：你在<b>半影</b>裡，太陽只被遮住一部分。'; see = { cover: 1, app: moonApp, off: (dy - halfU) / (halfP - halfU) * 1.6 + .2 }; }
+      else { txt = '沒有日食：你不在月球的影子裡。'; see = { cover: 0 }; }
+      drawSeeSun(see);
+    } else {
+      const eX = 380, eR = 45, mR = 14, xEnd = 780;
+      const t = tips(sunX, sunR, eX, eR);
+      cone(sunX, sunR, eX, eR, xEnd, 'rgba(120,120,160,.22)', true);
+      cone(sunX, sunR, eX, eR, xEnd, 'rgba(0,0,0,.85)', false);
+      ctx.fillStyle = '#4A90E2'; ctx.beginPath(); ctx.arc(eX, CY, eR, Math.PI / 2, Math.PI * 1.5); ctx.fill(); ctx.fillStyle = '#1B2A4A'; ctx.beginPath(); ctx.arc(eX, CY, eR, -Math.PI / 2, Math.PI / 2); ctx.fill();
+      label(ctx, '地球', eX, CY + eR + 18, { color: '#fff', size: 12, align: 'center' });
+      const mX = 640, mY = CY + (+my.value / 100) * 90;
+      const halfU = eR * (t.ext - mX) / (t.ext - eX), halfP = eR * (mX - t.int) / (eX - t.int), d = Math.abs(mY - CY);
+      let col = '#F5E9B8', st;
+      if (d + mR <= halfU) { col = '#A0442A'; st = '<b>月全食</b>：月球完全進入地球的本影。月亮沒有消失，而是變成<b>紅銅色</b>——有一點陽光經過地球大氣層折射、散射後照到月球，剩下的主要是紅光。'; }
+      else if (d - mR < halfU) { col = '#C9B98F'; st = '<b>月偏食</b>：月球有一部分進入本影，看起來像被咬了一口。'; }
+      else if (d - mR < halfP) { col = '#E3D7AD'; st = '<b>半影月食</b>：月球只在半影裡，變暗一點點，肉眼不太容易察覺。'; }
+      else st = '沒有月食：月球不在地球的影子裡，是一個普通的滿月。';
+      ctx.fillStyle = col; ctx.beginPath(); ctx.arc(mX, mY, mR, 0, 7); ctx.fill();
+      if (d - mR < halfU && d + mR > halfU) { ctx.save(); ctx.beginPath(); ctx.arc(mX, mY, mR, 0, 7); ctx.clip(); ctx.fillStyle = 'rgba(120,40,20,.85)'; ctx.fillRect(mX - mR, CY - halfU, 2 * mR, 2 * halfU); ctx.restore(); }
+      label(ctx, '月球', mX, mY - 24, { color: '#ddd', size: 12, align: 'center' });
+      label(ctx, '本影', 560, CY, { color: '#888', size: 12 }); label(ctx, '半影', 700, CY - 80, { color: '#99a', size: 12 });
+      txt = st + '<br><span class="note">同一次月食，地球上所有在「夜晚」那一半的人，看到的月食情形幾乎一樣（課本 p.208）。</span>';
+      drawSeeMoon(col, d, mR, halfU);
+    }
+    document.getElementById('c7eTxt').innerHTML = txt;
+  }
+  function drawSeeSun({ cover, app, off }) {
+    SEE.fit(); sx.fillStyle = '#0B1530'; sx.fillRect(0, 0, 180, 180);
+    const R = 50, total = cover && off === 0 && app >= 1;
+    if (total) { const g = sx.createRadialGradient(90, 90, R, 90, 90, R * 1.9); g.addColorStop(0, 'rgba(255,255,255,.75)'); g.addColorStop(1, 'rgba(255,255,255,0)'); sx.fillStyle = g; sx.beginPath(); sx.arc(90, 90, R * 1.9, 0, 7); sx.fill(); }
+    sx.fillStyle = '#FFC107'; sx.beginPath(); sx.arc(90, 90, R, 0, 7); sx.fill();
+    if (cover) { sx.fillStyle = '#111'; sx.beginPath(); sx.arc(90 + (off || 0) * R, 90 - (off || 0) * R * .3, R * app, 0, 7); sx.fill(); }
+    label(sx, '你看到的太陽', 90, 170, { color: '#aaa', size: 11, align: 'center' });
+  }
+  function drawSeeMoon(col, d, mR, halfU) {
+    SEE.fit(); sx.fillStyle = '#0B1530'; sx.fillRect(0, 0, 180, 180);
+    sx.fillStyle = col; sx.beginPath(); sx.arc(90, 90, 50, 0, 7); sx.fill();
+    label(sx, '你看到的月亮', 90, 170, { color: '#aaa', size: 11, align: 'center' });
+  }
+  document.querySelectorAll('#c7eMode .chip').forEach(b => b.onclick = () => {
+    document.querySelectorAll('#c7eMode .chip').forEach(x => x.classList.remove('on')); b.classList.add('on'); mode = b.dataset.m;
+    document.getElementById('c7eDistBox').style.display = mode === 'solar' ? '' : 'none'; document.getElementById('c7eObsBox').style.display = mode === 'solar' ? '' : 'none';
+    document.getElementById('c7eMoonBox').style.display = mode === 'lunar' ? '' : 'none'; draw();
+  });
+  registerSim('t5', { start: draw, resize: draw });
+
+  /* ---------- 12 次新月 ---------- */
+  const NC = stage(document.getElementById('c7nodes'), 780, 220), nx = NC.ctx;
+  const inc = bindRange('c7inc', v => v + '°' + (v === 5 ? '（真實值）' : ''), () => drawNodes());
+  function drawNodes() {
+    NC.fit(); nx.fillStyle = '#05070F'; nx.fillRect(0, 0, NC.W, NC.H);
+    const i = +inc.value, w = 780 / 12; let n = 0;
+    for (let k = 0; k < 12; k++) {
+      const x0 = k * w, cx = x0 + w / 2, beta = i * Math.sin(2 * Math.PI * (k + .3) / 12);   // 新月時月球在黃道面上下的角度
+      const ecl = Math.abs(beta) < .9;
+      if (ecl) { n++; nx.fillStyle = 'rgba(229,57,53,.25)'; nx.fillRect(x0 + 2, 10, w - 4, 180); }
+      nx.strokeStyle = '#FFD54F'; nx.beginPath(); nx.moveTo(x0 + 6, 100); nx.lineTo(x0 + w - 6, 100); nx.stroke();
+      nx.fillStyle = '#FFB300'; nx.beginPath(); nx.arc(x0 + 12, 100, 6, 0, 7); nx.fill();
+      nx.fillStyle = '#4A90E2'; nx.beginPath(); nx.arc(x0 + w - 12, 100, 6, 0, 7); nx.fill();
+      const myy = 100 - beta * 13; nx.fillStyle = '#ddd'; nx.beginPath(); nx.arc(cx + 6, myy, 4, 0, 7); nx.fill();
+      label(nx, `${k + 1}月`, cx, 206, { color: '#aaa', size: 11, align: 'center' });
+      if (ecl) label(nx, '日食！', cx, 24, { color: '#FF8A80', size: 12, bold: true, align: 'center' });
+    }
+    label(nx, `一年中可能發生日食的新月：${n} 次`, 10, 196 - 182, { color: '#fff', size: 12, bold: true });
+  }
+  registerSim('t5', { start: drawNodes, resize: drawNodes });
+})();
+
+/* ==== t6.js ==== */
+/* ===== 第七章 分頁 6：潮汐模擬器、拉力差 =====
+   臺灣的水位 h = cos 2(λ − λ月) + 0.46·cos 2(λ − λ日)；λ 是臺灣所在的方向（地球自轉），λ月每天前進 360°/29.5。 */
+(() => {
+  const cv = document.getElementById('c7tide'); if (!cv) return;
+  const S = stage(cv, 380, 380), ctx = S.ctx;
+  const G = stage(document.getElementById('c7tideG'), 380, 220), gx = G.ctx;
+  const tday = bindRange('c7tday', v => v === 0 ? '初一（新月）' : v === 7.5 ? '初八（上弦）' : v === 15 ? '十五（滿月）' : v === 22 ? '廿三（下弦）' : `第 ${v} 天`, () => { hist = []; t = 0; draw(); });
+  const sun = document.getElementById('c7sun'), moses = document.getElementById('c7moses');
+  let t = 0, play = false, hist = [];   // t：小時
+  const AS = () => sun.checked ? .46 : 0;
+  const lamMoon = () => (+tday.value + t / 24) / 29.5 * 2 * Math.PI;   // 月球方向（相對太陽方向 0）
+  const lamTW = () => Math.PI + t / 24 * 2 * Math.PI;                    // 臺灣的方向：t=0 時是半夜（背對太陽）
+  const level = () => Math.cos(2 * (lamTW() - lamMoon())) + AS() * Math.cos(2 * lamTW());
+  function draw() {
+    S.fit(); ctx.fillStyle = '#05070F'; ctx.fillRect(0, 0, S.W, S.H);
+    const C = [190, 190], R = 70;
+    // 太陽方向（右）
+    if (sun.checked) { for (let k = 0; k < 5; k++) arrow(ctx, 375, 110 + k * 40, 345, 110 + k * 40, 'rgba(255,213,79,.6)', 2, 7); label(ctx, '太陽 →', 370, 92, { color: '#FFD54F', size: 12, align: 'right' }); }
+    // 月球
+    const lm = lamMoon(), mx = C[0] + Math.cos(lm) * 160, my = C[1] - Math.sin(lm) * 160;
+    ctx.fillStyle = '#ddd'; ctx.beginPath(); ctx.arc(mx, my, 12, 0, 7); ctx.fill(); label(ctx, '月球', mx, my - 20, { color: '#ddd', size: 12, align: 'center' });
+    // 海水（誇張）
+    ctx.fillStyle = 'rgba(64,140,230,.75)'; ctx.beginPath();
+    for (let a = 0; a <= 2 * Math.PI + .01; a += .05) { const r = R + 22 + 16 * (Math.cos(2 * (a - lm)) + AS() * Math.cos(2 * a)); const x = C[0] + Math.cos(a) * r, y = C[1] - Math.sin(a) * r; a ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
+    ctx.closePath(); ctx.fill();
+    // 地球
+    ctx.fillStyle = '#5E9E5A'; ctx.beginPath(); ctx.arc(...C, R, 0, 7); ctx.fill();
+    ctx.fillStyle = 'rgba(0,0,0,.35)'; ctx.beginPath(); ctx.arc(...C, R, Math.PI / 2, Math.PI * 1.5); ctx.fill();   // 夜（左半）
+    const lt = lamTW(), tx = C[0] + Math.cos(lt) * (R - 8), ty = C[1] - Math.sin(lt) * (R - 8);
+    ctx.fillStyle = '#FF7043'; ctx.beginPath(); ctx.arc(tx, ty, 6, 0, 7); ctx.fill(); label(ctx, '臺灣', tx + Math.cos(lt) * 18, ty - Math.sin(lt) * 18, { color: '#fff', size: 12, bold: true, align: 'center' });
+    label(ctx, '逆時鐘自轉', C[0], C[1], { color: '#fff', size: 11, align: 'center' });
+    drawGraph();
+  }
+  function drawGraph() {
+    G.fit(); gx.clearRect(0, 0, G.W, G.H);
+    const x0 = 40, x1 = 370, y0 = 110, A = 55, span = 72;    // 顯示 72 小時
+    gx.strokeStyle = '#ddd'; gx.beginPath(); gx.moveTo(x0, y0); gx.lineTo(x1, y0); gx.stroke();
+    for (let d = 0; d <= 3; d++) { const x = x0 + d * 24 / span * (x1 - x0); gx.strokeStyle = '#eee'; gx.beginPath(); gx.moveTo(x, 10); gx.lineTo(x, 200); gx.stroke(); if (d < 3) label(gx, `第 ${d + 1} 天`, x + 4, 210, { size: 11, color: '#888' }); }
+    label(gx, '水位', 4, 14, { size: 11, color: '#555' });
+    if (moses.checked) { const th = y0 + A * .55; gx.fillStyle = 'rgba(46,125,50,.12)'; gx.fillRect(x0, th, x1 - x0, 200 - th); gx.strokeStyle = '#2E7D32'; gx.setLineDash([4, 3]); gx.beginPath(); gx.moveTo(x0, th); gx.lineTo(x1, th); gx.stroke(); gx.setLineDash([]); label(gx, '水位低於這條線 → 步道露出，可以走', x0 + 4, th + 12, { size: 11, color: '#2E7D32', bold: true }); }
+    // 曲線（從現在往後畫 72 小時的預報）
+    const save = t; gx.strokeStyle = '#1565C0'; gx.lineWidth = 2.5; gx.beginPath();
+    const base = Math.floor(save / 24) * 24; let mx = -9, mn = 9;
+    for (let h = 0; h <= span; h += .5) { t = base + h; const v = level() / (1 + AS()); mx = Math.max(mx, v); mn = Math.min(mn, v); const x = x0 + h / span * (x1 - x0), y = y0 - v * A; h ? gx.lineTo(x, y) : gx.moveTo(x, y); }
+    gx.stroke(); t = save;
+    const xn = x0 + (t - base) / span * (x1 - x0), vn = level() / (1 + AS());
+    gx.fillStyle = '#E53935'; gx.beginPath(); gx.arc(xn, y0 - vn * A, 6, 0, 7); gx.fill();
+    const hr = t % 24, d = +tday.value;
+    const range = (mx - mn) * (1 + AS());
+    const kind = !sun.checked ? '（沒有太陽的影響）' : (d < 2 || d > 27 || Math.abs(d - 15) < 2) ? '大潮' : (Math.abs(d - 7.5) < 2 || Math.abs(d - 22) < 2) ? '小潮' : '中潮';
+    document.getElementById('c7tideR').innerHTML = `<div><b>${String(Math.floor(hr)).padStart(2, '0')}:${String(Math.floor((hr % 1) * 60)).padStart(2, '0')}</b><span>臺灣時間</span></div>
+      <div><b>${vn > .5 ? '滿潮附近' : vn < -.5 ? '乾潮附近' : (Math.sin(2 * (lamTW() - lamMoon())) < 0 ? '漲潮中' : '退潮中')}</b><span>現在</span></div>
+      <div><b>${range.toFixed(2)}</b><span>這三天最大的潮差（相對值）</span></div><div><b>${kind}</b><span>這幾天</span></div>`;
+    document.getElementById('c7tideTxt').innerHTML = '月球附近和正對面的海水隆起（滿潮），兩側的海水較低（乾潮）。地球自轉一圈，臺灣會經過兩個隆起 → <b>一天約兩次滿潮、兩次乾潮</b>。因為月球同時在往前走，下一次滿潮會晚約 12 小時 25 分。';
+  }
+  const pb = document.getElementById('c7tidePlay');
+  pb.onclick = () => { play = !play; pb.textContent = play ? '⏸ 暫停' : '▶ 時間前進'; };
+  [sun, moses].forEach(e => e.onchange = draw);
+  const L = loop(dt => { if (play) t += dt * 2; draw(); });   // 1 秒 = 2 小時
+  registerSim('t6', { start() { L.start(); }, stop() { L.stop(); } });
+
+  /* ---------- 拉力差 ---------- */
+  const P = stage(document.getElementById('c7pull'), 420, 240), px = P.ctx;
+  let pmode = 'raw';
+  function drawPull() {
+    P.fit(); px.fillStyle = '#05070F'; px.fillRect(0, 0, P.W, P.H);
+    const ex = 150, ey = 120, R = 70, mxp = 400;
+    px.fillStyle = '#ddd'; px.beginPath(); px.arc(mxp, ey, 12, 0, 7); px.fill(); label(px, '月球', mxp, ey - 22, { color: '#ddd', size: 12, align: 'center' });
+    px.fillStyle = 'rgba(64,140,230,.6)'; px.beginPath(); px.ellipse(ex, ey, R + (pmode === 'rel' ? 26 : 12), R + 4, 0, 0, 7); px.fill();
+    px.fillStyle = '#5E9E5A'; px.beginPath(); px.arc(ex, ey, R, 0, 7); px.fill();
+    const pts = [['A 近側', ex + R], ['B 地心', ex], ['C 遠側', ex - R]];
+    const F = x => 2.6e5 / Math.pow(mxp - x, 2);       // 萬有引力和距離平方成反比
+    pts.forEach(([n, x]) => {
+      let f = F(x); if (pmode === 'rel') f -= F(ex);
+      const L2 = f * 4;
+      px.fillStyle = '#FFD54F'; px.beginPath(); px.arc(x, ey, 4, 0, 7); px.fill();
+      if (Math.abs(L2) > 2) arrow(px, x, ey, x + L2, ey, pmode === 'rel' ? '#FF8A65' : '#FFD54F', 3, 10);
+      label(px, n, x, ey + 26, { color: '#fff', size: 12, align: 'center' });
+    });
+    document.getElementById('c7pullTxt').innerHTML = pmode === 'raw'
+      ? '月球對三個點都往右拉，但<b>離月球愈近拉力愈大</b>：A ＞ B ＞ C。'
+      : '從地球中心 B 的角度看（把每個箭頭都減掉 B 的拉力）：A 被「往月球拉走」，C 則「被留在後面」，看起來像被往反方向推。地球就像被往兩頭拉長——<b>兩邊都隆起</b>。<br><span class="note">🔬 引力和距離平方成反比，但「拉力差」（潮汐力）和距離的立方成反比，距離的影響更大。所以雖然太陽的引力大得多，近的月球對潮汐的影響反而約是太陽的兩倍。</span>';
+  }
+  document.querySelectorAll('#c7pullMode .chip').forEach(b => b.onclick = () => { document.querySelectorAll('#c7pullMode .chip').forEach(x => x.classList.remove('on')); b.classList.add('on'); pmode = b.dataset.m; drawPull(); });
+  registerSim('t6', { start: drawPull, resize: drawPull });
+})();
+
+/* ==== t7.js ==== */
+/* ===== 第七章 分頁 7：總複習（心智圖翻牌、快問快答、迷思總整理） ===== */
+(() => {
+  const mapHost = document.getElementById('t8map'); if (!mapHost) return;
+  const MAP = [
+    ['7-1 宇宙與太陽系', '#3949AB', [
+      ['宇宙的層級', '宇宙 ＞ 星系 ＞ 恆星 ＞ 行星 ＞ 衛星。星系是組成宇宙的基本單位。'],
+      ['銀河系', '由兩千多億顆恆星組成；太陽是其中一顆，繞著銀河系中心運行（不在中心）。'],
+      ['光年', '距離單位：光在真空中走一年的距離。北極星約 400 光年 → 看到的是 400 年前的光。'],
+      ['天文單位', '地球到太陽的平均距離（約 1.5 億公里），用於太陽系內。'],
+      ['恆星、行星、衛星', '恆星自己發光；行星繞恆星；衛星繞行星（月球繞地球）。'],
+      ['類地行星', '水星、金星、地球、火星：體積小、密度大、岩石與金屬組成。'],
+      ['類木行星', '木星、土星、天王星、海王星：體積大、密度小、氣體為主（土星密度比水小）。'],
+      ['矮行星與小天體', '矮行星：球狀但不能清除軌道（冥王星）；小行星多在火星和木星之間；彗星由冰雪和塵埃組成。'],
+      ['流星與隕石', '微小天體進入大氣摩擦燃燒 → 流星；沒燒完落地 → 隕石。'],
+    ]],
+    ['7-2 晝夜與四季', '#F9A825', [
+      ['晝夜', '地球自轉（自西向東，北極上空看逆時鐘）→ 晝夜交替、日月星辰東升西落。自轉一周 1 日。'],
+      ['四季的成因', '自轉軸傾斜 23.5° ＋ 繞太陽公轉（一周 1 年）→ 陽光直射位置改變。'],
+      ['直射與斜射', '直射：能量集中、溫度高；斜射：能量分散、溫度低。'],
+      ['春分、秋分', '直射赤道，全球晝夜等長。'],
+      ['夏至', '直射北回歸線，北半球晝長夜短，北極圈內永晝。'],
+      ['冬至', '直射南回歸線，北半球晝短夜長，北極圈內永夜。'],
+    ]],
+    ['7-3 日地月的相對運動', '#546E7A', [
+      ['月相', '月球繞地球公轉，看到亮半球的比例改變；新月→上弦→滿月→下弦，約 29.5 天一循環。'],
+      ['上弦、下弦', '上弦月（初七八）亮面朝西；下弦月（廿二三）亮面朝東。'],
+      ['日食', '月球在太陽和地球之間（朔）；日全食、日偏食、日環食。'],
+      ['月食', '地球在太陽和月球之間（望）；月全食時月球呈紅銅色。'],
+      ['為何不是每月都有', '月球公轉軌道面和地球公轉軌道面有約 5° 夾角。'],
+      ['潮汐', '月球（和太陽）的引力造成；月球較近，影響較大。同一地點每天約兩次漲退。'],
+      ['滿潮、乾潮、潮差', '最高水位＝滿潮；最低＝乾潮；兩者差＝潮差。初一、十五大潮。'],
+    ]],
+  ];
+  mapHost.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px">` +
+    MAP.map(([t, c, items]) => `<div><div style="background:${c};color:#fff;border-radius:10px;padding:8px 12px;font-weight:bold">${t}</div>` +
+      items.map(([k, v]) => `<button class="opt flip" style="margin-top:6px;width:100%;display:block"><b style="color:${c}">${k}</b><div class="fv note" style="display:none;color:var(--ink);margin-top:4px">${v}</div><div class="fq note">（先說說看，再點開）</div></button>`).join('') + `</div>`).join('') + `</div>`;
+  const flip = (b, on) => { $('.fv', b).style.display = on ? 'block' : 'none'; $('.fq', b).style.display = on ? 'none' : 'block'; };
+  $$('.flip', mapHost).forEach(b => b.onclick = () => flip(b, $('.fv', b).style.display === 'none'));
+  $('#t8hide').onclick = () => $$('.flip', mapHost).forEach(b => flip(b, false));
+  $('#t8show').onclick = () => $$('.flip', mapHost).forEach(b => flip(b, true));
+
+  // [單元, 題目, 選項, 正解, 解說]
+  const QB = [
+    ['7-1', '下列天體層級，由大到小排列何者正確？', ['宇宙＞星系＞恆星＞行星＞衛星', '宇宙＞恆星＞星系＞行星＞衛星', '星系＞宇宙＞恆星＞衛星＞行星', '宇宙＞星系＞行星＞恆星＞衛星'], 0, '星系是組成宇宙的基本單位。'],
+    ['7-1', '「光年」是什麼單位？', ['時間', '距離', '亮度', '速度'], 1, '光在真空中行進一年的距離。'],
+    ['7-1', '北極星距離地球約 400 光年，代表？', ['北極星有 400 歲', '我們看到的是北極星約 400 年前發出的光', '光每年走 400 公里', '北極星 400 年後會消失'], 1, ''],
+    ['7-1', '太陽在銀河系中的位置是？', ['銀河系的中心', '銀河系中的一顆恆星，不在中心', '銀河系外面', '太陽就是銀河系'], 1, '銀河系約有兩千多億顆恆星。'],
+    ['7-1', '下列何者會自行發光發熱？', ['月球', '地球', '太陽', '木星'], 2, '太陽是恆星。'],
+    ['7-1', '下列何者屬於類木行星？', ['火星', '金星', '土星', '水星'], 2, '類木行星：木、土、天王、海王。'],
+    ['7-1', '類地行星和類木行星相比，何者正確？', ['類地行星體積較大', '類地行星密度較大', '類木行星有岩石外殼', '類木行星離太陽較近'], 1, ''],
+    ['7-1', '冥王星在 2006 年被歸類為矮行星，是因為它不符合哪一條？', ['繞恆星運轉', '接近球形', '能清除軌道上的其他小天體', '會自行發光'], 2, ''],
+    ['7-1', '小行星帶大多位在哪兩顆行星的軌道之間？', ['地球和火星', '火星和木星', '木星和土星', '水星和金星'], 1, ''],
+    ['7-1', '微小天體進入大氣層摩擦燃燒，沒有燒完而掉到地面的稱為？', ['流星', '彗星', '隕石', '衛星'], 2, ''],
+    ['7-2', '地球上有晝夜交替，主要是因為？', ['地球公轉', '地球自轉', '月球公轉', '太陽自轉'], 1, '自轉一周為一日。'],
+    ['7-2', '從北極上空俯瞰，地球自轉的方向是？', ['順時鐘', '逆時鐘', '由東向西', '沒有固定方向'], 1, '從赤道上空看是由西向東。'],
+    ['7-2', '太陽和星星都是東升西落，原因是？', ['它們繞地球轉', '地球由西向東自轉', '地球由東向西自轉', '地球公轉'], 1, ''],
+    ['7-2', '地球有四季變化的主因是？', ['地球和太陽的距離改變', '自轉軸傾斜 23.5° 且繞太陽公轉', '太陽的亮度改變', '月球的引力'], 1, ''],
+    ['7-2', '相同光源照射時，直射和斜射相比，何者正確？', ['斜射的亮區面積較小', '直射時單位面積接收的能量較多', '兩者能量一樣', '斜射溫度較高'], 1, ''],
+    ['7-2', '夏至時，太陽直射哪裡？', ['赤道', '北回歸線', '南回歸線', '北極'], 1, ''],
+    ['7-2', '冬至時，臺灣的晝夜長短是？', ['晝長夜短', '晝短夜長', '晝夜等長', '永夜'], 1, ''],
+    ['7-2', '春分、秋分時，全球的晝夜長短是？', ['北半球晝長', '南半球晝長', '大致晝夜等長', '北極永晝'], 2, ''],
+    ['deep', '地球最靠近太陽的時候大約在？', ['1 月初', '4 月初', '7 月初', '10 月初'], 0, '北半球的冬天！所以季節不是由距離決定。'],
+    ['deep', '如果自轉軸不傾斜，會怎樣？', ['四季更明顯', '幾乎沒有四季，各地晝夜等長', '永遠是夏天', '永遠是冬天'], 1, ''],
+    ['7-3', '月球的光芒來自？', ['自己發光', '反射太陽光', '反射地球的燈光', '月球上的火山'], 1, ''],
+    ['7-3', '農曆十五左右，日、地、月的相對位置是？', ['月球在太陽和地球之間', '地球在太陽和月球之間', '三者成直角', '月球在太陽後面'], 1, '此時是滿月（望）。'],
+    ['7-3', '上弦月的亮面朝向哪一邊？', ['東', '西', '南', '北'], 1, '下弦月亮面朝東。'],
+    ['7-3', '月相變化的週期約為？', ['1 天', '7 天', '29.5 天', '365 天'], 2, ''],
+    ['7-3', '日食發生時是哪一種月相？', ['新月（朔）', '上弦月', '滿月（望）', '下弦月'], 0, ''],
+    ['7-3', '月球在近地點時發生日食，最可能看到？', ['日環食', '日全食（在本影內）', '月全食', '看不到'], 1, '月球看起來比太陽大，遮得住。'],
+    ['7-3', '月全食時月亮呈紅銅色，原因是？', ['月球著火', '部分陽光經地球大氣折射照到月球', '月球自己發紅光', '地球的燈光'], 1, ''],
+    ['deep', '為什麼不是每個月都有日食？', ['月球太小', '月球公轉軌道面和地球公轉軌道面有約 5° 夾角', '白天看不到', '其實每個月都有'], 1, ''],
+    ['7-3', '潮汐主要是由什麼造成的？', ['風', '月球和太陽的引力', '地震', '洋流'], 1, '月球較近，影響較大。'],
+    ['7-3', '同一地點一天大約有幾次滿潮？', ['1', '2', '3', '4'], 1, ''],
+    ['7-3', '滿潮和乾潮之間的水位差稱為？', ['潮汐週期', '潮差', '漲潮', '退潮'], 1, ''],
+    ['deep', '一個月中潮差最大（大潮）大約在？', ['初一和十五', '初八和廿三', '每天都一樣', '只在初一'], 0, '日月排成一直線，引力效果疊加。'],
+  ];
+  let filt = 'all', cur = null, used = new Set();
+  const pool = () => QB.map((q, i) => [q, i]).filter(([q]) => filt === 'all' || q[0] === filt);
+  function upd() { document.getElementById('t8count').textContent = `題庫 ${pool().length} 題，已抽 ${[...used].filter(i => pool().some(p => p[1] === i)).length} 題`; }
+  function show() {
+    const host = document.getElementById('t8q');
+    if (cur === null) { host.innerHTML = '<p class="note">按「🎲 抽一題」開始。</p>'; return; }
+    const [u, q, opts] = QB[cur];
+    host.innerHTML = `<div class="note">${u === 'deep' ? '🟣 加深' : u}</div><div class="big" style="margin:6px 0 10px;font-size:1.35rem">${q}</div><div class="vl"></div><div class="reveal callout good" id="t8why"></div>`;
+    const v = voteList($('.vl', host), opts);
+    document.getElementById('t8ans').onclick = () => { v.reveal(QB[cur][3]); const w = document.getElementById('t8why'); w.innerHTML = '💡 ' + QB[cur][4]; w.classList.add('show'); };
+  }
+  document.getElementById('t8draw').onclick = () => {
+    let p = pool().filter(([, i]) => !used.has(i)); if (!p.length) { pool().forEach(([, i]) => used.delete(i)); p = pool(); }
+    cur = p[Math.floor(Math.random() * p.length)][1]; used.add(cur); show(); upd();
+  };
+  document.querySelectorAll('#t8filter .chip').forEach(b => b.onclick = () => { document.querySelectorAll('#t8filter .chip').forEach(x => x.classList.remove('on')); b.classList.add('on'); filt = b.dataset.f; upd(); });
+  show(); upd();
+
+  // 迷思總整理（從各分頁的擂台自動彙整）
+  document.getElementById('t8myth').innerHTML = '<tr><th>迷思</th><th>其實是</th><th>在哪一頁</th></tr>' +
+    Object.entries(ARENA).map(([k, a]) => {
+      const tab = k.replace(/b$/, ''), btn = document.querySelector(`nav.tabs button[data-tab="${tab}"]`);
+      return `<tr><td style="text-align:left">${a.title.replace(/^迷思 \d：/, '')}</td><td style="text-align:left">${a.short || a.opts[a.ans]}</td><td><button class="chip" onclick="showTab('${tab}')">${btn ? btn.textContent : tab}</button></td></tr>`;
+    }).join('');
+})();
+
+boot();
+</script>
+</body>
+</html>

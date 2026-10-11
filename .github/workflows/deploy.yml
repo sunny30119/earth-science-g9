@@ -1,0 +1,48 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy1.outputs.page_url || steps.deploy2.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/configure-pages@v5
+
+      # 純靜態站直接上傳整個 repo 根目錄。
+      # 若改用 Vite/React：先加 build 步驟，path 改成 dist
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      # GitHub Pages 偶爾出現暫時性 deploy 失敗（build 成功、deploy 報 try again later）
+      # 因此固定帶一次自動重試，不必再手動重跑 workflow
+      - name: Deploy（第一次嘗試）
+        id: deploy1
+        uses: actions/deploy-pages@v4
+        continue-on-error: true
+
+      - name: 失敗則等 60 秒
+        if: steps.deploy1.outcome == 'failure'
+        run: sleep 60
+
+      - name: Deploy（自動重試）
+        id: deploy2
+        if: steps.deploy1.outcome == 'failure'
+        uses: actions/deploy-pages@v4

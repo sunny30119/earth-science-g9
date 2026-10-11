@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第五章 地球的環境｜互動課本</title>
+<style>
+{{CSS}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-row">
+    <h1>🌏 第五章 地球的環境<small>國三上自然・地科｜互動電子課本</small></h1>
+    <div class="top-tools">
+      <div class="seg" id="modeSeg" title="資優班會自動展開所有紫色的「資優挑戰」">
+        <button data-mode="normal">一般班</button><button data-mode="deep" class="deepon">資優班</button>
+      </div>
+      <button class="tool-btn" id="pickBtn" title="隨機抽座號">🎲 抽號</button>
+      <button class="tool-btn" id="projBtn" title="字放大、隱藏教師提示">📽 投影模式</button>
+      <button class="tool-btn" id="fsBtn" title="全螢幕">⛶</button>
+    </div>
+  </div>
+  <nav class="tabs">
+{{NAV}}
+  </nav>
+</header>
+
+<main>
+{{TABS}}
+<div class="footer">鍵盤 <kbd>←</kbd> <kbd>→</kbd> 或簡報筆可以換分頁｜課本：115 學年度國中自然 3 上 第 5 章｜案例資料查證日期：2026-10-11</div>
+</main>
+
+<div class="picker" id="picker"><div class="box">
+  <div>🎲 抽到的座號</div><div class="num" id="pickNum">?</div>
+  <div class="note">全班人數 <input id="pickMax" type="number" value="30" min="2" max="60" style="width:60px"></div>
+  <div class="btnrow" style="justify-content:center;margin-top:12px"><button class="btn" id="pickAgain">再抽一次</button><button class="btn ghost" id="pickClose">關閉</button></div>
+</div></div>
+
+<script>
+const STORE_KEY = 'geo-ch5-v1';
+{{JS}}
+boot();
+</script>
+</body>
+</html>

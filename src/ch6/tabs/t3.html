@@ -1,0 +1,70 @@
+<!--NAV: 褶皺與斷層-->
+<div class="pagehead">
+  <span class="ref">課本 p.172–174｜6-2 ① 實驗 6-1、褶皺與斷層</span>
+  <h2>岩層被擠、被拉：彎掉還是斷掉？</h2>
+  <p class="hook"><b>實驗 6-1：</b>用力擠壓疊在一起的紙黏土。濕的黏土和乾的黏土，結果一樣嗎？這跟地底深處和地表附近的岩層有什麼關係？</p>
+</div>
+
+<details class="teacher"><summary>👩‍🏫 教學提示</summary><div class="inner">
+  可以先做真實的實驗 6-1，再用這裡的虛擬黏土「放慢、放大、加入課本沒做的情況」。重點：深處高溫高壓的岩層像濕黏土 → 褶皺；淺處的岩層像乾黏土 → 斷層。<br>
+  正斷層／逆斷層的判斷，資優班用「找上盤」小遊戲＋擂台練到熟。
+</div></details>
+
+<div data-guess="t3"></div>
+
+<div class="card">
+  <h3>🧪 虛擬黏土實驗台</h3>
+  <div class="grid2">
+    <canvas class="sim" id="c6clay" style="background:#EAF3F8"></canvas>
+    <div class="controls">
+      <div><div class="note">① 黏土（岩層）的狀態</div>
+        <div class="chips" id="c6wet"><button class="chip on" data-w="wet">濕黏土＝地底深處（高溫高壓）</button><button class="chip" data-w="dry">乾黏土＝接近地表</button></div></div>
+      <div><div class="note">② 施力方向</div>
+        <div class="chips" id="c6force"><button class="chip on" data-f="push">→ ← 擠壓</button><button class="chip" data-f="pull">← → 拉張</button><button class="chip" data-f="slide">⇅ 水平錯動</button></div></div>
+      <div class="ctl"><label>③ 用力程度 <output for="c6amt"></output></label><input type="range" id="c6amt" min="0" max="100" value="0"></div>
+      <div class="callout" id="c6clayTxt" style="min-height:90px"></div>
+    </div>
+  </div>
+</div>
+
+<div class="cases">
+  <div class="case">
+    <div class="where">🇹🇼 臺灣｜1999 年 921 集集地震</div>
+    <h4>車籠埔斷層：逆斷層把操場推高</h4>
+    <p>規模 7.3。車籠埔斷層錯動，造成將近百公里長的地表破裂，是近百年來陸地上逆斷層活動規模最大的一次。</p>
+    <p>臺中霧峰光復國中的操場被斷層切過，一側隆起約兩公尺多，跑道斷成上下兩段。這裡現在是「921 地震教育園區」，把斷層和倒塌的校舍原地保存下來。</p>
+    <div class="links"><a href="https://www.google.com/search?tbm=isch&q=921%E5%9C%B0%E9%9C%87%E6%95%99%E8%82%B2%E5%9C%92%E5%8D%80+%E6%93%8D%E5%A0%B4+%E6%96%B7%E5%B1%A4" target="_blank" rel="noopener">📷 看照片</a></div>
+  </div>
+  <div class="case world">
+    <div class="where">🌍 國際｜緬甸（2025 年 3 月 28 日）</div>
+    <h4>平移斷層：一條 460 公里長的裂縫，兩側水平錯開好幾公尺</h4>
+    <p>規模 7.7 的曼德勒地震發生在實皆斷層上。這是一條<b>平移斷層</b>：兩側岩層水平錯開，地表破裂帶長達約 460～500 公里（大約臺灣南北長度的 1.3 倍），兩側最多水平錯開好幾公尺。</p>
+    <p>斷層破裂的速度甚至一度超過每秒 5 公里。原本筆直的道路、圍牆都被錯開。</p>
+    <div class="links"><a href="https://www.earth.com/news/myanmars-massive-earthquake-ripped-310-mile-rupture-through-the-earth-eric-does-images/" target="_blank" rel="noopener">Earth.com 報導（英）</a><a href="https://www.youtube.com/results?search_query=Myanmar+earthquake+2025+fault+rupture+video" target="_blank" rel="noopener">🎬 斷層錯動實拍</a></div>
+  </div>
+  <div class="case world">
+    <div class="where">🌍 國際｜日本 能登半島（2024 年 1 月 1 日）</div>
+    <h4>一夜之間，海岸往上長高約 4 公尺</h4>
+    <p>規模 7.6 的地震（日本氣象廳）讓半島北岸隆起，最多約 <span class="num">4 公尺</span>。原本泡在海裡的海床露出來，大部分漁港乾掉、船開不出去，海岸線最多往海推進約 250 公尺。</p>
+    <p class="ask">想一想：這是內營力還是外營力？和第五章「海岸線向海前進」的原因一樣嗎？</p>
+    <div class="links"><a href="https://www.space.com/japan-earthquake-january-2024-shifted-coastline-photos" target="_blank" rel="noopener">Space.com 衛星照片（英）</a></div>
+  </div>
+</div>
+
+<details class="deep"><summary>🧠 資優挑戰｜找上盤小遊戲＋迷思擂台：上盤一定在上面？</summary><div class="inner">
+  <div class="card" style="margin:0 0 10px">
+    <h3>🎯 找上盤</h3>
+    <div class="grid2">
+      <canvas class="sim" id="c6hw" style="background:#EAF3F8"></canvas>
+      <div class="controls">
+        <p style="margin:0">點一下你認為是<b>上盤</b>的那一塊岩層。</p>
+        <div class="btnrow"><button class="btn deepb" id="c6hwNew">🎲 換一題</button></div>
+        <div class="callout" id="c6hwTxt" style="min-height:90px"></div>
+        <div class="readout" id="c6hwScore"></div>
+      </div>
+    </div>
+  </div>
+  <div data-arena="t3"></div>
+</div></details>
+
+<div class="takeaway">💬 <b>一句話帶走：</b>岩層受力 → 彎曲是______，斷裂並錯動是______。正斷層的上盤往______，逆斷層的上盤往______。</div>

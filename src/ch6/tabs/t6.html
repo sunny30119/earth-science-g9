@@ -1,0 +1,64 @@
+<!--NAV: 臺灣的板塊與火山-->
+<div class="pagehead">
+  <span class="ref">課本 p.179–180｜6-2 ② 臺灣的板塊運動＋觀念統整</span>
+  <h2>臺灣：被兩個板塊「擠」出來的島</h2>
+  <p class="hook"><b>關鍵問題：</b>為什麼臺灣地震這麼多？為什麼山脈大多是南北走向？為什麼東部的海岸山脈和綠島、蘭嶼是「火山來的」？</p>
+</div>
+
+<details class="teacher"><summary>👩‍🏫 教學提示</summary><div class="inner">
+  ① 先在地圖上指出花東縱谷＝板塊交界。② 把「時光機」往回拉，看海岸山脈、綠島、蘭嶼過去在哪裡。③ 點火山標記，對照課本圖 6-14。④ 最後用「內營力 vs 外營力」分類，把第五、六章接起來（課本觀念統整 p.180）。
+</div></details>
+
+<div data-guess="t6"></div>
+
+<div class="card">
+  <h3>🕰 臺灣板塊時光機</h3>
+  <div class="grid2">
+    <canvas class="sim" id="c6tw" style="background:#4F86C6;max-width:520px;margin:0 auto"></canvas>
+    <div class="controls">
+      <div class="ctl"><label>回到過去 <output for="c6ago"></output></label><input type="range" id="c6ago" min="0" max="100" value="0"></div>
+      <div class="readout" id="c6twR"></div>
+      <div class="callout" id="c6twTxt" style="min-height:90px">點地圖上的▲火山，看看它的故事。</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h3>⛰ 抬升計算器 <span class="tag note">一邊被推高，一邊被侵蝕</span></h3>
+  <div class="grid2">
+    <canvas class="sim" id="c6up" style="background:#EAF4FA"></canvas>
+    <div class="controls">
+      <div class="ctl"><label>每年抬升 <output for="c6rate"></output></label><input type="range" id="c6rate" min="1" max="20" value="6"></div>
+      <div class="ctl"><label>每年被侵蝕（第五章的外營力） <output for="c6ero"></output></label><input type="range" id="c6ero" min="0" max="15" value="3"></div>
+      <div class="ctl"><label>經過時間 <output for="c6yrs"></output></label><input type="range" id="c6yrs" min="0" max="100" value="0"></div>
+      <div class="readout" id="c6upR"></div>
+    </div>
+  </div>
+  <p class="note">臺灣中央山脈的抬升速率，各地不同，大約每年幾公釐到 1 公分；同時，颱風豪雨也讓臺灣的侵蝕速率名列世界前茅。</p>
+</div>
+
+<div class="card">
+  <h3>🔁 觀念統整：內營力 vs 外營力（課本 p.180）</h3>
+  <div id="c6io"></div>
+</div>
+
+<div class="cases">
+  <div class="case">
+    <div class="where">🇹🇼 臺灣｜大屯火山群（陽明山）</div>
+    <h4>臺北旁邊的火山</h4>
+    <p>陽明山的小油坑可以看到噴氣孔、硫磺結晶和溫泉，都是火山活動的現象（課本圖 6-14）。科學家在這裡設有大屯火山觀測站，持續監測地震、地溫和火山氣體，留意底下的岩漿活動。</p>
+    <div class="links"><a href="https://www.google.com/search?tbm=isch&q=%E5%B0%8F%E6%B2%B9%E5%9D%91+%E5%99%B4%E6%B0%A3%E5%AD%94" target="_blank" rel="noopener">📷 小油坑噴氣孔</a></div>
+  </div>
+  <div class="case">
+    <div class="where">🇹🇼 臺灣｜1999 年 921、2024 年 0403</div>
+    <h4>同一個原因，不同的斷層</h4>
+    <p>兩次大地震都是菲律賓海板塊推擠歐亞板塊、累積的能量突然釋放。921 發生在西部的車籠埔斷層（規模 7.3）；0403 發生在花蓮外海附近（規模 7.1）。</p>
+    <p class="ask">想一想：板塊交界在花東縱谷，為什麼西部也會有大地震？（提示：擠壓的力量會一路傳過整座島）</p>
+  </div>
+</div>
+
+<details class="deep"><summary>🧠 資優挑戰｜迷思擂台：每年才動 8 公分，怎麼可能推出高山？</summary><div class="inner">
+  <div data-arena="t6"></div>
+</div></details>
+
+<div class="takeaway">💬 <b>一句話帶走：</b>臺灣位在______板塊和______板塊的交界，交界在______；板塊擠壓 → 南北走向的山脈、頻繁的地震。</div>

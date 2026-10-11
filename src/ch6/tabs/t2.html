@@ -1,0 +1,65 @@
+<!--NAV: 板塊的相對運動-->
+<div class="pagehead">
+  <span class="ref">課本 p.169–171｜6-1 ③ 板塊間的相對運動</span>
+  <h2>板塊在動：分開、相撞，各自造出什麼地形？</h2>
+  <p class="hook"><b>課本探究提問：</b>在板塊分布圖上找出喜馬拉雅山、富士山這些高山的位置。它們出現的地方有什麼共通點？</p>
+</div>
+
+<details class="teacher"><summary>👩‍🏫 教學提示</summary><div class="inner">
+  ① 先投票「高山大多在哪裡」，再用模擬器四種交界各跑一次（每種約 2 分鐘），請學生說出「長出了什麼地形」。② 分類小遊戲對應課本圖 6-2 的 a～d。③ 資優班：擂台「誰會沉下去」，再加碼看「海洋撞海洋」（日本、菲律賓的島弧）。
+</div></details>
+
+<div data-guess="t2"></div>
+
+<div class="card">
+  <h3>🧪 板塊交界模擬器 <span class="tag note">剖面圖</span></h3>
+  <div class="chips" id="c6pb" style="margin-bottom:8px">
+    <button class="chip on" data-k="mor">① 海洋板塊分離</button>
+    <button class="chip" data-k="rift">② 大陸板塊分離</button>
+    <button class="chip" data-k="sub">③ 海洋撞大陸</button>
+    <button class="chip" data-k="cc">④ 大陸撞大陸</button>
+    <button class="chip" data-k="oo">🟣 海洋撞海洋</button>
+  </div>
+  <canvas class="sim" id="c6plate" style="background:#DDEBF5"></canvas>
+  <div class="grid2" style="margin-top:10px">
+    <div class="controls">
+      <div class="ctl"><label>經過時間 <output for="c6pt"></output></label><input type="range" id="c6pt" min="0" max="100" value="0" step="any"></div>
+      <div class="btnrow"><button class="btn" id="c6pplay">▶ 播放</button><label class="note"><input type="checkbox" id="c6mag"> 🟣 顯示海底岩石的「磁性條紋」</label></div>
+    </div>
+    <div class="callout" id="c6pTxt"></div>
+  </div>
+</div>
+
+<div class="card">
+  <h3>🗺 這些地方是「分離」還是「聚合」？（課本圖 6-2）</h3>
+  <div id="c6sort"></div>
+</div>
+
+<div class="cases">
+  <div class="case world">
+    <div class="where">🌍 國際｜冰島 雷克雅內斯半島</div>
+    <h4>站在兩個板塊中間的國家</h4>
+    <p>冰島位在中洋脊露出海面的地方，北美洲板塊和歐亞板塊在這裡往兩邊分開，岩漿從裂縫湧出。</p>
+    <p>2023 年 12 月到 2025 年 8 月，格林達維克鎮附近的火山裂隙連續噴發了 <span class="num">9 次</span>，全鎮居民和附近的藍湖溫泉一再撤離，熔岩還衝過了保護小鎮的堤防。</p>
+    <div class="links"><a href="https://en.wikipedia.org/wiki/2023%E2%80%932025_Sundhn%C3%BAkur_eruptions" target="_blank" rel="noopener">維基百科（英）</a><a href="https://www.youtube.com/results?search_query=Grindavik+eruption+fissure" target="_blank" rel="noopener">🎬 裂隙噴發影片</a></div>
+  </div>
+  <div class="case world">
+    <div class="where">🌍 國際｜喜馬拉雅山脈</div>
+    <h4>印度「撞」出世界最高峰</h4>
+    <p>印度板塊一直往北推擠歐亞板塊，兩塊都是大陸板塊，誰也沉不下去，岩層就被擠得高高隆起。2020 年中國和尼泊爾共同公布聖母峰最新高度：<span class="num">8848.86 公尺</span>。</p>
+    <p class="ask">想一想：在喜馬拉雅山的高處岩層裡，找得到海洋生物的化石。為什麼？（連結 6-3）</p>
+  </div>
+  <div class="case">
+    <div class="where">📖 課本｜科學家日誌 p.189–190</div>
+    <h4>韋格納：被笑了一輩子的對的人</h4>
+    <p>1910 年，氣象學家韋格納住院時發現：地圖上大西洋兩岸的輪廓幾乎可以拼在一起。他提出「大陸漂移學說」，卻因為說不出「大陸靠什麼力量移動」而被地質學家嘲笑。</p>
+    <p>他多次到格陵蘭找證據，最後在探險中過世。直到他死後約 30 年，「海底擴張」的證據出現，才證明他是對的。</p>
+    <p class="ask">想一想：一個說法「有證據」但「說不出原因」，科學家該接受它嗎？</p>
+  </div>
+</div>
+
+<details class="deep"><summary>🧠 資優挑戰｜迷思擂台：大陸板塊比較厚，撞在一起時是它沉下去？</summary><div class="inner">
+  <div data-arena="t2"></div>
+</div></details>
+
+<div class="takeaway">💬 <b>一句話帶走：</b>板塊分離 → 中洋脊、______；板塊聚合 → 海溝、火山、______。高山和火山大多在板塊______。</div>

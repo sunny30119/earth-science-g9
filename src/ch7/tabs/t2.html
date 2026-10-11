@@ -1,0 +1,72 @@
+<!--NAV: 太陽系-->
+<div class="pagehead">
+  <span class="ref">課本 p.194–198｜7-1 ③ 太陽系</span>
+  <h2>太陽系的家族成員</h2>
+  <p class="hook"><b>關鍵問題：</b>八大行星可以分成哪兩類？冥王星為什麼不再是行星？流星真的是「星星」掉下來嗎？</p>
+</div>
+
+<details class="teacher"><summary>👩‍🏫 教學提示</summary><div class="inner">
+  ① 縮小模型：選「太陽 = 籃球」，問學生「地球要放在操場的哪裡？」再看答案（約 26 公尺外的一粒芝麻）。② 密度水缸：先猜哪一顆行星會浮起來。③ 行星判定器：用三條準則，討論冥王星。④ 資優班：流星擂台。
+</div></details>
+
+<div class="card">
+  <h3>🏀 太陽系縮小模型</h3>
+  <div class="chips" id="c7scale"><button class="chip on" data-s="0.24">太陽 ＝ 籃球（24 公分）</button><button class="chip" data-s="1.5">太陽 ＝ 1.5 公尺的大球</button></div>
+  <canvas class="sim" id="c7model" style="background:#0B1020;margin-top:8px"></canvas>
+  <table class="simple" id="c7mt" style="margin-top:10px"></table>
+</div>
+
+<div data-guess="t2"></div>
+
+<div class="grid2 even">
+  <div class="card">
+    <h3>🛁 行星密度水缸</h3>
+    <div class="chips" id="c7pl"></div>
+    <canvas class="sim" id="c7tank" style="background:#fff;margin-top:8px"></canvas>
+    <div class="callout" id="c7tankTxt" style="min-height:80px"></div>
+  </div>
+  <div class="card">
+    <h3>⚖️ 行星判定器（國際天文聯合會 2006 年準則）</h3>
+    <div class="chips" id="c7obj"></div>
+    <div id="c7crit" style="margin-top:10px"></div>
+    <div class="callout" id="c7critTxt" style="min-height:80px"></div>
+  </div>
+</div>
+
+<div class="cases">
+  <div class="case">
+    <div class="where">🇹🇼 臺灣｜2024 年 合歡山</div>
+    <h4>紫金山－阿特拉斯彗星</h4>
+    <p>2024 年秋天，這顆彗星接近地球，在臺灣合歡山拍得到長長的彗尾（課本圖 7-3）。彗星主要由冰雪和塵埃組成，靠近太陽時冰被加熱、噴出氣體和塵埃，看起來像拖著一條尾巴，所以俗稱「掃帚星」。</p>
+    <div class="links"><a href="https://www.google.com/search?tbm=isch&q=%E7%B4%AB%E9%87%91%E5%B1%B1+%E9%98%BF%E7%89%B9%E6%8B%89%E6%96%AF%E5%BD%97%E6%98%9F+%E5%90%88%E6%AD%A1%E5%B1%B1" target="_blank" rel="noopener">📷 看照片</a></div>
+  </div>
+  <div class="case world">
+    <div class="where">🌍 國際｜俄羅斯 車里雅賓斯克（2013 年）</div>
+    <h4>一顆比太陽還亮的流星</h4>
+    <p>2013 年 2 月 15 日早上，一顆大約 20 公尺的小天體衝進大氣層，在空中爆炸，亮度一度超過太陽。爆炸的衝擊波震碎了大量窗戶玻璃，約 1500 人受傷，碎片落地成為隕石。</p>
+    <p class="ask">想一想：它算流星還是隕石？</p>
+    <div class="links"><a href="https://www.youtube.com/results?search_query=Chelyabinsk+meteor+2013" target="_blank" rel="noopener">🎬 行車記錄器畫面</a></div>
+  </div>
+  <div class="case">
+    <div class="where">📅 每年 12 月中旬</div>
+    <h4>雙子座流星雨</h4>
+    <p>地球每年都會穿過同一團太空碎屑，所以流星雨每年大約同一時間出現。雙子座流星雨是每年最穩定、最壯觀的流星雨之一（課本圖 7-4 在合歡山拍攝）。</p>
+  </div>
+</div>
+
+<details class="deep"><summary>🧠 資優挑戰｜流星模擬＋迷思擂台：流星是星星掉下來嗎？</summary><div class="inner">
+  <div class="card" style="margin:0 0 10px">
+    <h3>☄️ 流星還是隕石？</h3>
+    <div class="grid2">
+      <canvas class="sim" id="c7met" style="background:#0B1020"></canvas>
+      <div class="controls">
+        <div class="ctl"><label>太空碎石的大小 <output for="c7msz"></output></label><input type="range" id="c7msz" min="0" max="100" value="20"></div>
+        <div class="btnrow"><button class="btn deepb" id="c7mgo">☄️ 衝進大氣層</button></div>
+        <div class="callout" id="c7mTxt"></div>
+      </div>
+    </div>
+  </div>
+  <div data-arena="t2"></div>
+</div></details>
+
+<div class="takeaway">💬 <b>一句話帶走：</b>類地行星：體積小、密度______、有岩石外殼；類木行星：體積大、密度______、主要由氣體組成。</div>

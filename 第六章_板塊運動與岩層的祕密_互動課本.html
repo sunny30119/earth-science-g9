@@ -1,0 +1,2286 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第六章 板塊運動與岩層的祕密｜互動課本</title>
+<style>
+/* ====== 地科互動課本 共用樣式 ====== */
+:root {
+  --primary: #24584A;      /* 主色：深青綠 */
+  --primary-2: #3B7D6B;
+  --accent: #C46A28;       /* 強調：赭橘 */
+  --deep: #6A3FA0;         /* 資優層：紫 */
+  --deep-bg: #F5F0FB;
+  --bg: #F4F1EA;
+  --card: #FFFFFF;
+  --ink: #23302B;
+  --muted: #66736E;
+  --line: #DDD6C8;
+  --ok: #2E7D32;
+  --bad: #C62828;
+  --tw: #1F6FB2;           /* 臺灣案例 */
+  --world: #8A5A12;        /* 國際案例 */
+  --fs: 17px;
+}
+* { box-sizing: border-box; }
+html { font-size: var(--fs); }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+  line-height: 1.65;
+}
+body.proj { --fs: 21px; }
+body.proj .teacher { display: none !important; }
+body.proj .grid2:not(.even) { grid-template-columns: 1fr; }   /* 投影時：單張模擬圖佔滿整行；成對的圖（.even）保持左右並排 */
+body.proj canvas.sim { max-width: min(100%, calc((100vh - 170px) * var(--ar, 2))) !important; margin-left: auto; margin-right: auto; }   /* 用寬度限制高度：高度不超過一個螢幕 */
+
+/* ---------- 頁首 ---------- */
+header.top {
+  position: sticky; top: 0; z-index: 50;
+  background: var(--primary); color: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,.18);
+}
+.top-row { display: flex; align-items: center; gap: 12px; padding: 8px 16px; flex-wrap: wrap; }
+.top-row h1 { font-size: 1.15rem; margin: 0; white-space: nowrap; }
+.top-row h1 small { font-weight: normal; opacity: .8; font-size: .8rem; margin-left: 6px; }
+.top-tools { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.seg { display: inline-flex; background: rgba(255,255,255,.15); border-radius: 999px; padding: 3px; }
+.seg button {
+  border: 0; background: transparent; color: #fff; padding: 4px 12px; border-radius: 999px;
+  font-size: .85rem; cursor: pointer; font-family: inherit;
+}
+.seg button.on { background: #fff; color: var(--primary); font-weight: bold; }
+.seg button.on.deepon { color: var(--deep); }
+.tool-btn {
+  border: 1px solid rgba(255,255,255,.45); background: transparent; color: #fff;
+  border-radius: 8px; padding: 4px 10px; font-size: .85rem; cursor: pointer; font-family: inherit;
+}
+.tool-btn:hover { background: rgba(255,255,255,.12); }
+nav.tabs {
+  display: flex; gap: 4px; padding: 0 12px; overflow-x: auto; scrollbar-width: thin;
+  background: var(--primary-2);
+}
+nav.tabs button {
+  flex: 0 0 auto; border: 0; background: transparent; color: rgba(255,255,255,.85);
+  padding: 9px 12px 8px; font-size: .9rem; cursor: pointer; font-family: inherit;
+  border-bottom: 3px solid transparent;
+}
+nav.tabs button .n { display: inline-block; min-width: 1.4em; opacity: .7; }
+nav.tabs button.active { color: #fff; font-weight: bold; border-bottom-color: #FFD27A; }
+
+/* ---------- 主內容 ---------- */
+main { max-width: 1180px; margin: 0 auto; padding: 16px; }
+.panel { display: none; }
+.panel.active { display: block; animation: fadein .25s ease; }
+@keyframes fadein { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; } }
+
+.pagehead { margin: 4px 0 14px; }
+.pagehead .ref {
+  display: inline-block; font-size: .78rem; color: var(--primary); border: 1px solid var(--primary);
+  border-radius: 999px; padding: 0 10px; margin-bottom: 4px;
+}
+.pagehead h2 { margin: 2px 0 4px; font-size: 1.55rem; }
+.hook {
+  background: #FFF7E8; border-left: 5px solid var(--accent); padding: 8px 14px; border-radius: 0 8px 8px 0;
+  margin: 8px 0 0;
+}
+.hook b { color: var(--accent); }
+
+.card {
+  background: var(--card); border-radius: 12px; padding: 16px 18px; margin-bottom: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.08), 0 0 0 1px rgba(0,0,0,.03);
+}
+.card h3 { margin: 0 0 8px; font-size: 1.15rem; }
+.card h3 .tag { font-size: .72rem; font-weight: normal; vertical-align: middle; margin-left: 6px; }
+.grid2 { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(260px, 1fr); gap: 16px; align-items: start; }
+.grid2.even { grid-template-columns: 1fr 1fr; }
+@media (max-width: 860px) { .grid2, .grid2.even { grid-template-columns: 1fr; } }
+
+canvas.sim { width: 100%; display: block; border-radius: 10px; background: #EAF3F8; touch-action: none; }
+.controls { display: flex; flex-direction: column; gap: 12px; }
+.ctl label { display: flex; justify-content: space-between; font-size: .9rem; color: var(--muted); }
+.ctl label output { color: var(--ink); font-weight: bold; }
+.ctl input[type=range] { width: 100%; accent-color: var(--primary); height: 28px; }
+.btnrow { display: flex; flex-wrap: wrap; gap: 8px; }
+.btn {
+  border: 0; border-radius: 8px; padding: 8px 14px; font-size: .9rem; cursor: pointer; font-family: inherit;
+  background: var(--primary); color: #fff;
+}
+.btn:hover { filter: brightness(1.08); }
+.btn.ghost { background: transparent; color: var(--primary); border: 1px solid var(--primary); }
+.btn.warn { background: var(--accent); }
+.btn.deepb { background: var(--deep); }
+.btn.sel { outline: 3px solid #FFD27A; }
+.readout {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px;
+}
+.readout div { background: #F3F6F4; border-radius: 8px; padding: 6px 10px; }
+.readout b { display: block; font-size: 1.2rem; color: var(--primary); }
+.readout span { font-size: .78rem; color: var(--muted); }
+.note { font-size: .85rem; color: var(--muted); }
+.callout { background: #EEF6F2; border-radius: 10px; padding: 10px 14px; margin-top: 10px; }
+.callout.warn { background: #FDECEA; }
+.callout.good { background: #E8F5E9; }
+.big { font-size: 1.15rem; font-weight: bold; }
+
+/* ---------- 猜一猜（全班） ---------- */
+.guess { border: 2px dashed #E7C08E; background: #FFFBF4; }
+.guess .q { font-weight: bold; margin-bottom: 8px; }
+.opts { display: flex; flex-direction: column; gap: 6px; }
+.opt {
+  display: flex; align-items: center; gap: 10px; border: 1px solid var(--line); background: #fff;
+  border-radius: 8px; padding: 7px 12px; cursor: pointer; text-align: left; font-size: .95rem; font-family: inherit;
+  color: var(--ink);
+}
+.opt:hover { background: #F7F3EA; }
+.opt .letter {
+  flex: 0 0 auto; width: 26px; height: 26px; border-radius: 50%; background: #EFE7D8; display: grid;
+  place-items: center; font-weight: bold;
+}
+.opt .bar { margin-left: auto; display: flex; align-items: center; gap: 6px; font-size: .8rem; color: var(--muted); white-space: nowrap; }
+.opt .t { flex: 1 1 auto; }
+.opt.picked { outline: 3px solid #FFD27A; }
+.opt .bar i { display: block; height: 8px; background: var(--accent); border-radius: 4px; min-width: 2px; }
+.opt.right { border-color: var(--ok); background: #EEF8EE; }
+.opt.right .letter { background: var(--ok); color: #fff; }
+.opt.wrong { border-color: #E3B4B4; background: #FFF4F4; }
+.vote-ctl { display: flex; gap: 4px; margin-left: 6px; }
+.vote-ctl button { border: 1px solid var(--line); background: #fff; border-radius: 6px; width: 26px; height: 26px; cursor: pointer; }
+.reveal { display: none; margin-top: 10px; }
+.reveal.show { display: block; animation: fadein .3s; }
+
+/* ---------- 資優：迷思擂台 ---------- */
+details.deep {
+  border: 2px solid var(--deep); border-radius: 12px; background: var(--deep-bg); margin-bottom: 16px;
+}
+details.deep > summary {
+  cursor: pointer; padding: 10px 16px; color: var(--deep); font-weight: bold; list-style: none;
+}
+details.deep > summary::-webkit-details-marker { display: none; }
+details.deep > summary::before { content: "▸ "; }
+details.deep[open] > summary::before { content: "▾ "; }
+details.deep > .inner { padding: 0 16px 16px; }
+.arena { background: #fff; border-radius: 10px; padding: 14px 16px; margin-top: 10px; }
+.arena h4 { margin: 0 0 6px; color: var(--deep); font-size: 1.05rem; }
+.steps { display: flex; gap: 6px; margin: 8px 0 12px; flex-wrap: wrap; }
+.steps span {
+  font-size: .78rem; padding: 3px 10px; border-radius: 999px; background: #ECE4F6; color: #8A72AB;
+}
+.steps span.now { background: var(--deep); color: #fff; }
+.steps span.done { background: #D9CCEB; color: var(--deep); }
+.stage { display: none; }
+.stage.show { display: block; animation: fadein .3s; }
+.clash {
+  background: #FFF0F0; border-left: 5px solid var(--bad); padding: 8px 14px; border-radius: 0 8px 8px 0; margin: 8px 0;
+}
+.hint { background: #F4EEFB; border-radius: 8px; padding: 6px 12px; margin: 6px 0; display: none; }
+.hint.show { display: block; animation: fadein .3s; }
+.explain { background: #EDE7F6; border-radius: 8px; padding: 10px 14px; margin-top: 8px; }
+
+/* ---------- 真實案例 ---------- */
+.cases { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; margin-bottom: 16px; }
+.case { background: #fff; border-radius: 12px; padding: 14px 16px; border-top: 5px solid var(--tw); box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+.case.world { border-top-color: var(--world); }
+.case .where { font-size: .75rem; font-weight: bold; color: var(--tw); }
+.case.world .where { color: var(--world); }
+.case h4 { margin: 2px 0 6px; font-size: 1.02rem; }
+.case p { margin: 4px 0; font-size: .92rem; }
+.case .num { font-size: 1.35rem; font-weight: bold; color: var(--accent); }
+.case .links { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; }
+.case .links a {
+  font-size: .78rem; text-decoration: none; border: 1px solid var(--line); border-radius: 999px; padding: 2px 10px; color: var(--primary);
+}
+.case .links a:hover { background: #F3F6F4; }
+.case .ask { margin-top: 6px; font-size: .88rem; color: var(--deep); }
+
+/* ---------- 一句話帶走 / 教學提示 ---------- */
+.takeaway {
+  background: var(--primary); color: #fff; border-radius: 12px; padding: 12px 18px; margin-bottom: 20px;
+}
+.takeaway b { color: #FFD27A; }
+details.teacher {
+  border: 1px dashed #B9B2A3; border-radius: 10px; background: #FBFAF6; margin-bottom: 16px; font-size: .88rem;
+}
+details.teacher summary { cursor: pointer; padding: 6px 12px; color: var(--muted); }
+details.teacher .inner { padding: 0 14px 10px; }
+
+/* ---------- 小元件 ---------- */
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 4px 12px; cursor: pointer;
+  font-size: .88rem; font-family: inherit; color: var(--ink);
+}
+.chip.on { background: var(--primary); color: #fff; border-color: var(--primary); }
+.sortq { display: grid; gap: 8px; }
+.sortq .item { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 6px 10px; background: #F7F5EF; border-radius: 8px; }
+.sortq .item .txt { flex: 1 1 260px; }
+.sortq .item.ok { background: #E8F5E9; }
+.sortq .item.no { background: #FDECEA; }
+table.simple { border-collapse: collapse; width: 100%; font-size: .9rem; }
+table.simple th, table.simple td { border: 1px solid var(--line); padding: 5px 8px; text-align: center; }
+table.simple th { background: #EFEBE1; }
+.picker { position: fixed; inset: 0; background: rgba(0,0,0,.55); display: none; place-items: center; z-index: 100; }
+.picker.show { display: grid; }
+.picker .box { background: #fff; border-radius: 16px; padding: 24px 36px; text-align: center; min-width: 280px; }
+.picker .num { font-size: 5rem; font-weight: bold; color: var(--accent); line-height: 1.1; }
+kbd { background: #eee; border-radius: 4px; padding: 0 5px; font-size: .8em; border: 1px solid #ccc; }
+.footer { text-align: center; font-size: .78rem; color: var(--muted); padding: 10px 0 30px; }
+@media print { header.top, .btn, details.teacher { display: none !important; } .panel { display: block !important; } }
+
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-row">
+    <h1>🌋 第六章 板塊運動與岩層的祕密<small>國三上自然・地科｜互動電子課本</small></h1>
+    <div class="top-tools">
+      <div class="seg" id="modeSeg" title="資優班會自動展開所有紫色的「資優挑戰」">
+        <button data-mode="normal">一般班</button><button data-mode="deep" class="deepon">資優班</button>
+      </div>
+      <button class="tool-btn" id="pickBtn" title="隨機抽座號">🎲 抽號</button>
+      <button class="tool-btn" id="projBtn" title="字放大、隱藏教師提示">📽 投影模式</button>
+      <button class="tool-btn" id="fsBtn" title="全螢幕">⛶</button>
+    </div>
+  </div>
+  <nav class="tabs">
+    <button data-tab="t0"><span class="n">0</span>開場：海底的陸地動物</button>
+    <button data-tab="t1"><span class="n">1</span>地球分層</button>
+    <button data-tab="t2"><span class="n">2</span>板塊的相對運動</button>
+    <button data-tab="t3"><span class="n">3</span>褶皺與斷層</button>
+    <button data-tab="t4"><span class="n">4</span>地震：規模與震度</button>
+    <button data-tab="t5"><span class="n">5</span>地震預警</button>
+    <button data-tab="t6"><span class="n">6</span>臺灣的板塊與火山</button>
+    <button data-tab="t7"><span class="n">7</span>岩層的紀錄</button>
+    <button data-tab="t8"><span class="n">8</span>總複習</button>
+  </nav>
+</header>
+
+<main>
+<section class="panel" id="p-t0">
+<!--NAV: 開場：海底的陸地動物-->
+<div class="pagehead">
+  <span class="ref">課本 p.164–166｜章首</span>
+  <h2>為什麼海底撈得到大象化石？</h2>
+  <p class="hook"><b>探究提問：</b>漁民在臺灣和澎湖之間的「澎湖水道」，撈起古菱齒象、德氏水牛、四不像鹿，甚至「澎湖原人」的化石。這些都是陸地上的動物，怎麼會在海底？</p>
+</div>
+
+<details class="teacher"><summary>👩‍🏫 教學提示（投影模式會自動隱藏）</summary><div class="inner">
+  5 分鐘暖身。先讓學生提出假設（被沖下去？游過去？地面沉下去？），再拉海平面滑桿揭曉。<br>
+  收尾點題：「地球的環境並非沒有變動」——這一章要學地球是怎麼變動的，以及岩層怎麼把變動記錄下來。
+</div></details>
+
+<div class="grid2">
+  <div class="card">
+    <h3>🌊 把海水「抽乾」看看</h3>
+    <canvas class="sim" id="c6t0" style="background:#4F86C6;max-width:560px;margin:0 auto"></canvas>
+  </div>
+  <div>
+    <div class="card">
+      <div class="ctl"><label>海平面下降 <output for="c6sea"></output></label><input type="range" id="c6sea" min="0" max="140" value="0"></div>
+      <div class="readout" id="c6t0R" style="margin-top:8px"></div>
+      <div class="callout" id="c6t0Txt" style="margin-top:10px"></div>
+      <p class="note">地圖的海水深度為示意。冰河時期最冷的時候（大約 2 萬年前），大量海水變成陸地上的冰，全球海平面比現在低約 120 公尺。</p>
+    </div>
+    <div class="card">
+      <h3>🦣 澎湖水道動物群</h3>
+      <p style="margin:0">古菱齒象（原生於華北與淮河流域）、德氏水牛、四不像鹿（原生於長江中下游）、斑鬣狗……還有臺灣首度發現的古人類「澎湖原人」——2025 年科學家分析化石裡保存的古老蛋白質，確認他是神祕的<b>丹尼索瓦人</b>（原本以為是直立人）。這些動物和古人類，都是冰河時期從亞洲大陸「走」過來的。<br><span class="note">🟣 新證據推翻舊分類，正是科學的日常。</span></p>
+      <div class="links" style="margin-top:8px"><a class="chip" href="https://www.google.com/search?q=%E6%BE%8E%E6%B9%96%E5%8E%9F%E4%BA%BA+%E5%8C%96%E7%9F%B3" target="_blank" rel="noopener">🔎 搜尋「澎湖原人」</a></div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h3>📚 這一章的三條線</h3>
+  <p style="margin:0">
+    <b>6-1 地球的構造與板塊運動</b>：地球裡面長什麼樣？地表為什麼會動？<br>
+    <b>6-2 板塊運動與內營力</b>：岩層被擠、被拉，產生褶皺、斷層、地震、火山<br>
+    <b>6-3 岩層的紀錄</b>：岩層和化石是地球的歷史書
+  </p>
+  <div class="callout" style="margin-top:8px">和第五章接起來：第五章是<b>外營力</b>把地表「削平」；第六章是<b>內營力</b>把地表「推高、扯開」。</div>
+</div>
+
+<div class="takeaway">💬 <b>一句話帶走：</b>海底有陸地動物的化石，代表這裡______是______。地球的環境一直在變。</div>
+
+</section>
+<section class="panel" id="p-t1">
+<!--NAV: 地球分層-->
+<div class="pagehead">
+  <span class="ref">課本 p.166–168｜6-1 ①②</span>
+  <h2>沒人去過的地球內部，科學家怎麼知道？</h2>
+  <p class="hook"><b>課本 tell me why：</b>《地心歷險記》的主角從火山口走到地心。以現在的科技，真的辦得到嗎？</p>
+</div>
+
+<details class="teacher"><summary>👩‍🏫 教學提示</summary><div class="inner">
+  ① 先投票「人類最深鑽到多深」，再用「放大鏡」從地球全貌一路放大到地表，看那口井有多短。② 點每一層看組成，對照課本隨堂筆記。③ 切到「岩石圈／軟流圈」視角，強調：分法不同（看成分 vs 看軟硬）。④ 資優班：地震波 X 光，用 S 波證明外核是液體、地函是固體。
+</div></details>
+
+<div data-guess="t1"></div>
+
+<div class="card">
+  <h3>🌍 地球切開來</h3>
+  <div class="grid2">
+    <canvas class="sim" id="c6earth" style="background:#0E1A2B"></canvas>
+    <div class="controls">
+      <div class="chips" id="c6view"><button class="chip on" data-v="comp">看成分：地殼／地函／地核</button><button class="chip" data-v="mech">看軟硬：岩石圈／軟流圈</button></div>
+      <div class="ctl"><label>放大鏡（往地表放大） <output for="c6zoom"></output></label><input type="range" id="c6zoom" min="0" max="100" value="0"></div>
+      <div class="callout" id="c6layer" style="min-height:110px">點圖上的任何一層，看它是什麼組成的。</div>
+    </div>
+  </div>
+  <table class="simple" style="margin-top:12px">
+    <tr><th></th><th>大陸地殼</th><th>海洋地殼</th></tr>
+    <tr><td>厚度</td><td>較厚（約 35 公里）</td><td>較薄（約 8 公里）</td></tr>
+    <tr><td>密度</td><td>較小</td><td>較大</td></tr>
+    <tr><td>主要岩石</td><td>花岡岩</td><td>玄武岩</td></tr>
+  </table>
+</div>
+
+<div class="cases">
+  <div class="case world">
+    <div class="where">🌍 國際｜俄羅斯 科拉半島</div>
+    <h4>人類挖過最深的洞：約 12 公里</h4>
+    <p>蘇聯從 1970 年開始鑽「科拉超深鑽孔」，花了將近 20 年，1989 年鑽到約 <span class="num">12.2 公里</span>深就停了——底部溫度高達約 180 °C，岩石變得像塑膠一樣軟，鑽頭鑽不下去。</p>
+    <p>12 公里，只有地球半徑（約 6370 公里）的 0.2%。連地殼都還沒鑽穿。</p>
+    <div class="links"><a href="https://en.wikipedia.org/wiki/Kola_Superdeep_Borehole" target="_blank" rel="noopener">維基百科（英）</a></div>
+  </div>
+  <div class="case">
+    <div class="where">🔬 科學家的方法</div>
+    <h4>用地震波幫地球照「X 光」</h4>
+    <p>第三冊學過：波遇到不同的介質，速度會改變、還會轉彎。地震時，全世界的地震站記錄地震波何時到、從哪裡來，科學家就能反推出地球內部的分層——就像醫生用超音波看身體裡面。</p>
+  </div>
+</div>
+
+<details class="deep"><summary>🧠 資優挑戰｜地震波 X 光＋迷思擂台：地殼下面是一片岩漿海？</summary><div class="inner">
+  <div class="card" style="margin:0 0 10px">
+    <h3>📡 地震波穿過地球</h3>
+    <div class="grid2">
+      <canvas class="sim" id="c6wave" style="background:#0E1A2B"></canvas>
+      <div class="controls">
+        <div class="chips" id="c6wtype"><button class="chip on" data-w="S">S 波（只能在固體中傳播）</button><button class="chip" data-w="P">P 波（固體、液體都能傳）</button></div>
+        <label class="note"><input type="checkbox" id="c6solid"> 假設：外核也是「固體」</label>
+        <div class="callout" id="c6wTxt" style="font-size:.9rem"></div>
+        <p class="note">上方紅星是地震的震源。線條是地震波走的路徑（簡化成直線，真實路徑會彎曲）。</p>
+      </div>
+    </div>
+  </div>
+  <div data-arena="t1"></div>
+</div></details>
+
+<div class="takeaway">💬 <b>一句話帶走：</b>看成分分成地殼、______、______；看軟硬分成堅硬的______圈和可塑的______圈。</div>
+
+</section>
+<section class="panel" id="p-t2">
+<!--NAV: 板塊的相對運動-->
+<div class="pagehead">
+  <span class="ref">課本 p.169–171｜6-1 ③ 板塊間的相對運動</span>
+  <h2>板塊在動：分開、相撞，各自造出什麼地形？</h2>
+  <p class="hook"><b>課本探究提問：</b>在板塊分布圖上找出喜馬拉雅山、富士山這些高山的位置。它們出現的地方有什麼共通點？</p>
+</div>
+
+<details class="teacher"><summary>👩‍🏫 教學提示</summary><div class="inner">
+  ① 先投票「高山大多在哪裡」，再用模擬器四種交界各跑一次（每種約 2 分鐘），請學生說出「長出了什麼地形」。② 分類小遊戲對應課本圖 6-2 的 a～d。③ 資優班：擂台「誰會沉下去」，再加碼看「海洋撞海洋」（日本、菲律賓的島弧）。
+</div></details>
+
+<div data-guess="t2"></div>
+
+<div class="card">
+  <h3>🧪 板塊交界模擬器 <span class="tag note">剖面圖</span></h3>
+  <div class="chips" id="c6pb" style="margin-bottom:8px">
+    <button class="chip on" data-k="mor">① 海洋板塊分離</button>
+    <button class="chip" data-k="rift">② 大陸板塊分離</button>
+    <button class="chip" data-k="sub">③ 海洋撞大陸</button>
+    <button class="chip" data-k="cc">④ 大陸撞大陸</button>
+    <button class="chip" data-k="oo">🟣 海洋撞海洋</button>
+  </div>
+  <canvas class="sim" id="c6plate" style="background:#DDEBF5"></canvas>
+  <div class="grid2" style="margin-top:10px">
+    <div class="controls">
+      <div class="ctl"><label>經過時間 <output for="c6pt"></output></label><input type="range" id="c6pt" min="0" max="100" value="0" step="any"></div>
+      <div class="btnrow"><button class="btn" id="c6pplay">▶ 播放</button><label class="note"><input type="checkbox" id="c6mag"> 🟣 顯示海底岩石的「磁性條紋」</label></div>
+    </div>
+    <div class="callout" id="c6pTxt"></div>
+  </div>
+</div>
+
+<div class="card">
+  <h3>🗺 這些地方是「分離」還是「聚合」？（課本圖 6-2）</h3>
+  <div id="c6sort"></div>
+</div>
+
+<div class="cases">
+  <div class="case world">
+    <div class="where">🌍 國際｜冰島 雷克雅內斯半島</div>
+    <h4>站在兩個板塊中間的國家</h4>
+    <p>冰島位在中洋脊露出海面的地方，北美洲板塊和歐亞板塊在這裡往兩邊分開，岩漿從裂縫湧出。</p>
+    <p>2023 年 12 月到 2025 年 8 月，格林達維克鎮附近的火山裂隙連續噴發了 <span class="num">9 次</span>，全鎮居民和附近的藍湖溫泉一再撤離，熔岩還衝過了保護小鎮的堤防。</p>
+    <div class="links"><a href="https://en.wikipedia.org/wiki/2023%E2%80%932025_Sundhn%C3%BAkur_eruptions" target="_blank" rel="noopener">維基百科（英）</a><a href="https://www.youtube.com/results?search_query=Grindavik+eruption+fissure" target="_blank" rel="noopener">🎬 裂隙噴發影片</a></div>
+  </div>
+  <div class="case world">
+    <div class="where">🌍 國際｜喜馬拉雅山脈</div>
+    <h4>印度「撞」出世界最高峰</h4>
+    <p>印度板塊一直往北推擠歐亞板塊，兩塊都是大陸板塊，誰也沉不下去，岩層就被擠得高高隆起。2020 年中國和尼泊爾共同公布聖母峰最新高度：<span class="num">8848.86 公尺</span>。</p>
+    <p class="ask">想一想：在喜馬拉雅山的高處岩層裡，找得到海洋生物的化石。為什麼？（連結 6-3）</p>
+  </div>
+  <div class="case">
+    <div class="where">📖 課本｜科學家日誌 p.189–190</div>
+    <h4>韋格納：被笑了一輩子的對的人</h4>
+    <p>1910 年，氣象學家韋格納住院時發現：地圖上大西洋兩岸的輪廓幾乎可以拼在一起。他提出「大陸漂移學說」，卻因為說不出「大陸靠什麼力量移動」而被地質學家嘲笑。</p>
+    <p>他多次到格陵蘭找證據，最後在探險中過世。直到他死後約 30 年，「海底擴張」的證據出現，才證明他是對的。</p>
+    <p class="ask">想一想：一個說法「有證據」但「說不出原因」，科學家該接受它嗎？</p>
+  </div>
+</div>
+
+<details class="deep"><summary>🧠 資優挑戰｜迷思擂台：大陸板塊比較厚，撞在一起時是它沉下去？</summary><div class="inner">
+  <div data-arena="t2"></div>
+</div></details>
+
+<div class="takeaway">💬 <b>一句話帶走：</b>板塊分離 → 中洋脊、______；板塊聚合 → 海溝、火山、______。高山和火山大多在板塊______。</div>
+
+</section>
+<section class="panel" id="p-t3">
+<!--NAV: 褶皺與斷層-->
+<div class="pagehead">
+  <span class="ref">課本 p.172–174｜6-2 ① 實驗 6-1、褶皺與斷層</span>
+  <h2>岩層被擠、被拉：彎掉還是斷掉？</h2>
+  <p class="hook"><b>實驗 6-1：</b>用力擠壓疊在一起的紙黏土。濕的黏土和乾的黏土，結果一樣嗎？這跟地底深處和地表附近的岩層有什麼關係？</p>
+</div>
+
+<details class="teacher"><summary>👩‍🏫 教學提示</summary><div class="inner">
+  可以先做真實的實驗 6-1，再用這裡的虛擬黏土「放慢、放大、加入課本沒做的情況」。重點：深處高溫高壓的岩層像濕黏土 → 褶皺；淺處的岩層像乾黏土 → 斷層。<br>
+  正斷層／逆斷層的判斷，資優班用「找上盤」小遊戲＋擂台練到熟。
+</div></details>
+
+<div data-guess="t3"></div>
+
+<div class="card">
+  <h3>🧪 虛擬黏土實驗台</h3>
+  <div class="grid2">
+    <canvas class="sim" id="c6clay" style="background:#EAF3F8"></canvas>
+    <div class="controls">
+      <div><div class="note">① 黏土（岩層）的狀態</div>
+        <div class="chips" id="c6wet"><button class="chip on" data-w="wet">濕黏土＝地底深處（高溫高壓）</button><button class="chip" data-w="dry">乾黏土＝接近地表</button></div></div>
+      <div><div class="note">② 施力方向</div>
+        <div class="chips" id="c6force"><button class="chip on" data-f="push">→ ← 擠壓</button><button class="chip" data-f="pull">← → 拉張</button><button class="chip" data-f="slide">⇅ 水平錯動</button></div></div>
+      <div class="ctl"><label>③ 用力程度 <output for="c6amt"></output></label><input type="range" id="c6amt" min="0" max="100" value="0"></div>
+      <div class="callout" id="c6clayTxt" style="min-height:90px"></div>
+    </div>
+  </div>
+</div>
+
+<div class="cases">
+  <div class="case">
+    <div class="where">🇹🇼 臺灣｜1999 年 921 集集地震</div>
+    <h4>車籠埔斷層：逆斷層把操場推高</h4>
+    <p>規模 7.3。車籠埔斷層錯動，造成將近百公里長的地表破裂，是近百年來陸地上逆斷層活動規模最大的一次。</p>
+    <p>臺中霧峰光復國中的操場被斷層切過，一側隆起約兩公尺多，跑道斷成上下兩段。這裡現在是「921 地震教育園區」，把斷層和倒塌的校舍原地保存下來。</p>
+    <div class="links"><a href="https://www.google.com/search?tbm=isch&q=921%E5%9C%B0%E9%9C%87%E6%95%99%E8%82%B2%E5%9C%92%E5%8D%80+%E6%93%8D%E5%A0%B4+%E6%96%B7%E5%B1%A4" target="_blank" rel="noopener">📷 看照片</a></div>
+  </div>
+  <div class="case world">
+    <div class="where">🌍 國際｜緬甸（2025 年 3 月 28 日）</div>
+    <h4>平移斷層：一條 460 公里長的裂縫，兩側水平錯開好幾公尺</h4>
+    <p>規模 7.7 的曼德勒地震發生在實皆斷層上。這是一條<b>平移斷層</b>：兩側岩層水平錯開，地表破裂帶長達約 460～500 公里（大約臺灣南北長度的 1.3 倍），兩側最多水平錯開好幾公尺。</p>
+    <p>斷層破裂的速度甚至一度超過每秒 5 公里。原本筆直的道路、圍牆都被錯開。</p>
+    <div class="links"><a href="https://www.earth.com/news/myanmars-massive-earthquake-ripped-310-mile-rupture-through-the-earth-eric-does-images/" target="_blank" rel="noopener">Earth.com 報導（英）</a><a href="https://www.youtube.com/results?search_query=Myanmar+earthquake+2025+fault+rupture+video" target="_blank" rel="noopener">🎬 斷層錯動實拍</a></div>
+  </div>
+  <div class="case world">
+    <div class="where">🌍 國際｜日本 能登半島（2024 年 1 月 1 日）</div>
+    <h4>一夜之間，海岸往上長高約 4 公尺</h4>
+    <p>規模 7.6 的地震（日本氣象廳）讓半島北岸隆起，最多約 <span class="num">4 公尺</span>。原本泡在海裡的海床露出來，大部分漁港乾掉、船開不出去，海岸線最多往海推進約 250 公尺。</p>
+    <p class="ask">想一想：這是內營力還是外營力？和第五章「海岸線向海前進」的原因一樣嗎？</p>
+    <div class="links"><a href="https://www.space.com/japan-earthquake-january-2024-shifted-coastline-photos" target="_blank" rel="noopener">Space.com 衛星照片（英）</a></div>
+  </div>
+</div>
+
+<details class="deep"><summary>🧠 資優挑戰｜找上盤小遊戲＋迷思擂台：上盤一定在上面？</summary><div class="inner">
+  <div class="card" style="margin:0 0 10px">
+    <h3>🎯 找上盤</h3>
+    <div class="grid2">
+      <canvas class="sim" id="c6hw" style="background:#EAF3F8"></canvas>
+      <div class="controls">
+        <p style="margin:0">點一下你認為是<b>上盤</b>的那一塊岩層。</p>
+        <div class="btnrow"><button class="btn deepb" id="c6hwNew">🎲 換一題</button></div>
+        <div class="callout" id="c6hwTxt" style="min-height:90px"></div>
+        <div class="readout" id="c6hwScore"></div>
+      </div>
+    </div>
+  </div>
+  <div data-arena="t3"></div>
+</div></details>
+
+<div class="takeaway">💬 <b>一句話帶走：</b>岩層受力 → 彎曲是______，斷裂並錯動是______。正斷層的上盤往______，逆斷層的上盤往______。</div>
+
+</section>
+<section class="panel" id="p-t4">
+<!--NAV: 地震：規模與震度-->
+<div class="pagehead">
+  <span class="ref">課本 p.175–177｜6-2 ① 地震與火山</span>
+  <h2>同一個地震，為什麼各地搖得不一樣？</h2>
+  <p class="hook"><b>課本 tell me why：</b>世界上每個地方都像臺灣一樣常常地震嗎？還是這和臺灣的位置有關？——先搞懂地震報告上的每一個詞。</p>
+</div>
+
+<details class="teacher"><summary>👩‍🏫 教學提示</summary><div class="inner">
+  ① 先按「0403 花蓮」重現課本圖 6-10 的地震報告，請學生讀出震央、震源深度、規模、各地震度。② 拖曳紅色震央、改規模和深度，讓學生歸納「震度和什麼有關」。③ 例題 6-1 放在資優擂台的換情境題。④ 最後 3 分鐘：震度分級表＋「趴下、掩護、穩住」。
+</div></details>
+
+<div data-guess="t4"></div>
+
+<div class="card">
+  <h3>🗺 臺灣地震模擬器 <span class="tag note">拖曳紅色星號 = 移動震央</span></h3>
+  <div class="grid2">
+    <canvas class="sim" id="c6eq" style="background:#D8ECF5;max-width:520px;margin:0 auto"></canvas>
+    <div class="controls">
+      <div class="btnrow"><button class="btn ghost" data-pre="hl">0403 花蓮</button><button class="btn ghost" data-pre="cc">921 集集</button><button class="btn ghost" data-pre="deep">深層地震</button></div>
+      <div class="ctl"><label>規模（釋放的能量） <output for="c6M"></output></label><input type="range" id="c6M" min="40" max="80" value="71"></div>
+      <div class="ctl"><label>震源深度 <output for="c6D"></output></label><input type="range" id="c6D" min="5" max="150" value="22"></div>
+      <canvas class="sim" id="c6side" style="background:#fff"></canvas>
+      <div id="c6eqList" style="font-size:.9rem"></div>
+    </div>
+  </div>
+  <p class="note">震度依「規模、距離」用簡化公式估算，用來看趨勢；真實震度還和地質、地形有關。</p>
+</div>
+
+<div class="card">
+  <h3>📋 震度分級（中央氣象署，課本 p.176）</h3>
+  <table class="simple" id="c6scale"></table>
+  <div class="callout" style="margin-top:10px">
+    <b>地震發生時：趴下、掩護、穩住！</b>趴在地上，爬到堅固的桌子下，雙手抓牢桌腳，護住頭頸部。<br>
+    <b>地震發生前：</b>準備緊急避難包——保暖衣物、緊急糧食與飲水、貴重物品、醫療清潔用品。
+  </div>
+</div>
+
+<div class="cases">
+  <div class="case">
+    <div class="where">🇹🇼 臺灣｜2024 年 4 月 3 日 花蓮</div>
+    <h4>25 年來最大的地震</h4>
+    <p>早上 7:58，震央在花蓮縣政府南南西方約 15 公里，震源深度 22.5 公里，課本記錄的芮氏規模為 7.1。花蓮最大震度 6 強，房屋倒塌、太魯閣山區大規模崩塌。</p>
+    <p>氣象署當天初報規模 7.2；因為東部海域的測站較少，有些地區一開始估得偏低，沒收到國家級警報——這也讓地震預警系統持續改進（下一分頁）。</p>
+    <div class="links"><a href="https://www.google.com/search?q=0403+%E8%8A%B1%E8%93%AE%E5%9C%B0%E9%9C%87+%E5%9C%B0%E9%9C%87%E5%A0%B1%E5%91%8A" target="_blank" rel="noopener">🔎 搜尋地震報告</a></div>
+  </div>
+  <div class="case world">
+    <div class="where">🌍 國際｜日本 2011 年 3 月 11 日</div>
+    <h4>規模 9.0：能量約是 921 的 350 倍</h4>
+    <p>東日本大地震發生在太平洋板塊隱沒到日本下方的海溝附近，引發巨大海嘯，約 1 萬 8 千人罹難或失蹤，還造成福島核電廠事故。</p>
+    <p class="ask">算算看：規模每大 1，能量約變成 32 倍。9.0 比 7.3 大了 1.7，能量約是幾倍？</p>
+  </div>
+  <div class="case world">
+    <div class="where">🌍 🟣 加深｜尼泊爾 2026 年 8 月 26 日</div>
+    <h4>地震儀記到的，不一定是「地震」</h4>
+    <p>朗塘山谷冰川崩塌的那一刻，地震儀記錄到相當於規模 5 多的訊號，大家一開始以為是地震引發了災難。後來美國地質調查局分析波形，發現這個訊號是<b>冰和岩石崩塌本身</b>造成的——巨大的質量砸到地面，也會產生地震波。</p>
+    <p class="ask">想一想：這和課本「岩層斷裂釋放能量 → 地震波」有什麼相同、有什麼不同？</p>
+    <div class="links"><a href="https://en.wikipedia.org/wiki/2026_Nepal%E2%80%93Tibet_floods" target="_blank" rel="noopener">維基百科整理（英）</a></div>
+  </div>
+</div>
+
+<details class="deep"><summary>🧠 資優挑戰｜迷思擂台：規模比較大，就一定搖得比較兇？</summary><div class="inner">
+  <div data-arena="t4"></div>
+</div></details>
+
+<div class="takeaway">💬 <b>一句話帶走：</b>規模看「震源放出多少______」，同一次地震只有______個；震度看「各地______的程度」，離震央愈近通常愈______。</div>
+
+</section>
+<section class="panel" id="p-t5">
+<!--NAV: 地震預警-->
+<div class="pagehead">
+  <span class="ref">課本 p.178、187–188｜地科 In my life＋科學大事記：強震即時警報</span>
+  <h2>手機的「國家級警報」，為什麼有時來得及、有時來不及？</h2>
+  <p class="hook"><b>課本 In my life：</b>阿翰收到警報時已經在搖了，琳琳卻有時間關火、躲到桌下。差在哪裡？</p>
+</div>
+
+<details class="teacher"><summary>👩‍🏫 教學提示</summary><div class="inner">
+  ① 按「▶ 地震發生」，畫面會慢動作播放：先看到快的 P 波、慢的 S 波（主要的破壞），再看到警報在第幾秒「瞬間」傳遍全臺。② 讓學生讀出每個城市的預警秒數，找出「盲區」。③ 調整「計算時間」，討論為什麼氣象署一直努力把它縮短。
+</div></details>
+
+<div data-guess="t5"></div>
+
+<div class="card">
+  <h3>⏱ 地震預警模擬 <span class="tag note">點地圖任何地方 = 設定震央</span></h3>
+  <div class="grid2">
+    <canvas class="sim" id="c6ew" style="background:#D8ECF5;max-width:520px;margin:0 auto"></canvas>
+    <div class="controls">
+      <div class="btnrow"><button class="btn warn" id="c6ewGo">▶ 地震發生</button><button class="btn ghost" id="c6ewHL">震央設在花蓮外海</button></div>
+      <div class="ctl"><label>氣象署計算＋發送警報需要 <output for="c6proc"></output></label><input type="range" id="c6proc" min="3" max="20" value="10"></div>
+      <div class="readout" id="c6ewClock"></div>
+      <div id="c6ewList" style="font-size:.9rem"></div>
+      <p class="note">簡化設定：P 波每秒約 6 公里、S 波每秒約 3.5 公里；警報用電磁波傳送，幾乎瞬間到達。</p>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h3>📡 警報是怎麼來的？（課本 p.187）</h3>
+  <div class="chips" style="gap:4px;align-items:center">
+    <span class="chip">① 測站測到地震波</span>→<span class="chip">② 用電磁波把數據傳回氣象署</span>→<span class="chip">③ 電腦算出震央、規模、各地震度</span>→<span class="chip">④ 判斷要不要發警報</span>→<span class="chip">⑤ 警報比地震波先到你家</span>
+  </div>
+  <p class="note" style="margin-bottom:0">關鍵原理：<b>電磁波（每秒 30 萬公里）比地震波（每秒幾公里）快太多了</b>。國家級警報的門檻大約是：規模 5.0 以上、預估所在地震度 4 級以上。</p>
+</div>
+
+<div class="cases">
+  <div class="case">
+    <div class="where">🇹🇼 臺灣｜2024 年 0403 花蓮地震</div>
+    <h4>地震後約 9 秒，第一則國家級警報發出</h4>
+    <p>地震發生在 7:58:09，氣象署在 7:58:18 和 7:58:24 發出兩則國家級警報。但因為東部海域的測站比較少，一開始估的規模（6.2、6.8）比實際小，雙北等地預估震度沒達到門檻，一開始沒收到警報。</p>
+    <p>氣象署的目標：把預警盲區從震央半徑約 35 公里縮小到約 25 公里，淺層地震在地震後約 7 秒就發出警報。</p>
+    <div class="links"><a href="https://www.bnext.com.tw/article/78770/earthquake-why-no-alarm" target="_blank" rel="noopener">📰 數位時代：為什麼沒收到警報</a><a href="https://technews.tw/?p=851843" target="_blank" rel="noopener">📰 科技新報：縮短到 7 秒</a></div>
+  </div>
+  <div class="case world">
+    <div class="where">🌍 國際｜墨西哥城</div>
+    <h4>離震央愈遠，預警時間愈長</h4>
+    <p>墨西哥城距離太平洋岸的隱沒帶好幾百公里。墨西哥的地震警報系統在海岸附近偵測到地震後，街上的警報器會響起，市民往往有幾十秒的時間可以離開建築物。</p>
+    <p class="ask">對照模擬：離震央 300 公里的地方，預警時間大約幾秒？</p>
+  </div>
+</div>
+
+<details class="deep"><summary>🧠 資優挑戰｜迷思擂台：地震預警＝地震預測？</summary><div class="inner">
+  <div data-arena="t5"></div>
+</div></details>
+
+<div class="takeaway">💬 <b>一句話帶走：</b>地震預警利用「______波比地震波快」來搶時間；離震央愈______，預警時間愈長。它不是地震「預測」。</div>
+
+</section>
+<section class="panel" id="p-t6">
+<!--NAV: 臺灣的板塊與火山-->
+<div class="pagehead">
+  <span class="ref">課本 p.179–180｜6-2 ② 臺灣的板塊運動＋觀念統整</span>
+  <h2>臺灣：被兩個板塊「擠」出來的島</h2>
+  <p class="hook"><b>關鍵問題：</b>為什麼臺灣地震這麼多？為什麼山脈大多是南北走向？為什麼東部的海岸山脈和綠島、蘭嶼是「火山來的」？</p>
+</div>
+
+<details class="teacher"><summary>👩‍🏫 教學提示</summary><div class="inner">
+  ① 先在地圖上指出花東縱谷＝板塊交界。② 把「時光機」往回拉，看海岸山脈、綠島、蘭嶼過去在哪裡。③ 點火山標記，對照課本圖 6-14。④ 最後用「內營力 vs 外營力」分類，把第五、六章接起來（課本觀念統整 p.180）。
+</div></details>
+
+<div data-guess="t6"></div>
+
+<div class="card">
+  <h3>🕰 臺灣板塊時光機</h3>
+  <div class="grid2">
+    <canvas class="sim" id="c6tw" style="background:#4F86C6;max-width:520px;margin:0 auto"></canvas>
+    <div class="controls">
+      <div class="ctl"><label>回到過去 <output for="c6ago"></output></label><input type="range" id="c6ago" min="0" max="100" value="0"></div>
+      <div class="readout" id="c6twR"></div>
+      <div class="callout" id="c6twTxt" style="min-height:90px">點地圖上的▲火山，看看它的故事。</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h3>⛰ 抬升計算器 <span class="tag note">一邊被推高，一邊被侵蝕</span></h3>
+  <div class="grid2">
+    <canvas class="sim" id="c6up" style="background:#EAF4FA"></canvas>
+    <div class="controls">
+      <div class="ctl"><label>每年抬升 <output for="c6rate"></output></label><input type="range" id="c6rate" min="1" max="20" value="6"></div>
+      <div class="ctl"><label>每年被侵蝕（第五章的外營力） <output for="c6ero"></output></label><input type="range" id="c6ero" min="0" max="15" value="3"></div>
+      <div class="ctl"><label>經過時間 <output for="c6yrs"></output></label><input type="range" id="c6yrs" min="0" max="100" value="0"></div>
+      <div class="readout" id="c6upR"></div>
+    </div>
+  </div>
+  <p class="note">臺灣中央山脈的抬升速率，各地不同，大約每年幾公釐到 1 公分；同時，颱風豪雨也讓臺灣的侵蝕速率名列世界前茅。</p>
+</div>
+
+<div class="card">
+  <h3>🔁 觀念統整：內營力 vs 外營力（課本 p.180）</h3>
+  <div id="c6io"></div>
+</div>
+
+<div class="cases">
+  <div class="case">
+    <div class="where">🇹🇼 臺灣｜大屯火山群（陽明山）</div>
+    <h4>臺北旁邊的火山</h4>
+    <p>陽明山的小油坑可以看到噴氣孔、硫磺結晶和溫泉，都是火山活動的現象（課本圖 6-14）。科學家在這裡設有大屯火山觀測站，持續監測地震、地溫和火山氣體，留意底下的岩漿活動。</p>
+    <div class="links"><a href="https://www.google.com/search?tbm=isch&q=%E5%B0%8F%E6%B2%B9%E5%9D%91+%E5%99%B4%E6%B0%A3%E5%AD%94" target="_blank" rel="noopener">📷 小油坑噴氣孔</a></div>
+  </div>
+  <div class="case">
+    <div class="where">🇹🇼 臺灣｜1999 年 921、2024 年 0403</div>
+    <h4>同一個原因，不同的斷層</h4>
+    <p>兩次大地震都是菲律賓海板塊推擠歐亞板塊、累積的能量突然釋放。921 發生在西部的車籠埔斷層（規模 7.3）；0403 發生在花蓮外海附近（規模 7.1）。</p>
+    <p class="ask">想一想：板塊交界在花東縱谷，為什麼西部也會有大地震？（提示：擠壓的力量會一路傳過整座島）</p>
+  </div>
+</div>
+
+<details class="deep"><summary>🧠 資優挑戰｜迷思擂台：每年才動 8 公分，怎麼可能推出高山？</summary><div class="inner">
+  <div data-arena="t6"></div>
+</div></details>
+
+<div class="takeaway">💬 <b>一句話帶走：</b>臺灣位在______板塊和______板塊的交界，交界在______；板塊擠壓 → 南北走向的山脈、頻繁的地震。</div>
+
+</section>
+<section class="panel" id="p-t7">
+<!--NAV: 岩層的紀錄-->
+<div class="pagehead">
+  <span class="ref">課本 p.181–185｜6-3 岩層與地質事件、岩層與化石</span>
+  <h2>岩層是一本地球的歷史書</h2>
+  <p class="hook"><b>課本 tell me why：</b>墾丁社頂自然公園裡有許多貝類化石和珊瑚礁巨岩。這表示那裡的環境發生過什麼變動？</p>
+</div>
+
+<details class="teacher"><summary>👩‍🏫 教學提示</summary><div class="inner">
+  ① 先複習三個判斷原則（下方卡片）。② 「岩層積木」：老師示範課本 p.182 的六步驟，再讓學生上台自己「蓋」一個剖面，給同學猜順序。③ 「排序挑戰」用抽號點人。④ 化石：先分類沉積環境，再用「46 億年月曆」感受時間尺度。資優班最後做翻轉岩層擂台。
+</div></details>
+
+<div class="card">
+  <h3>📏 判斷先後的三個原則</h3>
+  <div class="grid2 even" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr))">
+    <div class="callout" style="margin:0">① 沉積岩在<b>不受外力</b>的情況下，通常是<b>水平</b>的。</div>
+    <div class="callout" style="margin:0">② <b>下方</b>的岩層比上方的岩層<b>先沉積</b>，年代較久遠。</div>
+    <div class="callout" style="margin:0">③ 岩層中<b>較早</b>發生的事件，會被<b>較晚</b>發生的事件影響（被切過、被侵蝕）。</div>
+  </div>
+</div>
+
+<div data-guess="t7"></div>
+
+<div class="card">
+  <h3>🧱 岩層積木 <span class="tag note">一步一步「蓋」出岩層剖面</span></h3>
+  <div class="grid2">
+    <div>
+      <canvas class="sim" id="c6strata" style="background:#DDEBF5"></canvas>
+      <div class="note" id="c6legend" style="margin-top:6px"></div>
+    </div>
+    <div class="controls">
+      <div><div class="note">沉積一層（可以順便埋一種化石）</div>
+        <div class="chips" id="c6fos" style="margin:4px 0"><button class="chip on" data-f="">不放化石</button><button class="chip" data-f="tri">三葉蟲</button><button class="chip" data-f="amm">菊石</button><button class="chip" data-f="dino">恐龍</button><button class="chip" data-f="mam">哺乳類</button><button class="chip" data-f="coral">珊瑚</button><button class="chip" data-f="leaf">樹葉</button></div>
+        <div class="btnrow"><button class="btn" data-ev="dep:cong">礫岩</button><button class="btn" data-ev="dep:sand">砂岩</button><button class="btn" data-ev="dep:shale">頁岩</button><button class="btn" data-ev="dep:lime">石灰岩</button></div></div>
+      <div><div class="note">其他地質事件</div>
+        <div class="btnrow"><button class="btn warn" data-ev="tilt">↗ 受力傾斜</button><button class="btn warn" data-ev="ero">〰 侵蝕</button><button class="btn warn" data-ev="dike">🔥 岩漿侵入（岩脈）</button><button class="btn warn" data-ev="fault">⚡ 發生斷層</button><button class="btn deepb" data-ev="flip">🟣 強烈擠壓到翻轉</button></div></div>
+      <div class="btnrow"><button class="btn ghost" id="c6undo">↶ 復原一步</button><button class="btn ghost" id="c6clear">清空</button><button class="btn ghost" id="c6pre1">載入課本 p.182 六步驟</button></div>
+      <ol id="c6log" style="margin:0;padding-left:22px;font-size:.92rem"></ol>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h3>🔢 排序挑戰：這個剖面是怎麼形成的？</h3>
+  <div class="grid2">
+    <canvas class="sim" id="c6quiz" style="background:#DDEBF5"></canvas>
+    <div class="controls">
+      <div class="btnrow"><button class="btn warn" id="c6qNew">🎲 出一題</button><button class="btn ghost" id="c6qReset">重新排</button><button class="btn" id="c6qCheck">對答案</button></div>
+      <div class="note">依照「最早 → 最晚」的順序，點下面的事件卡：</div>
+      <div class="chips" id="c6qCards"></div>
+      <ol id="c6qPick" style="margin:0;padding-left:22px"></ol>
+      <div class="callout" id="c6qRes" style="display:none"></div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h3>🦕 化石：判斷「環境」和「年代」</h3>
+  <div id="c6fsort"></div>
+  <h3 style="margin-top:16px">📅 如果地球 46 億年的歷史濃縮成一年</h3>
+  <canvas class="sim" id="c6cal" style="background:#fff"></canvas>
+  <div class="callout" id="c6calTxt">點上面的標記，看看那件事發生在「幾月幾日」。</div>
+</div>
+
+<div class="cases">
+  <div class="case">
+    <div class="where">🇹🇼 臺灣｜墾丁 社頂自然公園</div>
+    <h4>山上的珊瑚礁</h4>
+    <p>珊瑚只能活在溫暖的淺海裡。現在社頂的珊瑚礁石灰岩卻在陸地上、甚至在山坡上——代表這裡以前是淺海，後來被板塊擠壓<b>抬升</b>到陸地上。</p>
+    <p class="ask">對照判斷原則：這片珊瑚礁告訴我們哪兩件事的先後？</p>
+    <div class="links"><a href="https://www.google.com/search?tbm=isch&q=%E7%A4%BE%E9%A0%82%E8%87%AA%E7%84%B6%E5%85%AC%E5%9C%92+%E7%8F%8A%E7%91%9A%E7%A4%81" target="_blank" rel="noopener">📷 看照片</a></div>
+  </div>
+  <div class="case">
+    <div class="where">🇹🇼 🟣 加深｜臺灣找得到恐龍化石嗎？</div>
+    <h4>臺灣太「年輕」了</h4>
+    <p>臺灣地表的岩層大多是在新生代形成的，比恐龍滅絕（約 6600 萬年前）還晚。所以在臺灣的岩層裡，找到的多是貝類、珊瑚、鯨魚、象、鹿等新生代的化石，幾乎不可能找到恐龍或三葉蟲。</p>
+    <p class="ask">想一想：這和上一分頁「臺灣在幾百萬年前才開始隆起」有什麼關係？</p>
+  </div>
+</div>
+
+<details class="deep"><summary>🧠 資優挑戰｜迷思擂台：最下面的岩層，一定最老？</summary><div class="inner">
+  <div data-arena="t7"></div>
+</div></details>
+
+<div class="takeaway">💬 <b>一句話帶走：</b>下面的岩層比較______；被切過的比切過它的______。化石可以判斷岩層的______和______。</div>
+
+</section>
+<section class="panel" id="p-t8">
+<!--NAV: 總複習-->
+<div class="pagehead">
+  <span class="ref">全章統整｜課本 p.185–186 圖解 point</span>
+  <h2>總複習：先想，再翻牌</h2>
+  <p class="hook"><b>玩法：</b>每張卡先蓋著。抽一位同學說出卡片內容，說完再翻開對答案——先「想出來」，比「看一遍」記得牢。</p>
+</div>
+
+<details class="teacher"><summary>👩‍🏫 教學提示</summary><div class="inner">
+  ① 心智圖翻牌（15 分鐘）：配合學生 A3 心智圖，一個分支一個分支翻，翻完讓學生補自己的圖。② 快問快答：按 🎲 抽題＋右上角 🎲 抽號，答對的人可以抽下一位。③ 資優班最後看「迷思總整理」，請學生用自己的話說出每一條為什麼錯。
+</div></details>
+
+<div class="card">
+  <h3>🧠 心智圖翻牌</h3>
+  <div class="btnrow" style="margin-bottom:10px"><button class="btn ghost" id="t8hide">全部蓋起來</button><button class="btn ghost" id="t8show">全部翻開</button></div>
+  <div id="t8map"></div>
+</div>
+
+<div class="card">
+  <h3>⚡ 快問快答 <span class="tag note" id="t8count"></span></h3>
+  <div class="chips" style="margin-bottom:10px" id="t8filter">
+    <button class="chip on" data-f="all">全部</button><button class="chip" data-f="6-1">6-1</button><button class="chip" data-f="6-2">6-2</button><button class="chip" data-f="6-3">6-3</button><button class="chip" data-f="deep">🟣 加深</button>
+  </div>
+  <div id="t8q" style="min-height:240px"></div>
+  <div class="btnrow" style="margin-top:10px"><button class="btn warn" id="t8draw">🎲 抽一題</button><button class="btn" id="t8ans">公布答案</button></div>
+</div>
+
+<details class="deep"><summary>🧠 資優挑戰｜迷思總整理</summary><div class="inner">
+  <div class="card" style="margin:0">
+    <table class="simple" id="t8myth"></table>
+    <p class="note">挑戰：遮住右邊那一欄，用自己的話說出「為什麼錯」，再翻回來對照。</p>
+  </div>
+</div></details>
+
+<div class="takeaway">💬 <b>全章一句話：</b>內營力把地表推高、扯開 → 地震與火山 → 岩層和化石把過程記下來。</div>
+
+</section>
+<div class="footer">鍵盤 <kbd>←</kbd> <kbd>→</kbd> 或簡報筆可以換分頁｜課本：115 學年度國中自然 3 上 第 6 章｜案例資料查證日期：2026-10-11</div>
+</main>
+
+<div class="picker" id="picker"><div class="box">
+  <div>🎲 抽到的座號</div><div class="num" id="pickNum">?</div>
+  <div class="note">全班人數 <input id="pickMax" type="number" value="30" min="2" max="60" style="width:60px"></div>
+  <div class="btnrow" style="justify-content:center;margin-top:12px"><button class="btn" id="pickAgain">再抽一次</button><button class="btn ghost" id="pickClose">關閉</button></div>
+</div></div>
+
+<script>
+const STORE_KEY = 'geo-ch6-v1';
+/* ==== core.js ==== */
+/* =====================================================================
+   地科互動課本 共用引擎
+   - 分頁切換、一般班／資優班、投影模式、抽號、鍵盤翻頁
+   - 畫布工具 stage()／loop()
+   - 「猜一猜」(全班) 與「迷思擂台」(資優) 兩種互動元件
+   ===================================================================== */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const lerp = (a, b, t) => a + (b - a) * t;
+
+/* ---------- 存檔（只存介面偏好，壞掉也不影響使用） ---------- */
+const store = {
+  get() { try { return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; } catch { return {}; } },
+  set(o) { try { localStorage.setItem(STORE_KEY, JSON.stringify({ ...store.get(), ...o })); } catch {} },
+};
+
+/* ---------- 分頁 ---------- */
+const SIMS = {};
+let curTab = null;
+function registerSim(tab, obj) {
+  (SIMS[tab] ||= []).push(obj);
+  if (curTab === tab && obj.start) obj.start();
+}
+function showTab(id) {
+  if (!document.getElementById('p-' + id)) return;
+  if (curTab && SIMS[curTab]) SIMS[curTab].forEach(s => s.stop && s.stop());
+  $$('nav.tabs button').forEach(b => b.classList.toggle('active', b.dataset.tab === id));
+  $$('.panel').forEach(p => p.classList.toggle('active', p.id === 'p-' + id));
+  curTab = id;
+  requestAnimationFrame(() => (SIMS[id] || []).forEach(s => s.start && s.start()));
+  store.set({ tab: id });
+  window.scrollTo({ top: 0 });
+  const b = $(`nav.tabs button[data-tab="${id}"]`);
+  if (b) b.scrollIntoView({ inline: 'center', block: 'nearest' });
+}
+function stepTab(d) {
+  const ids = $$('nav.tabs button').map(b => b.dataset.tab);
+  const i = ids.indexOf(curTab);
+  showTab(ids[clamp(i + d, 0, ids.length - 1)]);
+}
+
+/* ---------- 一般班 / 資優班 ---------- */
+function setMode(m) {
+  $$('#modeSeg button').forEach(b => b.classList.toggle('on', b.dataset.mode === m));
+  $$('details.deep').forEach(d => d.open = (m === 'deep'));
+  document.body.dataset.mode = m;
+  store.set({ mode: m });
+}
+
+/* ---------- 畫布工具：用固定的邏輯座標 W×H 作畫，自動配合螢幕寬度 ---------- */
+function stage(cv, W, H) {
+  cv.style.aspectRatio = `${W} / ${H}`;
+  cv.style.setProperty('--ar', W / H);
+  const ctx = cv.getContext('2d');
+  const s = { cv, ctx, W, H, fit() {
+    const dpr = window.devicePixelRatio || 1;
+    const cw = cv.clientWidth || 600;
+    const pw = Math.round(cw * dpr), ph = Math.round(cw * H / W * dpr);
+    if (cv.width !== pw || cv.height !== ph) { cv.width = pw; cv.height = ph; }
+    ctx.setTransform(pw / W, 0, 0, ph / H, 0, 0);
+  }, pt(e) {
+    const r = cv.getBoundingClientRect();
+    return { x: (e.clientX - r.left) / r.width * W, y: (e.clientY - r.top) / r.height * H };
+  } };
+  return s;
+}
+/* 動畫迴圈：分頁不在畫面上就停，省電 */
+function loop(fn) {
+  let id = null, last = 0;
+  return {
+    start() {
+      if (id) return; last = performance.now();
+      const f = t => { const dt = Math.min(0.05, (t - last) / 1000); last = t; fn(dt); id = requestAnimationFrame(f); };
+      id = requestAnimationFrame(f);
+    },
+    stop() { cancelAnimationFrame(id); id = null; },
+  };
+}
+/* 滑桿綁定：<input id> + <output for=id> */
+function bindRange(id, fmt, onChange) {
+  const el = document.getElementById(id);
+  const out = $(`output[for="${id}"]`);
+  const lab = () => { if (out) out.textContent = fmt ? fmt(+el.value) : el.value; };
+  el.addEventListener('input', () => { lab(); onChange && onChange(+el.value); });
+  lab();   // 一開始只更新文字，不觸發重畫（畫布可能還沒準備好）
+  return el;
+}
+/* 常用繪圖 */
+function rrect(ctx, x, y, w, h, r) {
+  ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+}
+function label(ctx, txt, x, y, opt = {}) {
+  ctx.save();
+  const sz = Math.max(13, opt.size || 15);   // 投影時畫布會縮小，文字至少 13
+  ctx.font = `${opt.bold ? 'bold ' : ''}${sz}px "PingFang TC","Microsoft JhengHei",sans-serif`;
+  ctx.textAlign = opt.align || 'left'; ctx.textBaseline = opt.base || 'middle';
+  if (opt.bg) {
+    const w = ctx.measureText(txt).width, h = sz + 8;
+    const x0 = opt.align === 'center' ? x - w / 2 - 6 : opt.align === 'right' ? x - w - 6 : x - 6;
+    ctx.fillStyle = opt.bg; rrect(ctx, x0, y - h / 2, w + 12, h, 5); ctx.fill();
+  }
+  ctx.fillStyle = opt.color || '#23302B'; ctx.fillText(txt, x, y);
+  ctx.restore();
+}
+function arrow(ctx, x1, y1, x2, y2, color = '#333', w = 2, head = 9) {
+  const a = Math.atan2(y2 - y1, x2 - x1);
+  ctx.save(); ctx.strokeStyle = ctx.fillStyle = color; ctx.lineWidth = w;
+  ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2 - Math.cos(a) * head * .6, y2 - Math.sin(a) * head * .6); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x2, y2);
+  ctx.lineTo(x2 - head * Math.cos(a - .45), y2 - head * Math.sin(a - .45));
+  ctx.lineTo(x2 - head * Math.cos(a + .45), y2 - head * Math.sin(a + .45)); ctx.closePath(); ctx.fill();
+  ctx.restore();
+}
+/* 可重現的亂數（同一個種子每次畫出一樣的圖） */
+function rng(seed) { let s = seed >>> 0 || 1; return () => (s = (s * 1664525 + 1013904223) >>> 0) / 4294967296; }
+
+/* ---------- 投票選項（老師數舉手，點 + / −） ---------- */
+function voteList(host, opts, onPick) {
+  const counts = opts.map(() => 0);
+  host.innerHTML = '';
+  const wrap = document.createElement('div'); wrap.className = 'opts';
+  const rows = opts.map((t, i) => {
+    const row = document.createElement('div'); row.className = 'opt'; row.tabIndex = 0;
+    row.innerHTML = `<span class="letter">${'ABCDEF'[i]}</span><span class="t">${t}</span>
+      <span class="bar"><i style="width:0"></i><em>0 人</em></span>
+      <span class="vote-ctl"><button title="少一票">−</button><button title="多一票">＋</button></span>`;
+    const [minus, plus] = $$('.vote-ctl button', row);
+    const upd = () => {
+      const tot = counts.reduce((a, b) => a + b, 0) || 1;
+      rows.forEach((r, k) => { $('.bar i', r).style.width = (counts[k] / tot * 90) + 'px'; $('.bar em', r).textContent = counts[k] + ' 人'; });
+    };
+    plus.onclick = e => { e.stopPropagation(); counts[i]++; upd(); };
+    minus.onclick = e => { e.stopPropagation(); counts[i] = Math.max(0, counts[i] - 1); upd(); };
+    row.onclick = () => { rows.forEach(r => r.classList.remove('picked')); row.classList.add('picked'); onPick && onPick(i); };
+    wrap.appendChild(row);
+    return row;
+  });
+  host.appendChild(wrap);
+  return {
+    counts,
+    reveal(ans) { rows.forEach((r, k) => r.classList.add(k === ans ? 'right' : 'wrong')); },
+  };
+}
+
+/* ---------- 猜一猜（全班版：先猜 → 操作模擬 → 公布） ---------- */
+function mountGuess(host, g) {
+  host.classList.add('card', 'guess');
+  host.innerHTML = `<h3>🤔 猜一猜 <span class="tag note">先舉手投票，再用這一頁的模擬驗證</span></h3>
+    <div class="q">${g.q}</div><div class="vl"></div>
+    <div class="btnrow" style="margin-top:10px"><button class="btn warn">公布答案</button></div>
+    <div class="reveal callout good">${g.after}</div>`;
+  const v = voteList($('.vl', host), g.opts);
+  $('.btn', host).onclick = () => { v.reveal(g.ans); $('.reveal', host).classList.add('show'); };
+}
+
+/* ---------- 迷思擂台（資優版：先賭 → 跑模擬 → 撞牆 → 重建 → 再考） ---------- */
+function mountArena(host, a) {
+  const names = ['① 先賭', '② 跑模擬', '③ 撞牆', '④ 重建', '⑤ 換情境再考'];
+  host.classList.add('arena');
+  host.innerHTML = `<h4>⚔️ ${a.title}</h4>
+    <div class="steps">${names.map(n => `<span>${n}</span>`).join('')}</div>
+    <div class="stage s0"><div class="q big" style="margin-bottom:8px">${a.q}</div><div class="vl"></div>
+      <div class="btnrow" style="margin-top:10px"><button class="btn deepb go1">鎖定預測，去驗證 →</button></div></div>
+    <div class="stage s1"><div class="callout">${a.sim}</div>
+      <div class="btnrow" style="margin-top:10px"><button class="btn deepb go2">做完了，對照全班的預測 →</button></div></div>
+    <div class="stage s2"><div class="clash"><b>結果：</b><span class="stat"></span><br>${a.clash}</div>
+      <div class="btnrow"><button class="btn deepb go3">我們來把它想清楚 →</button></div></div>
+    <div class="stage s3">${a.hints.map((h, i) => `<div class="hint">💡 提示 ${i + 1}：${h}</div>`).join('')}
+      <div class="btnrow" style="margin-top:8px"><button class="btn ghost more">下一個提示</button>
+      <button class="btn deepb go4" style="display:none">看完整解釋 →</button></div>
+      <div class="explain" style="display:none">${a.explain}</div>
+      <div class="btnrow" style="margin-top:10px"><button class="btn deepb go5" style="display:none">換個情境考考你 →</button></div></div>
+    <div class="stage s4"><div class="q big" style="margin-bottom:8px">${a.transfer.q}</div><div class="vt"></div>
+      <div class="reveal explain tw">${a.transfer.why}</div>
+      <div class="btnrow" style="margin-top:10px"><button class="btn ghost restart">↺ 重新開始這一關</button></div></div>`;
+  const stages = $$('.stage', host), chips = $$('.steps span', host);
+  const go = (n, quiet) => {
+    stages.forEach((s, i) => s.classList.toggle('show', i <= n));
+    chips.forEach((c, i) => { c.classList.toggle('now', i === n); c.classList.toggle('done', i < n); });
+    if (!quiet) stages[n].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  };
+  const v = voteList($('.vl', host), a.opts);
+  $('.go1', host).onclick = () => go(1);
+  $('.go2', host).onclick = () => {
+    const tot = v.counts.reduce((x, y) => x + y, 0);
+    const right = v.counts[a.ans];
+    $('.stat', host).innerHTML = tot
+      ? `全班 ${tot} 人中，有 <b>${right}</b> 人選了正確答案（${Math.round(right / tot * 100)}%）。正確答案是 <b>${'ABCDEF'[a.ans]}</b>。`
+      : `正確答案是 <b>${'ABCDEF'[a.ans]}</b>。`;
+    v.reveal(a.ans); go(2);
+  };
+  let hi = 0;
+  const hints = $$('.hint', host);
+  const showHint = () => {
+    if (hi < hints.length) hints[hi++].classList.add('show');
+    if (hi >= hints.length) { $('.more', host).style.display = 'none'; $('.go4', host).style.display = ''; }
+  };
+  $('.go3', host).onclick = () => { go(3); if (hi === 0) showHint(); };
+  $('.more', host).onclick = showHint;
+  $('.go4', host).onclick = () => { $('.explain', host).style.display = 'block'; $('.go5', host).style.display = ''; };
+  $('.go5', host).onclick = () => go(4);
+  const t = a.transfer;
+  const vt = voteList($('.vt', host), t.opts, () => { vt.reveal(t.ans); $('.tw', host).classList.add('show'); });
+  $('.restart', host).onclick = () => mountArena(host, a);
+  go(0, true);
+}
+
+/* ---------- 分類小遊戲：每列一個敘述，點選它屬於哪一類 ---------- */
+function mountSort(host, cats, items) {
+  host.classList.add('sortq');
+  host.innerHTML = items.map((it, i) => `<div class="item" data-i="${i}"><span class="txt">${it[0]}</span>
+     <span class="chips">${cats.map((c, k) => `<button class="chip" data-k="${k}">${c}</button>`).join('')}</span></div>`).join('')
+    + `<div class="note">點錯也沒關係，會顯示原因。</div>`;
+  $$('.item', host).forEach(row => {
+    const it = items[+row.dataset.i];
+    $$('.chip', row).forEach(ch => ch.onclick = () => {
+      $$('.chip', row).forEach(c => c.classList.remove('on')); ch.classList.add('on');
+      const ok = +ch.dataset.k === it[1];
+      row.classList.toggle('ok', ok); row.classList.toggle('no', !ok);
+      let why = $('.why', row);
+      if (!why) { why = document.createElement('div'); why.className = 'why note'; why.style.flexBasis = '100%'; row.appendChild(why); }
+      why.textContent = (ok ? '✔ ' : '✘ ') + (it[2] || '');
+    });
+  });
+}
+
+/* ---------- 啟動 ---------- */
+function boot() {
+  $$('nav.tabs button').forEach(b => b.addEventListener('click', () => showTab(b.dataset.tab)));
+  $$('#modeSeg button').forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
+  $('#projBtn').onclick = () => { document.body.classList.toggle('proj'); store.set({ proj: document.body.classList.contains('proj') }); window.dispatchEvent(new Event('resize')); };
+  $('#fsBtn').onclick = () => document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen?.();
+  // 抽號
+  const pk = $('#picker');
+  $('#pickBtn').onclick = () => { pk.classList.add('show'); spin(); };
+  const spin = () => {
+    const max = +$('#pickMax').value || 30; let n = 0;
+    const t = setInterval(() => { $('#pickNum').textContent = 1 + Math.floor(Math.random() * max); if (++n > 14) clearInterval(t); }, 60);
+  };
+  $('#pickAgain').onclick = spin;
+  $('#pickClose').onclick = () => pk.classList.remove('show');
+  // 鍵盤：← → 翻分頁（正在拖滑桿或打字時不搶）
+  document.addEventListener('keydown', e => {
+    const tag = (e.target.tagName || '').toLowerCase();
+    if (['input', 'textarea', 'select'].includes(tag)) return;
+    if (e.key === 'ArrowRight' || e.key === 'PageDown') { stepTab(1); e.preventDefault(); }
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') { stepTab(-1); e.preventDefault(); }
+  });
+  // 掛上「猜一猜」「迷思擂台」
+  $$('[data-guess]').forEach(h => mountGuess(h, GUESS[h.dataset.guess]));
+  $$('[data-arena]').forEach(h => mountArena(h, ARENA[h.dataset.arena]));
+  // 紫色卡片打開時，裡面的畫布要重畫（收合時寬度是 0）
+  $$('details').forEach(d => d.addEventListener('toggle', () => window.dispatchEvent(new Event('resize'))));
+  window.addEventListener('resize', () => (SIMS[curTab] || []).forEach(s => s.resize ? s.resize() : (s.stop && s.stop(), s.start && s.start())));
+  const st = store.get();
+  if (st.proj) document.body.classList.add('proj');
+  setMode(st.mode || 'normal');
+  showTab(st.tab && document.getElementById('p-' + st.tab) ? st.tab : $$('nav.tabs button')[0].dataset.tab);
+}
+
+/* ==== taiwan.js ==== */
+/* ===== 共用地理資料：臺灣海岸線（經度, 緯度），示意精度 ===== */
+const TW_COAST = [[121.54,25.30],[121.62,25.27],[121.70,25.20],[121.75,25.14],[121.87,25.12],[122.00,25.01],[121.92,24.95],
+  [121.83,24.86],[121.82,24.70],[121.86,24.60],[121.84,24.45],[121.72,24.25],[121.62,24.02],[121.57,23.80],[121.50,23.50],
+  [121.40,23.15],[121.27,22.95],[121.15,22.75],[121.00,22.55],[120.90,22.35],[120.87,22.10],[120.85,21.90],[120.78,21.93],
+  [120.72,21.95],[120.70,22.05],[120.62,22.30],[120.55,22.40],[120.40,22.50],[120.28,22.62],[120.18,22.90],[120.12,23.05],
+  [120.07,23.15],[120.13,23.40],[120.18,23.60],[120.25,23.80],[120.32,24.05],[120.48,24.25],[120.60,24.45],[120.75,24.65],
+  [120.90,24.85],[121.02,25.00],[121.15,25.08],[121.40,25.18]];
+/* 點是否在多邊形內 */
+function inPoly(pt, poly) {
+  let c = false;
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    const [xi, yi] = poly[i], [xj, yj] = poly[j];
+    if (((yi > pt[1]) !== (yj > pt[1])) && (pt[0] < (xj - xi) * (pt[1] - yi) / (yj - yi) + xi)) c = !c;
+  }
+  return c;
+}
+/* 臺灣主要城市（經度, 緯度） */
+const TW_CITY = [['臺北', 121.52, 25.04], ['基隆', 121.74, 25.13], ['宜蘭', 121.75, 24.75], ['新竹', 120.97, 24.80], ['臺中', 120.68, 24.15],
+  ['南投', 120.68, 23.91], ['花蓮', 121.60, 23.98], ['嘉義', 120.45, 23.48], ['臺南', 120.21, 22.99], ['臺東', 121.15, 22.76], ['高雄', 120.30, 22.63], ['恆春', 120.74, 22.00]];
+
+/* ==== 00_data.js ==== */
+/* ===== 第六章：「猜一猜」與「迷思擂台」題目資料 ===== */
+const GUESS = {};
+const ARENA = {};
+
+/* ---------- 分頁 1 ---------- */
+GUESS.t1 = {
+  q: '人類到目前為止，鑽到地球最深的井大約有多深？',
+  opts: ['約 12 公里', '約 600 公里', '約 3000 公里', '已經鑽到地心了'], ans: 0,
+  after: '答案是 <b>約 12 公里</b>（俄羅斯科拉超深鑽孔）。地球半徑約 6370 公里，12 公里只占 0.2%——如果地球是一顆蘋果，這口井還比蘋果皮薄。所以科學家是靠<b>地震波</b>「看」地球內部的（課本 p.167）。用這一頁的放大鏡從整顆地球放大到地表，找找那口井。',
+};
+ARENA.t1 = {
+  short: '地函大部分是固體；軟流圈是可塑、極緩慢流動的固體。真正的液體是外核。',
+  title: '迷思 1：地殼下面就是一片岩漿海？',
+  q: '火山會噴出岩漿。那麼地殼下面的「地函」，是什麼狀態？',
+  opts: ['是一整片液態的岩漿海', '幾乎都是固體；軟流圈是會極緩慢流動的固體', '是空心的'], ans: 1,
+  sim: '用上面的「地震波穿過地球」：選 <b>S 波</b>（只能在固體中傳播）。觀察 S 波能不能穿過地函？在哪裡被擋下來？',
+  clash: 'S 波一路穿過了將近 2900 公里厚的地函——如果地函是一片岩漿海，S 波早就過不去了！真正把 S 波擋下來的，是更深的<b>外核</b>。',
+  hints: [
+    'S 波只能在固體裡傳播。它能穿過地函，代表地函是什麼狀態？',
+    '那「軟流圈」為什麼又說會流動？想想第五章的冰川：冰是固體，卻能慢慢往下流。',
+    '軟流圈「流」得多快？——每年幾公分，跟指甲長的速度差不多。',
+  ],
+  explain: '地函是高溫高壓下的<b>固態岩石</b>。其中的<b>軟流圈</b>溫度接近熔點，像麥芽糖或黏土一樣有<b>可塑性</b>：短時間內是固體，經過幾百萬年就能非常緩慢地流動，板塊就在它上面移動。<br>岩漿只在局部地方產生（例如板塊分離處、隱沒帶），不是一整片海。<br>🔬 地球內部真正是液體的是<b>外核</b>（液態的鐵、鎳）——證據正是 S 波的陰影區。',
+  transfer: {
+    q: '冰川明明是固體，為什麼能從高山慢慢流到山下？',
+    opts: ['冰川其實是液體', '固體在長時間、巨大的壓力下，也能非常緩慢地流動', '冰川是被風吹下來的'], ans: 1,
+    why: '冰川和軟流圈是同一個道理：在很大的壓力和很長的時間下，固體也會慢慢變形、流動。所以「會流動」不代表「是液體」。',
+  },
+};
+
+/* ---------- 分頁 2 ---------- */
+GUESS.t2 = {
+  q: '喜馬拉雅山、安地斯山、富士山這些高山，大多出現在哪裡？',
+  opts: ['板塊的正中央', '板塊和板塊的交界處', '赤道附近', '隨機分布，沒有規律'], ans: 1,
+  after: '答案是 <b>板塊交界處</b>（課本 p.169 探究提問）。板塊互相擠壓的地方，岩層被推高成山脈；隱沒的地方會產生岩漿、形成火山。下面的模擬器可以看到每一種交界「長出」什麼地形。',
+};
+ARENA.t2 = {
+  short: '決定誰隱沒的是密度：海洋板塊密度大，會隱沒。',
+  title: '迷思 2：大陸板塊比較厚，撞在一起時是它沉下去？',
+  q: '海洋板塊和大陸板塊相撞。大陸地殼比較厚（約 35 公里），海洋地殼比較薄（約 8 公里）。哪一塊會隱沒到下面？',
+  opts: ['比較厚的大陸板塊', '密度比較大的海洋板塊', '兩塊都往上翻', '面積比較大的那一塊'], ans: 1,
+  sim: '在上面的模擬器分別按「③ 海洋撞大陸」和「④ 大陸撞大陸」，各播放一次。比較：誰沉下去了？兩塊都是大陸的時候呢？',
+  clash: '比較「薄」的海洋板塊沉下去了，比較「厚」的大陸板塊反而浮在上面！而兩塊大陸相撞時，誰也沉不下去。',
+  hints: [
+    '一大塊保麗龍和一小顆石頭丟進水裡，誰沉下去？決定沉浮的是「厚度、大小」，還是別的東西？',
+    '看課本 p.168 的表：大陸地殼和海洋地殼，哪一個密度比較大？主要岩石分別是什麼？',
+    '板塊是浮在軟流圈上的。密度大的，在軟流圈裡會怎樣？',
+  ],
+  explain: '決定誰沉下去的是<b>密度</b>，不是厚度。海洋地殼主要是玄武岩，密度較大；大陸地殼主要是花岡岩，密度較小。所以海洋板塊會隱沒到大陸板塊下方（課本 p.171：「密度大的板塊容易隱沒到密度小的板塊之下」）。<br>兩塊大陸板塊相撞時，密度都小、都沉不下去，只能互相擠壓、隆起成高山——這就是喜馬拉雅山。<br>🔬 再深一層：海洋板塊離中洋脊愈遠，愈老、愈冷、密度愈大，所以「老的海洋板塊」最容易隱沒。',
+  transfer: {
+    q: '兩塊「海洋板塊」相撞時，最可能是哪一塊隱沒下去？',
+    opts: ['比較年輕、比較熱的那一塊', '比較老、比較冷、密度比較大的那一塊', '兩塊都不會隱沒'], ans: 1,
+    why: '還是看密度：海洋板塊從中洋脊誕生後，一路冷卻、變重，愈老密度愈大，就是它隱沒下去。上面模擬器的「🟣 海洋撞海洋」可以看到，結果會在海上冒出一串火山島（島弧），例如日本、菲律賓。',
+  },
+};
+
+/* ---------- 分頁 3 ---------- */
+GUESS.t3 = {
+  q: '實驗 6-1：從兩端用力擠壓「已經乾燥」的紙黏土，最可能看到什麼？',
+  opts: ['整塊彎成波浪狀，但不會斷', '有部分出現斷裂、錯開', '完全沒有變化', '變得更軟'], ans: 1,
+  after: '答案是 <b>B</b>。乾黏土比較「脆」，受力後容易斷裂；濕黏土比較有可塑性，主要會彎曲（課本 p.173）。對應到地球：<b>接近地表</b>的岩層像乾黏土 → 容易形成<b>斷層</b>；<b>地底深處</b>高溫高壓的岩層像濕黏土 → 容易形成<b>褶皺</b>。',
+};
+ARENA.t3 = {
+  short: '上盤＝斷層面上方的岩塊，和它往上或往下移動無關。',
+  title: '迷思 3：「上盤」就是位置比較高、或往上跑的那一塊？',
+  q: '斷層兩側的岩塊中，「上盤」指的是哪一塊？',
+  opts: ['地面位置比較高的那一塊', '位在傾斜斷層面「上方」的那一塊', '往上移動的那一塊', '畫在左邊的那一塊'], ans: 1,
+  sim: '玩上面的「🎯 找上盤」，至少答 5 題。特別注意出現「正斷層」的題目：上盤後來的位置是變高還是變低？',
+  clash: '在正斷層裡，上盤反而<b>往下掉</b>、位置變得比較低！所以「上盤」跟「現在誰比較高」「誰往上跑」都沒有關係。',
+  hints: [
+    '斷層面通常是「斜」的。想像它是一道斜斜靠著的牆。',
+    '「上盤」的英文是 hanging wall（懸著的牆）。以前的礦工沿著斷層挖礦道，頭頂上「懸」著的那一塊就是上盤，腳底踩的是下盤。',
+    '所以判斷上盤，只要看：哪一塊在斜斜的斷層面「上面」？跟它怎麼移動無關。',
+  ],
+  explain: '<b>上盤＝斷層面上方的岩塊；下盤＝斷層面下方的岩塊</b>（課本 p.174）。先用「位置」認出上下盤，再看上盤怎麼動：<br>・上盤相對往<b>下</b> → <b>正斷層</b>（張力，把岩層拉開）<br>・上盤相對往<b>上</b> → <b>逆斷層</b>（擠壓力，把岩層推擠）<br>・兩側水平錯動 → <b>平移斷層</b><br>🔬 小技巧：如果斷層面是垂直的，就分不出上下盤——這時通常是平移斷層。',
+  transfer: {
+    q: '某斷層的上盤相對下盤「往下」滑動。這是哪一種斷層？岩層受到什麼力？',
+    opts: ['逆斷層，受擠壓', '正斷層，受拉張', '平移斷層，受水平錯動', '褶皺，受擠壓'], ans: 1,
+    why: '上盤往下 → 正斷層 → 張力。想像兩邊被拉開，中間失去支撐，上盤就沿著斷層面往下滑——東非大裂谷兩側就有很多正斷層。',
+  },
+};
+
+/* ---------- 分頁 4 ---------- */
+GUESS.t4 = {
+  q: '同一次地震，臺北的測站和花蓮的測站，測到的「規模」會怎樣？',
+  opts: ['花蓮比較大，因為離震央近', '臺北比較大，因為大樓多', '一樣大', '要看各地的儀器'], ans: 2,
+  after: '答案是 <b>一樣大</b>（課本 p.175）。規模代表<b>震源釋放的能量</b>，同一次地震的能量是固定的，所以只有一個規模。各地「搖得多厲害」叫做<b>震度</b>，才會因地點而不同。在模擬器裡拖曳震央看看：規模的數字不會變，地圖上的顏色（震度）會變。',
+};
+ARENA.t4 = {
+  short: '規模是能量；震度還和距離有關，深層大地震可能比淺層小地震搖得輕。',
+  title: '迷思 4：規模比較大，就一定搖得比較兇？',
+  q: '甲地震：規模 7.0，震源深度 150 公里。乙地震：規模 6.0，震源深度 10 公里。站在各自的「震央」上，哪一個搖得比較厲害？',
+  opts: ['甲，規模大就一定搖得兇', '乙，可能反而搖得比較兇', '兩個一樣'], ans: 1,
+  sim: '在上面的模擬器：① 規模 7.0、深度 150 公里，記下「震央附近的震度」② 規模 6.0、深度 10 公里，再記一次。',
+  clash: '規模小一級（能量只有約 1/32）的乙地震，在震央反而搖到 6 級；規模大的甲地震只有 5 弱！「規模大 = 搖得大」不一定成立。',
+  hints: [
+    '想像一顆燈泡：「瓦數」是規模，你看到「有多亮」是震度。離燈泡多遠，會不會影響你覺得有多亮？',
+    '站在震央上，離震源最近的距離是多少？——就是震源深度。',
+    '能量從 150 公里深的地方傳上來，一路上會發生什麼事？',
+  ],
+  explain: '<b>規模</b>＝震源釋放的能量（燈泡的瓦數），一次地震只有一個值。<br><b>震度</b>＝某個地點感受到的搖晃與破壞程度（你看到的亮度），和<b>距離震源多遠</b>有很大關係，還受地質影響。<br>深層地震雖然能量大，但傳到地表時已經衰減很多；淺層地震就算規模較小，震央附近也可能搖得很劇烈。臺灣的災害性地震（921、0403）多半是淺層地震。<br>🔬 深層地震的另一個特色：搖晃範圍比較大、比較平均（在模擬器按「深層地震」看看）。',
+  transfer: {
+    q: '（課本例題 6-1 改編）某次地震報告：「芮氏規模 6.4，震源深度 15.8 公里」。下列敘述何者<b>錯誤</b>？',
+    opts: ['全臺各地測站測得的規模都相同', '震央和震源在同一個位置', '離震央愈近，震度通常愈大', '規模愈大，代表震源釋放的能量愈多'], ans: 1,
+    why: '震源是岩層斷裂的地方（在地底下），震央是震源<b>垂直投影到地表</b>的位置，兩者相距的就是震源深度 15.8 公里，所以不在同一個位置。另外注意：報告上寫的是「震源深度」，不是「震央深度」——震央在地表，沒有深度。',
+  },
+};
+
+/* ---------- 分頁 5 ---------- */
+GUESS.t5 = {
+  q: '為什麼有時候手機的地震警報響起時，地面已經開始搖了？',
+  opts: ['手機收訊不好', '離震央太近，搖晃的地震波比警報更早到', '氣象署故意晚發', '那次地震太小'], ans: 1,
+  after: '答案是 <b>B</b>。氣象署要先等測站測到地震波、再花幾秒計算，才能發出警報。離震央很近的地方，地震波在這幾秒內就已經到了，所以「來不及」——這一圈叫做<b>預警盲區</b>。用這一頁的模擬按「▶ 地震發生」，看看哪些城市在盲區裡。',
+};
+ARENA.t5 = {
+  short: '預警是在地震發生後搶時間，不是預測地震。',
+  title: '迷思 5：地震預警＝地震預測？',
+  q: '國家級警報常常在搖晃前幾秒響起。這代表氣象署已經能「預測」地震了嗎？',
+  opts: ['能，所以才能提前通知大家', '不能；地震其實已經發生了，警報是靠「電磁波比地震波快」搶到幾秒鐘', '能預測，但只能提前幾秒'], ans: 1,
+  sim: '在上面的模擬按「▶ 地震發生」，盯著讀數區的時鐘：「地震發生」是第幾秒？「警報發出」是第幾秒？哪一個先？',
+  clash: '時鐘是從<b>地震發生</b>那一刻開始算的，警報要到第 10 秒左右才發出——警報永遠在地震<b>之後</b>！那為什麼還能「提前」通知遠方的人？',
+  hints: [
+    '電磁波（手機訊號）每秒跑 30 萬公里，S 波每秒只跑約 3.5 公里。',
+    '對離震央 200 公里的人來說，S 波要跑多久才會到？警報要多久？',
+    '所以警報搶贏的是「地震波還在路上」的那段時間，不是「地震還沒發生」的時間。',
+  ],
+  explain: '目前科學家<b>仍無法預測</b>地震發生的時間、地點和規模（課本 p.188）。地震預警是在地震<b>發生之後</b>，利用「電磁波傳播速率遠快於地震波」的原理，在破壞性的 S 波抵達前搶到幾秒到十幾秒的時間。<br>所以：離震央愈遠，預警時間愈長；離震央太近，就會落在盲區。想縮小盲區，就要縮短「偵測＋計算＋發送」的時間——例如在海底增設地震儀（海纜觀測）、讓電腦算得更快。',
+  transfer: {
+    q: '（課本 p.188 題目）阿翰離震央很近、收到警報時已在搖；琳琳離震央較遠，有約 10 秒預警時間。下列何者正確？',
+    opts: ['琳琳比阿翰先感受到地震', '阿翰離震央較近，所以預警時間比琳琳長', '依警報預測的搖晃程度：琳琳 ＞ 阿翰', '加快地震資訊的處理速度與手機通訊品質，可以幫阿翰爭取更多時間'], ans: 3,
+    why: '阿翰離震央近，地震波先到他那裡（A 錯），預警時間反而比較短（B 錯）；離震央近通常搖得比較兇，所以阿翰 ＞ 琳琳（C 錯）。能幫阿翰的，是讓警報更早發出：測站更密、更靠近震源，計算和發送更快——在模擬裡把「計算時間」調短，盲區就變小了。',
+  },
+};
+
+/* ---------- 分頁 6 ---------- */
+GUESS.t6 = {
+  q: '臺灣位在哪兩個板塊的交界處？',
+  opts: ['歐亞板塊與菲律賓海板塊', '太平洋板塊與印澳板塊', '北美洲板塊與歐亞板塊', '臺灣只在一個板塊上'], ans: 0,
+  after: '答案是 <b>歐亞板塊與菲律賓海板塊</b>（課本 p.179）。兩個板塊的交界大約在<b>花東縱谷</b>：縱谷以西屬於歐亞板塊，以東（海岸山脈、綠島、蘭嶼）屬於菲律賓海板塊。菲律賓海板塊每年以 7～8 公分的速率往西北推擠，所以臺灣地震頻繁、山脈多為南北走向。',
+};
+ARENA.t6 = {
+  short: '地質作用很慢，但時間非常長，每年幾公釐也能堆出高山。',
+  title: '迷思 6：每年才動幾公分，怎麼可能推出 3000 多公尺的高山？',
+  q: '臺灣的山每年只被抬升幾公釐到 1 公分。要從海平面長到玉山（3952 公尺）那麼高，大約需要多久？',
+  opts: ['幾百年', '幾千年', '幾十萬到幾百萬年', '永遠不可能，速度太慢了'], ans: 2,
+  sim: '用上面的「抬升計算器」：先把侵蝕設成 0，看「長到玉山的高度需要」幾年；再把侵蝕調回 3 公釐，看時間變多少。最後把「經過時間」拉到最右邊。',
+  clash: '每年 6 公釐，聽起來慢到不可思議，但只要給它幾十萬到一百多萬年，就足夠堆出玉山！我們覺得「不可能」，是因為我們習慣用「人的一輩子」去想時間。',
+  hints: [
+    '1 公分 × 100 年 = 1 公尺。1 公分 × 1 萬年 = ？',
+    '地球已經 46 億年了。100 萬年在地球的歷史裡，算長還是算短？',
+    '但為什麼加上「侵蝕」之後，需要的時間變長很多？想想第五章：颱風豪雨一直在削平臺灣的山。',
+  ],
+  explain: '地質作用很「慢」，但地球的時間非常「長」（地質學家稱為<b>深時</b>）。每年 6 公釐，一百萬年就是 6000 公尺。<br>真實的臺灣山脈是<b>內營力</b>和<b>外營力</b>的拔河：板塊擠壓一直把山推高，颱風、豪雨、河流一直把山削低。臺灣大約在幾百萬年前開始因為板塊碰撞而隆起，是一座「很年輕」的島。<br>🔬 這個「慢慢累積」的想法，下一分頁讀岩層的時候會再用到。',
+  transfer: {
+    q: '登山家在喜馬拉雅山接近山頂的岩層裡，發現了海洋生物的化石。最合理的解釋是？',
+    opts: ['海洋生物曾經爬到山頂', '這些岩層原本在海底沉積，後來被板塊擠壓、經過很長時間抬升到高處', '是遊客丟上去的', '以前的海平面比山頂還高'], ans: 1,
+    why: '化石告訴我們「這層岩石當初在海裡形成」，而它現在在 8000 多公尺高——中間發生的，就是印度板塊擠壓歐亞板塊、經過幾千萬年的抬升。這正是下一分頁「岩層的紀錄」要學的推理方法。',
+  },
+};
+
+/* ---------- 分頁 7 ---------- */
+GUESS.t7 = {
+  q: '一道岩脈（岩漿侵入冷卻形成）切穿了砂岩層。岩脈和砂岩，哪一個比較早形成？',
+  opts: ['岩脈', '砂岩', '同時形成', '無法判斷'], ans: 1,
+  after: '答案是 <b>砂岩</b>。判斷原則 ③：較早發生的事件，會被較晚發生的事件影響。砂岩要先「存在」，岩漿才能切穿它（課本 p.181）。在「岩層積木」先堆砂岩、再按「岩漿侵入」，就能看到岩脈切過砂岩。',
+};
+ARENA.t7 = {
+  short: '「下面比較老」的前提是沒有受外力；岩層可能被翻轉，要配合化石判斷。',
+  title: '迷思 7：最下面的岩層，一定最老？',
+  q: '地質學家在某個山壁發現：「上層」岩石裡有三葉蟲化石，「下層」岩石裡有恐龍化石。最合理的解釋是？',
+  opts: ['恐龍出現得比三葉蟲早', '這疊岩層曾經被強烈擠壓而翻轉（上下顛倒）', '化石會自己慢慢往上移動', '一定是有人把化石放錯了'], ans: 1,
+  sim: '在「岩層積木」按「清空」，然後：① 選「三葉蟲」→ 按「頁岩」② 選「恐龍」→ 按「砂岩」③ 按「🟣 強烈擠壓到翻轉」。看看兩種化石的上下位置。',
+  clash: '翻轉之後，比較老的三葉蟲岩層跑到了上面！「下面的比較老」這條原則，在這裡失靈了。',
+  hints: [
+    '回去看三個判斷原則的第 ① 條，它有一個前提條件——是什麼？',
+    '還記得「虛擬黏土」的褶皺嗎？擠壓得非常強烈時，褶皺可以被壓到「倒下」，甚至整片翻過來。',
+    '化石的年代是固定的：三葉蟲只出現在古生代，恐龍出現在中生代。當岩層順序和化石年代互相矛盾，你該相信哪一個？',
+  ],
+  explain: '「下面比較老」（疊置原則）有一個前提：岩層<b>沒有受到外力擾動</b>。臺灣、喜馬拉雅這種板塊強烈擠壓的地方，岩層常被摺疊、甚至<b>倒轉</b>，或被逆斷層把老岩層推到新岩層上面。<br>這時候，<b>代表性化石</b>就成了判斷年代的關鍵：三葉蟲（古生代）一定比恐龍（中生代）老。地質學家正是靠化石發現了許多「倒轉」的岩層。<br>🔬 這也是科學推理的好習慣：當兩條證據打架時，先檢查每一條規則的「適用條件」。',
+  transfer: {
+    q: '某剖面中，一道岩脈切過了 A、B、C 三層岩層，但沒有切過最上面的 D 層（D 層蓋在岩脈上方）。岩脈是什麼時候形成的？',
+    opts: ['A 層沉積之前', 'C 層沉積之後、D 層沉積之前', 'D 層沉積之後', '和 B 層同時'], ans: 1,
+    why: '岩脈切過 A、B、C → 比它們晚；D 層蓋在岩脈上、沒被切過 → 比岩脈晚。所以順序是 A → B → C → 岩脈 → D。在「岩層積木」照這個順序做一次驗證看看。',
+  },
+};
+
+/* ==== t0.js ==== */
+/* ===== 第六章 分頁 0：海平面下降 → 臺灣海峽變陸橋 =====
+   水深為示意：海峽大多 50–80 m，澎湖水道較深，臺灣東邊與南邊急速變深。 */
+(() => {
+  const cv = document.getElementById('c6t0'); if (!cv) return;
+  const S = stage(cv, 520, 560), ctx = S.ctx;
+  const L0 = 116.6, L1 = 122.4, A0 = 21.6, A1 = 27.0;
+  const P = (lo, la) => [(lo - L0) / (L1 - L0) * S.W, (A1 - la) / (A1 - A0) * S.H];
+  const CHINA = [[116.6, 27.0], [120.6, 27.0], [120.3, 26.9], [119.9, 26.5], [119.65, 25.95], [119.45, 25.45], [119.0, 25.2], [118.65, 24.8], [118.15, 24.5], [117.7, 24.1], [117.2, 23.65], [116.6, 23.3]];
+  const PENGHU = [119.58, 23.57];
+  function depth(lo, la) {
+    if (inPoly([lo, la], TW_COAST) || inPoly([lo, la], CHINA)) return -1;
+    if (Math.hypot((lo - PENGHU[0]) * 1.2, la - PENGHU[1]) < .12) return -1;
+    // 臺灣東側：很快變深
+    const eastOf = lo > 121.9 || (lo > 121.0 && la < 23.6 && lo > 121.3) ;
+    if (eastOf) return 600;
+    let d = 55 + 15 * Math.sin(lo * 3.1 + la * 2.3);            // 海峽主體
+    const ch = Math.hypot((lo - 119.95) * 2.2, (la - 23.15) * 1.1);   // 澎湖水道
+    if (ch < .45) d += 70 * (1 - ch / .45);
+    if (la < 22.9) d += (22.9 - la) * 260;                         // 往南海變深
+    if (la > 25.6 && lo > 121.0) d += (la - 25.6) * 80;
+    return d;
+  }
+  const sea = bindRange('c6sea', v => v + ' 公尺', () => draw());
+  let grid = null;
+  const G = 4;
+  function build() {
+    grid = [];
+    for (let y = 0; y < S.H; y += G) for (let x = 0; x < S.W; x += G) {
+      const lo = L0 + (x + G / 2) / S.W * (L1 - L0), la = A1 - (y + G / 2) / S.H * (A1 - A0);
+      grid.push([x, y, depth(lo, la)]);
+    }
+  }
+  function draw() {
+    S.fit(); if (!grid) build();
+    const drop = +sea.value;
+    let exposed = 0, total = 0;
+    grid.forEach(([x, y, d]) => {
+      if (d < 0) ctx.fillStyle = '#B9D3A0';
+      else if (d <= drop) { ctx.fillStyle = '#E3C98F'; exposed++; }
+      else { const k = clamp((d - drop) / 200, 0, 1); ctx.fillStyle = `rgb(${Math.round(lerp(140, 40, k))},${Math.round(lerp(190, 90, k))},${Math.round(lerp(225, 160, k))})`; }
+      if (d >= 0 && x > 120 && x < 380 && y > 150 && y < 430) total++;
+      ctx.fillRect(x, y, G + .6, G + .6);
+    });
+    // 海岸線
+    ctx.strokeStyle = '#5D7B48'; ctx.lineWidth = 1.5;
+    [TW_COAST, CHINA].forEach(poly => { ctx.beginPath(); poly.forEach(([lo, la], i) => { const [x, y] = P(lo, la); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); if (poly === TW_COAST) ctx.closePath(); ctx.stroke(); });
+    label(ctx, '臺灣', ...P(120.95, 23.7), { bold: true, size: 15, align: 'center' });
+    label(ctx, '亞洲大陸（福建）', ...P(117.6, 25.6), { bold: true, size: 14, align: 'center' });
+    label(ctx, '澎湖', ...P(119.45, 23.85), { size: 13, align: 'center' });
+    if (drop < 100) label(ctx, '澎湖水道', ...P(119.95, 23.0), { size: 12, align: 'center', color: '#fff' });
+    // 動物走過來
+    if (drop >= 80) {
+      const pts = [[118.4, 24.6], [119.0, 24.1], [119.6, 23.7], [120.1, 23.4], [120.4, 23.3]];
+      ctx.setLineDash([6, 5]); ctx.strokeStyle = '#8D4F1E'; ctx.lineWidth = 2.5; ctx.beginPath(); pts.forEach(([lo, la], i) => { const [x, y] = P(lo, la); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.stroke(); ctx.setLineDash([]);
+      label(ctx, '🦣🐃🦌 走過來！', ...P(118.9, 23.8), { size: 15, bold: true, bg: 'rgba(255,255,255,.85)' });
+    }
+    const txt = drop < 40 ? '現在的樣子：臺灣海峽是一片海。' : drop < 80 ? '海峽的淺處開始露出來，但還連不起來。' : drop < 120 ? '<b>陸橋出現了！</b>亞洲大陸和臺灣連在一起，動物可以走過來。' : '冰河時期最冷的時候：澎湖水道也幾乎露出來了。後來冰融化、海水回升，這些動物的骨頭就留在海底，被漁網撈起來。';
+    document.getElementById('c6t0Txt').innerHTML = txt;
+    document.getElementById('c6t0R').innerHTML = `<div><b>−${drop} m</b><span>海平面（和現在比）</span></div><div><b>${drop >= 120 ? '約 2 萬年前' : drop >= 80 ? '冰河時期' : '接近現在'}</b><span>大約像哪個時候</span></div>`;
+  }
+  registerSim('t0', { start: draw, resize: draw });
+})();
+
+/* ==== t1.js ==== */
+/* ===== 第六章 分頁 1：地球分層（剖面＋放大鏡）、地震波陰影區 =====
+   半徑（公里）：地表 6370；地殼厚 35（大陸）；地函底 2900 深；外核 2900–5150 深；內核 5150 深以下。 */
+(() => {
+  const cv = document.getElementById('c6earth'); if (!cv) return;
+  const S = stage(cv, 520, 420), ctx = S.ctx;
+  const R = 6370;
+  const LAYERS = {
+    comp: [['地殼', 0, 35, '#8D6E63', '地球最外層的薄殼。<b>大陸地殼</b>較厚、密度小、以花岡岩為主；<b>海洋地殼</b>較薄、密度大、以玄武岩為主。'],
+      ['地函', 35, 2900, '#E07B39', '位在地殼下方，由密度更大的岩石組成，主要元素為<b>氧、矽、鎂</b>。注意：地函大部分是<b>固體</b>！'],
+      ['地核', 2900, 6370, '#F2C14E', '地球最內層，密度最大，主要由<b>鐵、鎳</b>等金屬組成。🟣 加深：外核是液體、內核是固體。']],
+    mech: [['岩石圈', 0, 100, '#5D4037', '從地表到約 100 公里深，包含<b>地殼＋部分地函</b>，由堅硬的岩石組成。<b>板塊就是岩石圈</b>裂成的一塊塊。'],
+      ['軟流圈', 100, 350, '#C0504D', '在岩石圈下方、地函之中，是具<b>可塑性</b>、移動極緩慢的物質。板塊就「漂」在它上面緩慢移動。'],
+      ['其餘的地函', 350, 2900, '#E8A26A', '（課本不細分）'], ['地核', 2900, 6370, '#F2C14E', '鐵、鎳組成。']],
+  };
+  let view = 'comp', sel = null;
+  const zoom = bindRange('c6zoom', v => v < 2 ? '整顆地球' : '× ' + Math.round(Math.pow(10, v / 100 * 2.6)), () => draw());
+  // 把「深度」換成畫面座標：以地表頂點 (cx, top) 為放大中心
+  function geom() {
+    const z = Math.pow(10, +zoom.value / 100 * 2.6), r0 = 190;
+    const cx = 260, cy0 = 215;
+    const scale = r0 / R * z;
+    const top = cy0 - r0;                               // 地表頂點的畫面位置（放大時固定在這）
+    const cy = top + R * scale;
+    return { z, scale, cx, cy, top };
+  }
+  function draw() {
+    S.fit(); ctx.clearRect(0, 0, S.W, S.H);
+    ctx.fillStyle = '#0E1A2B'; ctx.fillRect(0, 0, S.W, S.H);
+    const g = geom(), Ls = LAYERS[view];
+    ctx.save(); ctx.beginPath(); ctx.rect(0, 0, S.W, S.H); ctx.clip();
+    // 由外往內畫圓（只畫下半部扇形會比較像切開；這裡畫完整的圓再切掉右上四分之一）
+    Ls.forEach(([n, d0, d1, c]) => {
+      ctx.fillStyle = c; ctx.beginPath(); ctx.arc(g.cx, g.cy, (R - d0) * g.scale, 0, Math.PI * 2); ctx.fill();
+      if (sel === n) { ctx.strokeStyle = '#FFD27A'; ctx.lineWidth = 4; ctx.stroke(); }
+    });
+    if (view === 'comp') { ctx.fillStyle = '#FFE38A'; ctx.beginPath(); ctx.arc(g.cx, g.cy, 1220 * g.scale, 0, 7); ctx.fill(); }
+    // 切開的那一角改成地表外觀（藍綠色）
+    if (g.z < 3) { ctx.fillStyle = '#2F6E9E'; ctx.beginPath(); ctx.moveTo(g.cx, g.cy); ctx.arc(g.cx, g.cy, R * g.scale, -Math.PI / 2, 0); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = '#5E9E5A'; [[.3, -.5, 30], [.6, -.75, 22], [.15, -.2, 18]].forEach(([fx, fy, rr]) => { ctx.beginPath(); ctx.arc(g.cx + fx * R * g.scale, g.cy + fy * R * g.scale, rr, 0, 7); ctx.fill(); }); }
+    // 鑽井（約 12 公里）
+    const wellPx = 12 * g.scale;
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = Math.max(2, 4); ctx.beginPath(); ctx.moveTo(g.cx - 40, g.top); ctx.lineTo(g.cx - 40, g.top + Math.max(wellPx, .5)); ctx.stroke();
+    ctx.fillStyle = '#fff'; ctx.fillRect(g.cx - 48, g.top - 14, 16, 14);
+    label(ctx, wellPx < 6 ? '← 最深的鑽井（12 公里）短到看不見！' : '最深的鑽井 12 公里', g.cx - 30, g.top - 8, { size: 13, color: '#fff', bold: true });
+    // 層名
+    Ls.forEach(([n, d0, d1]) => {
+      const mid = (d0 + Math.min(d1, 6370)) / 2, y = g.top + mid * g.scale;
+      const dh = (Math.min(d1, 6370) - d0) * g.scale;
+      if (y > 0 && y < S.H && dh > 14) label(ctx, `${n}`, g.cx + 12, Math.min(y, S.H - 14), { size: 14, bold: true, color: '#fff', bg: 'rgba(0,0,0,.35)' });
+    });
+    // 深度尺
+    if (g.z > 3) {
+      const kmPerPx = 1 / g.scale; const nice = [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000].find(k => k / kmPerPx > 60) || 1000;
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(20, S.H - 20); ctx.lineTo(20 + nice / kmPerPx, S.H - 20); ctx.stroke();
+      label(ctx, nice + ' 公里', 20, S.H - 34, { size: 12, color: '#fff' });
+    }
+    ctx.restore();
+  }
+  cv.addEventListener('pointerdown', e => {
+    const p = S.pt(e), g = geom(); const r = Math.hypot(p.x - g.cx, p.y - g.cy) / g.scale; const d = R - r;
+    if (d < 0) return;
+    const L = LAYERS[view].find(([, d0, d1]) => d >= d0 && d < d1); if (!L) return;
+    sel = L[0];
+    document.getElementById('c6layer').innerHTML = `<b style="font-size:1.1rem">${L[0]}</b>（深度約 ${L[1]}～${L[2] >= 6370 ? '6370（地心）' : L[2]} 公里）<br>${L[4]}`;
+    draw();
+  });
+  document.querySelectorAll('#c6view .chip').forEach(b => b.onclick = () => { document.querySelectorAll('#c6view .chip').forEach(x => x.classList.remove('on')); b.classList.add('on'); view = b.dataset.v; sel = null; draw(); });
+  registerSim('t1', { start: draw, resize: draw });
+
+  /* ---------- 地震波 X 光 ---------- */
+  const wc = document.getElementById('c6wave');
+  const W = stage(wc, 420, 420), wx = W.ctx;
+  let wtype = 'S';
+  const solid = document.getElementById('c6solid');
+  function wdraw() {
+    W.fit(); wx.clearRect(0, 0, W.W, W.H); wx.fillStyle = '#0E1A2B'; wx.fillRect(0, 0, W.W, W.H);
+    const cx = 210, cy = 210, r = 180, rc = r * 3470 / 6370, ri = r * 1220 / 6370;
+    wx.fillStyle = '#E07B39'; wx.beginPath(); wx.arc(cx, cy, r, 0, 7); wx.fill();
+    wx.fillStyle = solid.checked ? '#C9A33C' : '#F2C14E'; wx.beginPath(); wx.arc(cx, cy, rc, 0, 7); wx.fill();
+    wx.fillStyle = '#FFE38A'; wx.beginPath(); wx.arc(cx, cy, ri, 0, 7); wx.fill();
+    label(wx, '地函（固體）', cx, cy - rc - 22, { align: 'center', size: 12, color: '#fff', bold: true });
+    label(wx, solid.checked ? '外核（假設固體）' : '外核（液體）', cx, cy - ri - 22, { align: 'center', size: 12, color: '#5D4037', bold: true });
+    const sx = cx, sy = cy - r;                 // 震源在頂端
+    let blocked = 0, arrived = 0;
+    for (let a = 4; a <= 176; a += 4) {
+      // 從震源出發的直線（弦），角度 a 是相對垂直往下的方向
+      const ang = Math.PI / 2 + (a - 90) * Math.PI / 180 * .99;
+      const dx = Math.cos(ang), dy = Math.sin(ang);
+      // 和外核的交點
+      const fx = sx - cx, fy = sy - cy, b = fx * dx + fy * dy, c = fx * fx + fy * fy - rc * rc, disc = b * b - c;
+      const tEnd = -2 * (fx * dx + fy * dy);    // 和地表另一端的交點
+      let tCut = tEnd, hit = false;
+      if (disc > 0) { const t1 = -b - Math.sqrt(disc); if (t1 > 0 && t1 < tEnd) { tCut = t1; hit = true; } }
+      const stop = wtype === 'S' && hit && !solid.checked;
+      wx.strokeStyle = stop ? 'rgba(255,90,90,.9)' : wtype === 'S' ? 'rgba(120,220,255,.75)' : 'rgba(170,255,170,.75)';
+      wx.lineWidth = 1.6; wx.beginPath(); wx.moveTo(sx, sy); wx.lineTo(sx + dx * (stop ? tCut : tEnd), sy + dy * (stop ? tCut : tEnd)); wx.stroke();
+      if (stop) { blocked++; wx.fillStyle = '#FF5A5A'; wx.beginPath(); wx.arc(sx + dx * tCut, sy + dy * tCut, 2.5, 0, 7); wx.fill(); }
+      else { arrived++; wx.fillStyle = '#fff'; wx.beginPath(); wx.arc(sx + dx * tEnd, sy + dy * tEnd, 2.5, 0, 7); wx.fill(); }
+    }
+    // 陰影區
+    if (wtype === 'S' && !solid.checked) {
+      const half = Math.PI - 2 * Math.acos(rc / r); wx.strokeStyle = 'rgba(255,90,90,.9)'; wx.lineWidth = 8; wx.beginPath(); wx.arc(cx, cy, r + 6, Math.PI / 2 - half, Math.PI / 2 + half); wx.stroke();
+      label(wx, 'S 波收不到的「陰影區」', cx, cy + r + 20, { align: 'center', size: 13, color: '#FF8A80', bold: true });
+    }
+    wx.fillStyle = '#FF3B3B'; wx.beginPath(); for (let k = 0; k < 10; k++) { const rr = k % 2 ? 4 : 10, a = k / 10 * Math.PI * 2 - Math.PI / 2; wx.lineTo(sx + Math.cos(a) * rr, sy + Math.sin(a) * rr); } wx.closePath(); wx.fill();
+    document.getElementById('c6wTxt').innerHTML = wtype === 'S'
+      ? (solid.checked ? '如果外核是固體，S 波應該能穿過去，地球另一面也收得到。<b>但真實的地震站在另一面收不到 S 波</b>——所以外核不是固體。'
+        : `S 波穿過了<b>整個地函</b>（所以地函是固體！），但一碰到外核就停了（${blocked} 條被擋下）。地球另一面出現一大片收不到 S 波的「陰影區」→ 外核是<b>液體</b>。<br><span class="note">真實的地震波會彎曲前進，實際上從震央算起約 103° 以外就收不到 S 波。</span>`)
+      : 'P 波在固體和液體中都能傳播，可以穿過外核（真實情況：P 波進出外核時會大幅轉彎，也會形成一圈較窄的 P 波陰影區）。';
+  }
+  document.querySelectorAll('#c6wtype .chip').forEach(b => b.onclick = () => { document.querySelectorAll('#c6wtype .chip').forEach(x => x.classList.remove('on')); b.classList.add('on'); wtype = b.dataset.w; wdraw(); });
+  solid.onchange = wdraw;
+  registerSim('t1', { start: wdraw, resize: wdraw });
+})();
+
+/* ==== t2.js ==== */
+/* ===== 第六章 分頁 2：板塊交界模擬器（剖面）＋分類 ===== */
+(() => {
+  const cv = document.getElementById('c6plate'); if (!cv) return;
+  const S = stage(cv, 760, 360), ctx = S.ctx;
+  const SEA = 120, LITH = 60;               // 海平面 y、岩石圈厚度
+  let kind = 'mor', play = false;
+  const tR = bindRange('c6pt', v => Math.round(v * .3) + ' 百萬年', () => draw());
+  const mag = document.getElementById('c6mag');
+  const TXT = {
+    mor: '<b>海洋板塊分離 → 中洋脊</b>：兩個板塊被拉開，下方的地函岩石往上升、壓力變小而<b>部分熔融</b>成岩漿，從裂縫湧出，冷卻成新的玄武岩質海洋地殼，在海底形成綿延的火山山脈。<b>離中洋脊愈遠，岩石愈老</b>（顏色愈深）。例：大西洋中洋脊、冰島。',
+    rift: '<b>大陸板塊分離 → 裂谷</b>：大陸被拉開，中間的地塊往下陷，形成狹長的谷地，常伴隨火山活動。裂谷繼續擴大，海水灌進來，就會變成新的海洋。例：東非大裂谷（還在裂）、紅海（已經進水）。',
+    sub: '<b>海洋板塊撞大陸板塊 → 隱沒</b>：密度大的海洋板塊隱沒到大陸板塊下方，交界處形成很深的<b>海溝</b>；隱沒的板塊在約 100 公里深處釋出水分，讓上方的地函熔點降低而部分熔融，產生岩漿往上噴發形成<b>火山</b>，陸地也被擠出山脈。例：南美洲安地斯山脈。',
+    cc: '<b>大陸板塊撞大陸板塊 → 造山</b>：兩塊大陸密度都小、都沉不下去，只好互相擠壓，岩層摺疊、隆起成高大的山脈（造山運動）。例：喜馬拉雅山脈。',
+    oo: '<b>🟣 海洋撞海洋 → 島弧</b>：比較老、比較冷、密度比較大的那一塊隱沒下去，形成海溝；岩漿在海上冒出一串火山島，排成弧形，叫做「島弧」。例：馬里亞納群島與馬里亞納海溝、阿留申群島。臺灣東部的海岸山脈，就是一段撞上臺灣的島弧（呂宋島弧）。',
+  };
+  function asth() {
+    const g = ctx.createLinearGradient(0, 240, 0, S.H); g.addColorStop(0, '#E8955A'); g.addColorStop(1, '#C8553D');
+    ctx.fillStyle = g; ctx.fillRect(0, 230, S.W, S.H - 230);
+    label(ctx, '軟流圈（可塑、緩慢流動）', 12, S.H - 16, { size: 12, color: '#fff', bold: true });
+  }
+  function sea(y = SEA) { ctx.fillStyle = 'rgba(79,134,198,.85)'; ctx.fillRect(0, y, S.W, 400); }
+  function conv(x0, dir, t) {
+    // 地函熱對流示意箭頭
+    ctx.strokeStyle = 'rgba(255,255,255,.55)'; ctx.lineWidth = 2;
+    const ph = (t * 2) % 1;
+    for (let k = 0; k < 2; k++) { const r = 34 + k * 20; ctx.beginPath(); ctx.arc(x0, 300, r, dir > 0 ? Math.PI : 0, dir > 0 ? 2 * Math.PI : Math.PI, dir < 0); ctx.stroke(); }
+    arrow(ctx, x0 + dir * 30, 266, x0 + dir * 60, 272, 'rgba(255,255,255,.75)', 2, 8);
+  }
+  function draw() {
+    S.fit(); ctx.clearRect(0, 0, S.W, S.H);
+    const t = +tR.value / 100;
+    ctx.fillStyle = '#DDEBF5'; ctx.fillRect(0, 0, S.W, S.H);
+    const mid = 380;
+    if (kind === 'mor') {
+      sea(); asth();
+      const top = 200, v = 260;                  // 每 t=1 推開 260 px
+      // 海洋地殼條紋：每 18px 一條，年齡 = 距離 / 速度
+      for (let x = 0; x < 380; x += 3) {
+        const age = x / v;                          // 0 在中脊
+        const born = t * 2 - age;                   // 這條岩石誕生的時間：條紋會隨時間往外移動
+        const shade = clamp(age / 1.4, 0, 1), band = Math.floor(born * 6) % 2 ? 12 : -12;
+        let col = `rgb(${Math.round(lerp(150, 50, shade) + band)},${Math.round(lerp(150, 60, shade) + band)},${Math.round(lerp(160, 70, shade) + band)})`;
+        if (mag.checked) col = Math.floor(born * 9 + 100) % 2 ? '#2C2C2C' : '#D9D9D9';
+        const ridge = 40 * Math.exp(-x / 70);
+        ctx.fillStyle = col;
+        [mid - x - 3, mid + x].forEach(xx => ctx.fillRect(xx, top - ridge, 3, LITH * .5 + ridge));
+        ctx.fillStyle = 'rgba(70,60,60,.9)'; [mid - x - 3, mid + x].forEach(xx => ctx.fillRect(xx, top + LITH * .5, 3, LITH * .5));
+      }
+      // 岩漿上湧
+      ctx.fillStyle = '#FF7043'; ctx.beginPath(); ctx.moveTo(mid - 10, 240); ctx.quadraticCurveTo(mid, 160, mid + 10, 240); ctx.fill();
+      arrow(ctx, mid - 60, 180, mid - 140, 180, '#fff', 3, 12); arrow(ctx, mid + 60, 180, mid + 140, 180, '#fff', 3, 12);
+      conv(mid - 120, -1, t); conv(mid + 120, 1, t);
+      label(ctx, '中洋脊', mid, top - 56, { align: 'center', bold: true, size: 15, bg: 'rgba(255,255,255,.85)' });
+      label(ctx, '新', mid, top + 44, { align: 'center', size: 12, color: '#fff' }); label(ctx, '舊', 60, top + 44, { size: 12, color: '#fff' }); label(ctx, '舊', 700, top + 44, { size: 12, color: '#fff' });
+      if (mag.checked) label(ctx, '黑白條紋左右對稱！', mid, 30, { align: 'center', bold: true, size: 14, color: '#4A2C7A', bg: 'rgba(255,255,255,.9)' });
+    } else if (kind === 'rift') {
+      asth();
+      const w = 40 + t * 160, d = t * 90;
+      const flood = t > .65;
+      // 大陸塊（左右兩塊 + 中間下陷的地塊）
+      ctx.fillStyle = '#B8956A';
+      ctx.fillRect(0, 120, mid - w / 2, 120); ctx.fillRect(mid + w / 2, 120, S.W - mid - w / 2, 120);
+      ctx.fillStyle = '#A88458'; ctx.beginPath(); ctx.moveTo(mid - w / 2, 120 + d); ctx.lineTo(mid + w / 2, 120 + d); ctx.lineTo(mid + w / 2 - 20, 240); ctx.lineTo(mid - w / 2 + 20, 240); ctx.fill();
+      ctx.fillStyle = '#8BC34A'; ctx.fillRect(0, 114, mid - w / 2, 6); ctx.fillRect(mid + w / 2, 114, S.W - mid - w / 2, 6);
+      if (flood) { ctx.fillStyle = 'rgba(79,134,198,.9)'; ctx.fillRect(mid - w / 2, 126 + d * .2, w, d * .8); label(ctx, '海水灌進來 → 新的海洋誕生', mid, 100, { align: 'center', bold: true, size: 14, color: '#0D47A1', bg: 'rgba(255,255,255,.85)' }); }
+      else label(ctx, '裂谷', mid, 120 + d - 12, { align: 'center', bold: true, size: 14, bg: 'rgba(255,255,255,.85)' });
+      ctx.fillStyle = '#FF7043'; ctx.beginPath(); ctx.moveTo(mid - 12, 240); ctx.quadraticCurveTo(mid, 200 - t * 30, mid + 12, 240); ctx.fill();
+      arrow(ctx, 160, 180, 80, 180, '#fff', 3, 12); arrow(ctx, 600, 180, 680, 180, '#fff', 3, 12);
+      label(ctx, '大陸板塊', 120, 160, { size: 13, color: '#fff', bold: true }); label(ctx, '大陸板塊', 600, 160, { size: 13, color: '#fff', bold: true });
+    } else if (kind === 'sub' || kind === 'oo') {
+      sea(); asth();
+      const tr = 430, pushed = t * 120;
+      // 隱沒的海洋板塊（左邊往右，往下彎）
+      ctx.fillStyle = '#5B5B66';
+      ctx.beginPath(); ctx.moveTo(0, 190); ctx.lineTo(tr - 20, 190);
+      ctx.quadraticCurveTo(tr + 40, 195, tr + 60 + pushed * .6, 290 + pushed * .3); ctx.lineTo(tr + 20 + pushed * .6, 320 + pushed * .3);
+      ctx.quadraticCurveTo(tr + 10, 240, tr - 30, 240); ctx.lineTo(0, 240); ctx.fill();
+      label(ctx, '海洋板塊（密度大）', 30, 214, { size: 13, color: '#fff', bold: true });
+      arrow(ctx, 200, 170, 300, 170, '#fff', 3, 12);
+      // 上覆板塊
+      if (kind === 'sub') {
+        const mtn = 20 + t * 32;
+        ctx.fillStyle = '#B8956A'; ctx.beginPath(); ctx.moveTo(tr, 128); ctx.lineTo(tr + 60, 112); ctx.lineTo(tr + 130, 112 - mtn * .5); ctx.lineTo(tr + 170, 112 - mtn); ctx.lineTo(tr + 210, 112 - mtn * .6); ctx.lineTo(S.W, 108); ctx.lineTo(S.W, 230); ctx.lineTo(tr + 70, 230); ctx.quadraticCurveTo(tr + 20, 200, tr, 150); ctx.fill();
+        label(ctx, '大陸板塊（密度小）', 620, 200, { size: 13, color: '#fff', bold: true, align: 'center' });
+      } else {
+        ctx.fillStyle = '#6E6E78'; ctx.beginPath(); ctx.moveTo(tr, 150); ctx.lineTo(S.W, 150); ctx.lineTo(S.W, 210); ctx.lineTo(tr + 70, 210); ctx.quadraticCurveTo(tr + 20, 190, tr, 160); ctx.fill();
+        label(ctx, '另一塊海洋板塊（較年輕、較輕）', 610, 190, { size: 12, color: '#fff', bold: true, align: 'center' });
+      }
+      // 海溝
+      label(ctx, '海溝', tr - 12, 150, { align: 'center', bold: true, size: 14, bg: 'rgba(255,255,255,.85)' });
+      // 岩漿上升與火山
+      const vx = tr + 170, vTop = kind === 'sub' ? 112 - (20 + t * 32) - 10 : SEA - t * 40;
+      ctx.fillStyle = 'rgba(255,112,67,.85)'; ctx.beginPath(); ctx.moveTo(vx - 6, 270); ctx.quadraticCurveTo(vx - 20, 200, vx - 3, vTop + 12); ctx.lineTo(vx + 3, vTop + 12); ctx.quadraticCurveTo(vx + 20, 200, vx + 6, 270); ctx.fill();
+      if (t > .15) {
+        ctx.fillStyle = kind === 'sub' ? '#8D6E63' : '#7E6A5A'; ctx.beginPath(); ctx.moveTo(vx - 40, kind === 'sub' ? vTop + 40 : SEA + 2); ctx.lineTo(vx - 6, vTop); ctx.lineTo(vx + 6, vTop); ctx.lineTo(vx + 40, kind === 'sub' ? vTop + 40 : SEA + 2); ctx.fill();
+        ctx.fillStyle = 'rgba(120,120,120,.6)'; for (let k = 0; k < 4; k++) { ctx.beginPath(); ctx.arc(vx + k * 9, vTop - 12 - k * 10, 8 + k * 2, 0, 7); ctx.fill(); }
+        label(ctx, kind === 'sub' ? '火山、山脈' : '火山島（島弧）', vx + 70, Math.max(16, vTop - 20), { align: 'center', bold: true, size: 14, bg: 'rgba(255,255,255,.85)' });
+      }
+      label(ctx, '約 100 公里深：產生岩漿', vx + 20, 280, { size: 12, color: '#fff' });
+    } else if (kind === 'cc') {
+      asth();
+      const up = t * 92, sq = t * 60;
+      ctx.fillStyle = '#B8956A';
+      ctx.beginPath(); ctx.moveTo(0, 120); ctx.lineTo(mid - 120 + sq * .2, 120);
+      for (let x = mid - 120; x <= mid + 120; x += 10) { const f = Math.cos((x - mid) / 120 * Math.PI / 2); ctx.lineTo(x, 120 - up * f * f - (x % 30 === 0 ? 6 : 0) * t); }
+      ctx.lineTo(S.W, 120); ctx.lineTo(S.W, 240 + 0); ctx.lineTo(mid + 120, 240);
+      for (let x = mid + 120; x >= mid - 120; x -= 10) { const f = Math.cos((x - mid) / 120 * Math.PI / 2); ctx.lineTo(x, 240 + up * .6 * f * f); }
+      ctx.lineTo(0, 240); ctx.fill();
+      // 褶皺紋路
+      ctx.strokeStyle = 'rgba(90,60,30,.5)'; ctx.lineWidth = 1.5;
+      for (let k = 0; k < 5; k++) { ctx.beginPath(); for (let x = mid - 110; x <= mid + 110; x += 4) { const f = Math.cos((x - mid) / 120 * Math.PI / 2); const y = 140 + k * 20 - up * f * f * (1 - k * .12) + Math.sin(x / 14) * 10 * t; x === mid - 110 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); } ctx.stroke(); }
+      ctx.fillStyle = '#fff'; if (up > 60) { ctx.beginPath(); ctx.moveTo(mid - 30, 120 - up + 30); ctx.lineTo(mid, 120 - up); ctx.lineTo(mid + 30, 120 - up + 30); ctx.fill(); }
+      arrow(ctx, 80, 180, 180, 180, '#fff', 3, 12); arrow(ctx, 680, 180, 580, 180, '#fff', 3, 12);
+      label(ctx, '大陸板塊', 60, 150, { size: 13, color: '#fff', bold: true }); label(ctx, '大陸板塊', 620, 150, { size: 13, color: '#fff', bold: true });
+      if (t > .2) label(ctx, '高大的山脈（造山運動）', mid, 120 - up - 18, { align: 'center', bold: true, size: 14, bg: 'rgba(255,255,255,.85)' });
+    }
+    document.getElementById('c6pTxt').innerHTML = TXT[kind] + (kind === 'mor' && mag.checked ? '<br><span class="note">🟣 地球磁場每隔一段時間會南北翻轉。新岩石冷卻時會「記住」當時的磁場方向，所以海底出現左右對稱的黑白條紋——這是「海底擴張」最有力的證據，也讓韋格納的大陸漂移說被平反。</span>' : '');
+  }
+  document.querySelectorAll('#c6pb .chip').forEach(b => b.onclick = () => { document.querySelectorAll('#c6pb .chip').forEach(x => x.classList.remove('on')); b.classList.add('on'); kind = b.dataset.k; tR.value = 0; tR.dispatchEvent(new Event('input')); if (!play) pBtn.click(); });
+  mag.onchange = draw;
+  const pBtn = document.getElementById('c6pplay');
+  pBtn.onclick = () => { play = !play; pBtn.textContent = play ? '⏸ 暫停' : '▶ 播放'; if (play && +tR.value >= 100) tR.value = 0; };
+  const L = loop(dt => { if (play) { tR.value = Math.min(100, +tR.value + dt * 12); tR.dispatchEvent(new Event('input')); if (+tR.value >= 100) pBtn.click(); } });
+  registerSim('t2', { start() { draw(); L.start(); }, stop() { L.stop(); }, resize: draw });
+
+  mountSort(document.getElementById('c6sort'), ['板塊分離', '板塊聚合'], [
+    ['冰島', 0, '中洋脊露出海面的地方（北美洲板塊與歐亞板塊分離）。'],
+    ['東非大裂谷', 0, '大陸正在被拉開。'],
+    ['大西洋中洋脊', 0, '海底綿延的火山山脈。'],
+    ['喜馬拉雅山脈', 1, '印度板塊與歐亞板塊（大陸撞大陸）。'],
+    ['安地斯山脈', 1, '納茲卡板塊隱沒到南美洲板塊下方（海洋撞大陸）。'],
+    ['日本的富士山', 1, '隱沒帶上的火山。'],
+    ['臺灣的中央山脈', 1, '菲律賓海板塊擠壓歐亞板塊。'],
+  ]);
+})();
+
+/* ==== t3.js ==== */
+/* ===== 第六章 分頁 3：虛擬黏土（褶皺／正斷層／逆斷層／平移斷層）、找上盤 =====
+   繪圖用「反推」：畫面上每一點，算出它變形前原本在哪一層，就塗那一層的顏色。 */
+(() => {
+  const cv = document.getElementById('c6clay'); if (!cv) return;
+  const S = stage(cv, 480, 320), ctx = S.ctx;
+  const GW = 240, GH = 160, off = document.createElement('canvas'); off.width = GW; off.height = GH; const ox = off.getContext('2d');
+  const COLS = [[214, 168, 112], [160, 120, 90], [232, 210, 160], [120, 140, 110], [200, 150, 130], [150, 110, 80]];
+  let wet = 'wet', force = 'push';
+  const amt = bindRange('c6amt', v => v === 0 ? '還沒施力' : v < 40 ? '輕輕' : v < 75 ? '用力' : '非常用力', () => draw());
+  const TOP = 40, LH = 18, NL = 6;          // 黏土頂面、每層厚度（格點單位）
+  // 斷層：通過 (FX, TOP)、往右下傾斜 60°
+  const FX = 105, DIP = 60 * Math.PI / 180;
+  function layerAt(x0, y0) {
+    if (y0 < TOP) return null;
+    const k = Math.floor((y0 - TOP) / LH);
+    return k >= 0 && k < NL ? COLS[k] : [110, 90, 70];
+  }
+  function sideHW(x, y) { return x > FX + (y - TOP) / Math.tan(DIP); }    // 斷層面右上方 = 上盤
+  function source(x, y, a) {
+    if (force === 'slide') return [x, y];
+    if (wet === 'wet') {
+      if (force === 'push') {                                   // 褶皺：橫向縮短、上下波動
+        const sh = 1 - a * .35, cx = GW / 2;
+        const x0 = cx + (x - cx) / sh;
+        const amp = a * 22 * (0.6 + (y - TOP) / 160);
+        return [x0, y - amp * Math.sin((x0 - 20) / 200 * Math.PI * 2 * 1.5)];
+      }
+      const st = 1 + a * .3, cx = GW / 2; return [cx + (x - cx) / st, TOP + (y - TOP) * st];   // 拉薄
+    }
+    // 乾：斷層
+    const d = a * 30, ux = Math.cos(DIP), uy = Math.sin(DIP);     // 沿斷層面「往下」的方向 (ux, uy)
+    if (!sideHW(x, y)) return [x, y];
+    return force === 'push' ? [x + ux * d, y + uy * d] : [x - ux * d, y - uy * d];   // 逆：上盤沿斷層面往上 → 原本在更下面
+  }
+  function draw() {
+    S.fit(); ctx.clearRect(0, 0, S.W, S.H);
+    const a = +amt.value / 100;
+    if (force === 'slide') return drawSlide(a);
+    const img = ox.createImageData(GW, GH), dd = img.data;
+    for (let y = 0; y < GH; y++) for (let x = 0; x < GW; x++) {
+      const [x0, y0] = source(x, y, a);
+      let c = (x0 < 12 || x0 > GW - 12) ? null : layerAt(x0, y0);
+      const i = (y * GW + x) * 4;
+      if (!c) { dd[i] = 234; dd[i + 1] = 243; dd[i + 2] = 248; dd[i + 3] = 255; continue; }
+      const stripe = Math.floor((y0 - TOP) / 3) % 6 === 0 ? .9 : 1;
+      dd[i] = c[0] * stripe; dd[i + 1] = c[1] * stripe; dd[i + 2] = c[2] * stripe; dd[i + 3] = 255;
+    }
+    ox.putImageData(img, 0, 0);
+    ctx.imageSmoothingEnabled = true; ctx.drawImage(off, 0, 0, S.W, S.H);
+    const k = S.W / GW;
+    // 力的箭頭
+    const fy = (TOP + 55) * k;
+    if (force === 'push') { arrow(ctx, 6, fy, 26 + a * 30, fy, '#C62828', 4, 12); arrow(ctx, S.W - 6, fy, S.W - 26 - a * 30, fy, '#C62828', 4, 12); }
+    else { arrow(ctx, 40, fy, 4, fy, '#1565C0', 4, 12); arrow(ctx, S.W - 40, fy, S.W - 4, fy, '#1565C0', 4, 12); }
+    let txt;
+    if (wet === 'wet') txt = force === 'push' ? (a > .05 ? '<b>褶皺</b>：岩層<b>彎曲</b>但沒有斷。地底深處高溫高壓，岩層比較有「可塑性」（容易變形而不斷裂），像濕黏土一樣會彎。' : '按住滑桿慢慢往右拉，對黏土施力。')
+      : '拉張時，濕黏土會被拉長、變薄（課本沒有做這個情況）。';
+    else {
+      if (a > .05) {
+        // 斷層線與上下盤標示
+        ctx.strokeStyle = '#222'; ctx.lineWidth = 2.5; ctx.setLineDash([7, 5]);
+        ctx.beginPath(); ctx.moveTo(FX * k, TOP * k - 30); ctx.lineTo((FX + (GH - TOP) / Math.tan(DIP)) * k, S.H); ctx.stroke(); ctx.setLineDash([]);
+        label(ctx, '斷層面', FX * k + 6, TOP * k - 30, { size: 12, bold: true });
+        label(ctx, '上盤', 330, 210, { size: 15, bold: true, bg: 'rgba(255,255,255,.85)' });
+        label(ctx, '下盤', 70, 250, { size: 15, bold: true, bg: 'rgba(255,255,255,.85)' });
+        const ux = Math.cos(DIP), uy = Math.sin(DIP), mx = 300, my = 160;
+        if (force === 'push') arrow(ctx, mx + ux * 22, my + uy * 22, mx - ux * 22, my - uy * 22, '#C62828', 3, 10);
+        else arrow(ctx, mx - ux * 22, my - uy * 22, mx + ux * 22, my + uy * 22, '#1565C0', 3, 10);
+      }
+      txt = a <= .05 ? '按住滑桿慢慢往右拉，對黏土施力。' : force === 'push'
+        ? '<b>逆斷層</b>：受到<b>擠壓</b>，岩層斷裂後，<b>上盤沿著斷層面往上</b>移動。接近地表的岩層比較「脆」，像乾黏土一樣會斷。例：921 車籠埔斷層。'
+        : '<b>正斷層</b>：受到<b>拉張</b>，岩層斷裂後，<b>上盤沿著斷層面往下</b>掉。例：裂谷兩側常見正斷層。';
+    }
+    document.getElementById('c6clayTxt').innerHTML = txt;
+  }
+  function drawSlide(a) {
+    // 從空中往下看：一條道路和一條小河被斷層水平錯開
+    ctx.fillStyle = '#C5D9A4'; ctx.fillRect(0, 0, S.W, S.H);
+    const off2 = a * 70, fy = 160;
+    ctx.save(); ctx.beginPath(); ctx.rect(0, 0, S.W, fy); ctx.clip(); ctx.translate(-off2 / 2, 0); roadRiver(); ctx.restore();
+    ctx.save(); ctx.beginPath(); ctx.rect(0, fy, S.W, S.H - fy); ctx.clip(); ctx.translate(off2 / 2, 0); roadRiver(); ctx.restore();
+    ctx.strokeStyle = '#222'; ctx.lineWidth = 3; ctx.setLineDash([8, 6]); ctx.beginPath(); ctx.moveTo(0, fy); ctx.lineTo(S.W, fy); ctx.stroke(); ctx.setLineDash([]);
+    arrow(ctx, 330, fy - 24, 270, fy - 24, '#C62828', 3, 10); arrow(ctx, 150, fy + 24, 210, fy + 24, '#C62828', 3, 10);
+    label(ctx, '斷層（從空中往下看）', 10, fy - 10, { size: 12, bold: true });
+    document.getElementById('c6clayTxt').innerHTML = a > .05 ? '<b>平移斷層</b>：岩層沿著斷層<b>水平</b>錯動，沒有明顯上下移動。從空中看，原本連續的道路、河流被「左右」錯開。例：2025 年緬甸實皆斷層。' : '按住滑桿慢慢往右拉，對岩層施力。';
+    function roadRiver() {
+      ctx.fillStyle = '#9E9E9E'; ctx.fillRect(200, 0, 26, S.H); ctx.strokeStyle = '#fff'; ctx.setLineDash([10, 10]); ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(213, 0); ctx.lineTo(213, S.H); ctx.stroke(); ctx.setLineDash([]);
+      ctx.strokeStyle = '#4F86C6'; ctx.lineWidth = 9; ctx.beginPath(); ctx.moveTo(340, 0); ctx.bezierCurveTo(310, 100, 370, 220, 330, S.H); ctx.stroke();
+      ctx.fillStyle = '#2E7D32'; [[80, 60], [110, 250], [420, 90], [60, 200]].forEach(([x, y]) => { ctx.beginPath(); ctx.arc(x, y, 12, 0, 7); ctx.fill(); });
+    }
+  }
+  const pick = (sel, key, setter) => document.querySelectorAll(sel + ' .chip').forEach(b => b.onclick = () => { document.querySelectorAll(sel + ' .chip').forEach(x => x.classList.remove('on')); b.classList.add('on'); setter(b.dataset[key]); amt.value = 0; amt.dispatchEvent(new Event('input')); });
+  pick('#c6wet', 'w', v => wet = v); pick('#c6force', 'f', v => force = v);
+  registerSim('t3', { start: draw, resize: draw });
+
+  /* ---------- 找上盤 ---------- */
+  const hc = document.getElementById('c6hw');
+  const H = stage(hc, 420, 280), hx = H.ctx;
+  let q = null, score = { ok: 0, n: 0 }, answered = false;
+  function newQ() {
+    q = { dipRight: Math.random() < .5, normal: Math.random() < .5 }; answered = false;
+    document.getElementById('c6hwTxt').innerHTML = '點一下你認為是<b>上盤</b>的那一塊。';
+    drawH();
+  }
+  function faultX(y) { const top = 60, x0 = 210, k = 1 / Math.tan(55 * Math.PI / 180); return q.dipRight ? x0 + (y - top) * k : x0 - (y - top) * k; }
+  function isHW(x, y) { return q.dipRight ? x > faultX(y) : x < faultX(y); }
+  function drawH(hl) {
+    H.fit(); hx.clearRect(0, 0, H.W, H.H);
+    hx.fillStyle = '#EAF3F8'; hx.fillRect(0, 0, H.W, H.H);
+    const off = 34 * (q.normal ? 1 : -1);          // 上盤相對下盤往下(+)或往上(−)
+    const LC = ['#D6A870', '#A07A5A', '#E8D2A0', '#788C6E', '#C89682'];
+    for (let y = 20; y < H.H; y += 2) for (let x = 0; x < H.W; x += 2) {
+      const hw = isHW(x, y), y0 = y - (hw ? off : 0);
+      if (y0 < 60) continue;
+      const k = Math.floor((y0 - 60) / 36) % LC.length;
+      hx.fillStyle = hl && hw === (hl === 'hw') ? '#FFD27A' : LC[k]; hx.fillRect(x, y, 2, 2);
+    }
+    hx.strokeStyle = '#222'; hx.lineWidth = 3; hx.beginPath(); hx.moveTo(faultX(40), 40); hx.lineTo(faultX(H.H), H.H); hx.stroke();
+    label(hx, '斷層面', faultX(40) + (q.dipRight ? -60 : 10), 30, { size: 12, bold: true });
+  }
+  hc.addEventListener('pointerdown', e => {
+    if (answered) return;
+    const p = H.pt(e); if (p.y < 40) return;
+    if (p.y - (isHW(p.x, p.y) ? 34 * (q.normal ? 1 : -1) : 0) < 60) return;   // 點到天空不算
+    const pickedHW = isHW(p.x, p.y); answered = true; score.n++; if (pickedHW) score.ok++;
+    drawH('hw');
+    const typ = q.normal ? '正斷層（上盤往下掉）' : '逆斷層（上盤往上推）';
+    document.getElementById('c6hwTxt').innerHTML = (pickedHW ? '✔ 答對！' : '✘ 不是喔。') + `黃色那塊才是上盤：它在<b>傾斜斷層面的上方</b>（斷層面「懸」在它的底下）。<br>看地層的錯動，這是 <b>${typ}</b>。<br><span class="note">（圖中為了好看出差異，上盤只畫了上下移動；真實的上盤是沿著斜的斷層面滑動。）</span>`;
+    document.getElementById('c6hwScore').innerHTML = `<div><b>${score.ok} / ${score.n}</b><span>答對題數</span></div>`;
+  });
+  document.getElementById('c6hwNew').onclick = newQ;
+  newQ();
+  registerSim('t3', { start: () => drawH(answered ? 'hw' : null), resize: () => drawH(answered ? 'hw' : null) });
+})();
+
+/* ==== t4.js ==== */
+/* ===== 第六章 分頁 4：臺灣地震模擬器（規模 vs 震度）＋震度分級表 =====
+   簡化震度公式（以 0403 花蓮地震校準）：I = 1.2·M − 2·log10(R) + 0.54，R = 震源距離（公里）。 */
+(() => {
+  const cv = document.getElementById('c6eq'); if (!cv) return;
+  const S = stage(cv, 420, 560), ctx = S.ctx;
+  const L0 = 119.9, L1 = 122.2, A0 = 21.8, A1 = 25.45, KM = 111;
+  const P = (lo, la) => [(lo - L0) / (L1 - L0) * S.W, (A1 - la) / (A1 - A0) * S.H];
+  const inv = (x, y) => [L0 + x / S.W * (L1 - L0), A1 - y / S.H * (A1 - A0)];
+  const CLS = [['0', '#FFFFFF', '人無感覺'], ['1', '#D7F0C8', '人靜止時可感覺微小搖晃'], ['2', '#A6DD8C', '多數人可感覺搖晃，懸吊物會搖晃'], ['3', '#F6E96B', '所有人都感覺搖晃，門窗發出聲音'],
+    ['4', '#F4B740', '有些人會尋求躲避，房屋搖動甚烈，少數未固定物品可能傾倒'], ['5弱', '#EF8A2E', '多數人驚嚇恐慌，未固定的物品掉落'], ['5強', '#E1622A', '人難以走動，部分門窗變形、牆壁產生裂痕'],
+    ['6弱', '#C9402A', '人站立困難，傢俱移動或翻倒，門窗扭曲變形'], ['6強', '#A3262A', '耐震能力較強的房屋也可能受損，大範圍停電或通訊中斷'], ['7', '#6E1323', '山崩地裂，鐵軌彎曲']];
+  const cls = I => I < .5 ? 0 : I < 1.5 ? 1 : I < 2.5 ? 2 : I < 3.5 ? 3 : I < 4.5 ? 4 : I < 5 ? 5 : I < 5.5 ? 6 : I < 6 ? 7 : I < 6.5 ? 8 : 9;
+  let epi = [121.62, 23.84];
+  const mag = bindRange('c6M', v => (v / 10).toFixed(1), () => draw());
+  const dep = bindRange('c6D', v => v + ' 公里' + (v > 70 ? '（深層）' : v <= 30 ? '（淺層）' : ''), () => draw());
+  const I_at = (lo, la) => { const dx = (lo - epi[0]) * KM * Math.cos(23.5 * Math.PI / 180), dy = (la - epi[1]) * KM; const R = Math.max(5, Math.hypot(dx, dy, +dep.value)); return 1.2 * (+mag.value / 10) - 2 * Math.log10(R) + .54; };
+  let grid = null;
+  function draw() {
+    S.fit(); ctx.clearRect(0, 0, S.W, S.H);
+    ctx.fillStyle = '#D8ECF5'; ctx.fillRect(0, 0, S.W, S.H);
+    if (!grid) { grid = []; for (let y = 0; y < S.H; y += 5) for (let x = 0; x < S.W; x += 5) { const ll = inv(x + 2.5, y + 2.5); if (inPoly(ll, TW_COAST)) grid.push([x, y, ll]); } }
+    grid.forEach(([x, y, ll]) => { ctx.fillStyle = CLS[cls(I_at(...ll))][1]; ctx.fillRect(x, y, 5.6, 5.6); });
+    ctx.strokeStyle = '#555'; ctx.lineWidth = 1.2; ctx.beginPath(); TW_COAST.forEach(([lo, la], i) => { const [x, y] = P(lo, la); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.closePath(); ctx.stroke();
+    // 城市
+    TW_CITY.forEach(([n, lo, la]) => { const [x, y] = P(lo, la); const c = cls(I_at(lo, la)); ctx.fillStyle = '#222'; ctx.beginPath(); ctx.arc(x, y, 3, 0, 7); ctx.fill(); label(ctx, `${n} ${CLS[c][0]}`, x + 6, y, { size: 12, bold: true, bg: 'rgba(255,255,255,.8)' }); });
+    // 震央
+    const [ex, ey] = P(...epi);
+    ctx.fillStyle = '#E53935'; ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.beginPath();
+    for (let k = 0; k < 10; k++) { const r = k % 2 ? 6 : 14, a = k / 10 * Math.PI * 2 - Math.PI / 2; ctx.lineTo(ex + Math.cos(a) * r, ey + Math.sin(a) * r); } ctx.closePath(); ctx.fill(); ctx.stroke();
+    label(ctx, '震央', ex + 18, ey + 18, { align: 'left', bold: true, size: 13, color: '#B71C1C', bg: 'rgba(255,255,255,.85)' });
+    // 圖例
+    CLS.forEach(([n, c], i) => { ctx.fillStyle = c; ctx.fillRect(8, 300 + i * 20, 18, 18); ctx.strokeStyle = '#999'; ctx.strokeRect(8, 300 + i * 20, 18, 18); label(ctx, n, 36, 309 + i * 20, { size: 11 }); });
+    label(ctx, '震度', 8, 288, { size: 12, bold: true });
+    drawSide();
+    const M = +mag.value / 10, Imax = I_at(...epi);
+    document.getElementById('c6eqList').innerHTML = `<div class="readout"><div><b>${M.toFixed(1)}</b><span>規模（全臺只有這一個數字）</span></div><div><b>${CLS[cls(Imax)][0]} 級</b><span>震央附近的震度</span></div>
+      <div><b>${Math.pow(10, 1.5 * (M - 5)).toFixed(M >= 6 ? 0 : 1)} 倍</b><span>能量是規模 5.0 的</span></div></div>`;
+  }
+  // 側視圖：震源、震央、震源深度
+  const sc = document.getElementById('c6side');
+  const SD = stage(sc, 360, 150), sx = SD.ctx;
+  function drawSide() {
+    SD.fit(); sx.clearRect(0, 0, SD.W, SD.H);
+    sx.fillStyle = '#E3F1FA'; sx.fillRect(0, 0, SD.W, 30); sx.fillStyle = '#C8B49A'; sx.fillRect(0, 30, SD.W, SD.H - 30);
+    const d = +dep.value, y = 30 + d / 150 * 110;
+    sx.setLineDash([5, 4]); sx.strokeStyle = '#333'; sx.beginPath(); sx.moveTo(180, 30); sx.lineTo(180, y); sx.stroke(); sx.setLineDash([]);
+    sx.fillStyle = '#E53935'; sx.beginPath(); sx.arc(180, 30, 6, 0, 7); sx.fill(); sx.beginPath(); sx.arc(180, y, 7, 0, 7); sx.fill();
+    sx.strokeStyle = 'rgba(229,57,53,.5)'; for (let r = 18; r < 70; r += 16) { sx.beginPath(); sx.arc(180, y, r, 0, 7); sx.stroke(); }
+    label(sx, '震央（地表）', 190, 18, { size: 12, bold: true }); label(sx, '震源（岩層斷裂處）', 194, y, { size: 12, bold: true, color: '#fff' });
+    label(sx, `震源深度 ${d} km`, 172, (30 + y) / 2, { size: 12, align: 'right', bold: true, color: '#3E2723' });
+  }
+  let drag = false;
+  cv.addEventListener('pointerdown', e => { const p = S.pt(e), [ex, ey] = P(...epi); if (Math.hypot(p.x - ex, p.y - ey) < 26) { drag = true; cv.setPointerCapture(e.pointerId); } else { epi = inv(p.x, p.y); draw(); } });
+  cv.addEventListener('pointermove', e => { if (!drag) return; const p = S.pt(e); epi = inv(clamp(p.x, 0, S.W), clamp(p.y, 0, S.H)); draw(); });
+  cv.addEventListener('pointerup', () => drag = false);
+  const PRE = { hl: [121.62, 23.84, 71, 22], cc: [120.82, 23.85, 73, 8], deep: [121.75, 24.55, 60, 120] };
+  document.querySelectorAll('#p-t4 [data-pre]').forEach(b => b.onclick = () => { const [lo, la, m, d] = PRE[b.dataset.pre]; epi = [lo, la]; mag.value = m; dep.value = d; [mag, dep].forEach(x => x.dispatchEvent(new Event('input'))); });
+  registerSim('t4', { start: draw, resize: draw });
+  document.getElementById('c6scale').innerHTML = '<tr><th>震度</th><th>人的感受與影響</th></tr>' + CLS.map(([n, c, t]) => `<tr><td style="background:${c};color:${['6弱', '6強', '7', '5強'].includes(n) ? '#fff' : '#222'};font-weight:bold">${n}</td><td style="text-align:left">${t}</td></tr>`).join('');
+})();
+
+/* ==== t5.js ==== */
+/* ===== 第六章 分頁 5：地震預警（P 波、S 波、警報、盲區） ===== */
+(() => {
+  const cv = document.getElementById('c6ew'); if (!cv) return;
+  const S = stage(cv, 420, 560), ctx = S.ctx;
+  const L0 = 119.9, L1 = 122.6, A0 = 21.8, A1 = 25.45, KM = 111 * Math.cos(23.5 * Math.PI / 180);
+  const kmPerPx = (L1 - L0) * KM / S.W;
+  const P = (lo, la) => [(lo - L0) / (L1 - L0) * S.W, (A1 - la) / (A1 - A0) * S.H];
+  const inv = (x, y) => [L0 + x / S.W * (L1 - L0), A1 - y / S.H * (A1 - A0)];
+  const VP = 6, VS = 3.5, DEPTH = 15;
+  let epi = [121.75, 23.85], t = -1, run = false;
+  const proc = bindRange('c6proc', v => v + ' 秒', () => draw());
+  const dist = (lo, la) => Math.hypot((lo - epi[0]) * KM, (la - epi[1]) * 111);
+  function draw() {
+    S.fit(); ctx.clearRect(0, 0, S.W, S.H);
+    ctx.fillStyle = '#D8ECF5'; ctx.fillRect(0, 0, S.W, S.H);
+    const T = +proc.value, alerted = t >= T;
+    ctx.fillStyle = alerted ? '#FFF3C4' : '#CFE3B8';
+    ctx.beginPath(); TW_COAST.forEach(([lo, la], i) => { const [x, y] = P(lo, la); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = '#6E8B5A'; ctx.lineWidth = 1.2; ctx.stroke();
+    const [ex, ey] = P(...epi);
+    // 盲區
+    const blind = Math.sqrt(Math.max(0, (VS * T) ** 2 - DEPTH ** 2));
+    ctx.setLineDash([6, 4]); ctx.strokeStyle = '#C62828'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(ex, ey, blind / kmPerPx, 0, 7); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = 'rgba(198,40,40,.1)'; ctx.fill();
+    label(ctx, `預警盲區（半徑約 ${Math.round(blind)} 公里）`, ex, ey - blind / kmPerPx - 10, { align: 'center', size: 12, color: '#B71C1C', bold: true, bg: 'rgba(255,255,255,.8)' });
+    // 波前
+    if (t >= 0) {
+      const rp = Math.sqrt(Math.max(0, (VP * t) ** 2 - DEPTH ** 2)), rs = Math.sqrt(Math.max(0, (VS * t) ** 2 - DEPTH ** 2));
+      ctx.strokeStyle = 'rgba(30,136,229,.9)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(ex, ey, rp / kmPerPx, 0, 7); ctx.stroke();
+      ctx.strokeStyle = 'rgba(229,57,53,.95)'; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(ex, ey, rs / kmPerPx, 0, 7); ctx.stroke();
+      if (rp > 5) label(ctx, 'P 波（較快、較弱）', ex + rp / kmPerPx * .7, ey - rp / kmPerPx * .7, { size: 12, color: '#0D47A1', bold: true, bg: 'rgba(255,255,255,.8)' });
+      if (rs > 5) label(ctx, 'S 波（較慢、搖得兇）', ex - rs / kmPerPx * .7, ey + rs / kmPerPx * .7, { size: 12, color: '#B71C1C', bold: true, bg: 'rgba(255,255,255,.8)', align: 'right' });
+    }
+    // 城市
+    const rows = TW_CITY.map(([n, lo, la]) => {
+      const d = dist(lo, la), R = Math.hypot(d, DEPTH), tS = R / VS, lead = tS - T;
+      const shaking = t >= tS, gotAlert = t >= T;
+      const [x, y] = P(lo, la);
+      ctx.fillStyle = shaking ? '#E53935' : gotAlert ? '#FFB300' : '#455A64'; ctx.beginPath(); ctx.arc(x, y, shaking ? 6 : 4, 0, 7); ctx.fill();
+      label(ctx, n + (gotAlert && !shaking ? ' 📱' : shaking ? ' 💥' : ''), x + 7, y, { size: 12, bold: true, bg: 'rgba(255,255,255,.8)' });
+      return [n, d, lead];
+    }).sort((a, b) => a[1] - b[1]);
+    // 震央
+    ctx.fillStyle = '#E53935'; ctx.beginPath(); for (let k = 0; k < 10; k++) { const r = k % 2 ? 5 : 12, a = k / 10 * Math.PI * 2 - Math.PI / 2; ctx.lineTo(ex + Math.cos(a) * r, ey + Math.sin(a) * r); } ctx.closePath(); ctx.fill();
+    if (alerted && t < T + 1.5) label(ctx, '📢 國家級警報發出！', S.W / 2, 24, { align: 'center', size: 16, bold: true, color: '#fff', bg: '#C62828' });
+    document.getElementById('c6ewClock').innerHTML = `<div><b>${t < 0 ? '—' : t.toFixed(1) + ' 秒'}</b><span>地震發生後</span></div><div><b>${T} 秒</b><span>警報發出時間</span></div>`;
+    document.getElementById('c6ewList').innerHTML = '<table class="simple"><tr><th>城市</th><th>離震央</th><th>預警時間</th></tr>' +
+      rows.map(([n, d, lead]) => `<tr><td>${n}</td><td>${Math.round(d)} km</td><td style="color:${lead <= 0 ? '#C62828' : '#2E7D32'};font-weight:bold">${lead <= 0 ? '來不及（盲區）' : '約 ' + Math.round(lead) + ' 秒'}</td></tr>`).join('') + '</table>';
+  }
+  const L = loop(dt => { if (!run) return; t += dt * 4; if (t > 90) { run = false; } draw(); });   // 4 倍速
+  document.getElementById('c6ewGo').onclick = () => { t = 0; run = true; };
+  document.getElementById('c6ewHL').onclick = () => { epi = [121.75, 23.85]; t = -1; run = false; draw(); };
+  cv.addEventListener('pointerdown', e => { const p = S.pt(e); epi = inv(p.x, p.y); t = -1; run = false; draw(); });
+  registerSim('t5', { start() { draw(); L.start(); }, stop() { L.stop(); }, resize: draw });
+})();
+
+/* ==== t6.js ==== */
+/* ===== 第六章 分頁 6：臺灣板塊時光機、抬升計算器、內外營力分類 ===== */
+(() => {
+  const cv = document.getElementById('c6tw'); if (!cv) return;
+  const S = stage(cv, 440, 560), ctx = S.ctx;
+  const L0 = 119.6, L1 = 122.9, A0 = 21.6, A1 = 25.6, KMX = 111 * Math.cos(23.5 * Math.PI / 180);
+  const P = (lo, la) => [(lo - L0) / (L1 - L0) * S.W, (A1 - la) / (A1 - A0) * S.H];
+  const RIFT = [[121.62, 24.0], [121.45, 23.6], [121.3, 23.2], [121.15, 22.78]];   // 花東縱谷
+  const COAST_RANGE = [[121.62, 24.0], [121.7, 23.9], [121.55, 23.4], [121.4, 23.0], [121.2, 22.75], [121.15, 22.78], [121.3, 23.2], [121.45, 23.6]];
+  const VOL = [
+    ['大屯火山群', 121.55, 25.18, '北部的火山群，有噴氣孔、溫泉、硫磺。持續有科學監測。', 'EU'],
+    ['基隆火山群', 121.78, 25.12, '九份、金瓜石一帶，火山活動帶來金礦等金屬礦產。', 'EU'],
+    ['龜山島', 121.95, 24.84, '宜蘭外海的火山島，像一隻浮在海上的烏龜。', 'EU'],
+    ['綠島', 121.49, 22.66, '菲律賓海板塊上的火山島，屬於「呂宋島弧」的一部分，正跟著板塊往西北移動。', 'PH'],
+    ['蘭嶼', 121.55, 22.05, '和綠島一樣是島弧上的火山島，一直被板塊載著往臺灣靠近。', 'PH'],
+  ];
+  const ago = bindRange('c6ago', v => v === 0 ? '現在' : (v * 2) + ' 萬年前', () => draw());
+  function shift() { const yrs = +ago.value * 2e4, km = yrs * 0.08 / 1000; return [km * Math.cos(Math.PI / 4) / KMX, -km * Math.sin(Math.PI / 4) / 111]; }   // 過去在東南方
+  function draw() {
+    S.fit(); ctx.clearRect(0, 0, S.W, S.H);
+    ctx.fillStyle = '#4F86C6'; ctx.fillRect(0, 0, S.W, S.H);
+    // 板塊底色
+    ctx.fillStyle = 'rgba(255,255,255,.06)'; ctx.beginPath(); ctx.moveTo(0, 0);
+    const rp = RIFT.map(p => P(...p)); ctx.lineTo(rp[0][0] + 120, 0); rp.forEach(([x, y]) => ctx.lineTo(x, y)); ctx.lineTo(rp[rp.length - 1][0] - 60, S.H); ctx.lineTo(0, S.H); ctx.fill();
+    label(ctx, '歐亞板塊', 40, 60, { size: 16, bold: true, color: '#fff' });
+    label(ctx, '菲律賓海板塊', 300, 470, { size: 16, bold: true, color: '#fff' });
+    // 臺灣本島（歐亞板塊那一側不動）
+    ctx.fillStyle = '#B9D3A0'; ctx.beginPath(); TW_COAST.forEach(([lo, la], i) => { const [x, y] = P(lo, la); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.closePath(); ctx.fill();
+    // 中央山脈
+    ctx.strokeStyle = 'rgba(110,90,60,.45)'; ctx.lineWidth = 10; ctx.lineCap = 'round'; ctx.beginPath(); [[121.5, 24.85], [121.25, 24.2], [121.05, 23.5], [120.88, 22.6]].forEach(([lo, la], i) => { const [x, y] = P(lo, la); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.stroke();
+    label(ctx, '中央山脈', ...P(120.95, 23.9), { size: 12, color: '#5D4037', bold: true, align: 'center' });
+    // 海岸山脈＋綠島蘭嶼（菲律賓海板塊上，回到過去就往東南移）
+    const [dx, dy] = shift(), a = +ago.value;
+    if (a > 0) { ctx.save(); ctx.globalAlpha = .35; ctx.fillStyle = '#E8C98F'; ctx.beginPath(); COAST_RANGE.forEach(([lo, la], i) => { const [x, y] = P(lo, la); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.closePath(); ctx.fill(); ctx.restore(); }
+    ctx.fillStyle = '#D9B66F'; ctx.beginPath(); COAST_RANGE.forEach(([lo, la], i) => { const [x, y] = P(lo + dx, la + dy); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.closePath(); ctx.fill();
+    label(ctx, '海岸山脈', ...P(121.62 + dx, 23.35 + dy), { size: 12, color: '#3E2723', bold: true, bg: 'rgba(255,255,255,.75)' });
+    // 縱谷（板塊交界）
+    ctx.strokeStyle = '#E53935'; ctx.lineWidth = 3; ctx.setLineDash([6, 4]); ctx.beginPath(); rp.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.stroke(); ctx.setLineDash([]);
+    label(ctx, '花東縱谷＝板塊交界', ...P(121.0, 22.95), { size: 12, color: '#B71C1C', bold: true, bg: 'rgba(255,255,255,.85)', align: 'right' });
+    // 推擠方向
+    arrow(ctx, ...P(122.6, 22.6), ...P(122.25, 22.95), '#fff', 4, 14);
+    label(ctx, '每年 7～8 公分', ...P(122.45, 22.45), { size: 12, color: '#fff', bold: true, align: 'center' });
+    // 火山
+    VOL.forEach(v => {
+      const [lo, la] = v[4] === 'PH' ? [v[1] + dx, v[2] + dy] : [v[1], v[2]];
+      const [x, y] = P(lo, la); v.x = x; v.y = y;
+      ctx.fillStyle = '#BF360C'; ctx.beginPath(); ctx.moveTo(x, y - 9); ctx.lineTo(x + 8, y + 6); ctx.lineTo(x - 8, y + 6); ctx.closePath(); ctx.fill();
+      label(ctx, v[0], x + 10, y + (v[0] === '基隆火山群' ? 14 : v[0] === '大屯火山群' ? -8 : 0), { size: 12, bold: true, color: '#fff' });
+    });
+    const yrs = a * 2e4, km = yrs * .08 / 1000;
+    document.getElementById('c6twR').innerHTML = `<div><b>${a === 0 ? '現在' : (a * 2) + ' 萬年前'}</b><span>時間</span></div><div><b>${km.toFixed(km < 10 ? 1 : 0)} 公里</b><span>綠島、蘭嶼當時離現在位置多遠</span></div>` + (a > 0 ? '<div style="grid-column:1/-1"><span>那時它們還是海上的一串火山島（島弧），不是一座完整的山脈漂過來</span></div>' : '');
+  }
+  cv.addEventListener('pointerdown', e => {
+    const p = S.pt(e); const v = VOL.find(v => Math.hypot(v.x - p.x, v.y - p.y) < 18);
+    if (v) document.getElementById('c6twTxt').innerHTML = `<b>▲ ${v[0]}</b>（${v[4] === 'PH' ? '菲律賓海板塊' : '歐亞板塊'}上）<br>${v[3]}`;
+  });
+  registerSim('t6', { start: draw, resize: draw });
+
+  /* ---------- 抬升計算器 ---------- */
+  const uc = document.getElementById('c6up');
+  const U = stage(uc, 420, 260), ux = U.ctx;
+  const rate = bindRange('c6rate', v => v + ' 公釐', () => drawU());
+  const ero = bindRange('c6ero', v => v + ' 公釐', () => drawU());
+  const yrs = bindRange('c6yrs', v => Math.round(Math.pow(v / 100, 2) * 300) + ' 萬年', () => drawU());
+  function drawU() {
+    U.fit(); ux.clearRect(0, 0, U.W, U.H);
+    const Y = Math.pow(+yrs.value / 100, 2) * 3e6, net = (+rate.value - +ero.value) / 1000, h = Math.max(0, net * Y);
+    const sky = ux.createLinearGradient(0, 0, 0, U.H); sky.addColorStop(0, '#CFE7F7'); sky.addColorStop(1, '#F4F9FC'); ux.fillStyle = sky; ux.fillRect(0, 0, U.W, U.H);
+    const base = 230, scale = 180 / 5000, hp = Math.min(h, 6500) * scale;
+    // 玉山參考線
+    const yy = base - 3952 * scale; ux.setLineDash([5, 4]); ux.strokeStyle = '#6D4C41'; ux.beginPath(); ux.moveTo(0, yy); ux.lineTo(U.W, yy); ux.stroke(); ux.setLineDash([]);
+    label(ux, '玉山 3952 公尺', U.W - 6, yy - 10, { align: 'right', size: 12, bold: true, color: '#6D4C41' });
+    ux.fillStyle = '#8D9F6A'; ux.beginPath(); ux.moveTo(40, base); ux.lineTo(210, base - hp); ux.lineTo(240, base - hp * .92); ux.lineTo(380, base); ux.fill();
+    if (h > 3000) { ux.fillStyle = '#fff'; ux.beginPath(); ux.moveTo(210 - 18, base - hp + 18 * hp / 170); ux.lineTo(210, base - hp); ux.lineTo(228, base - hp + 16 * hp / 170); ux.fill(); }
+    ux.fillStyle = '#4F86C6'; ux.fillRect(0, base, U.W, U.H - base);
+    label(ux, `${Math.round(h).toLocaleString()} 公尺`, 210, Math.max(16, base - hp - 14), { align: 'center', bold: true, size: 15, bg: 'rgba(255,255,255,.85)' });
+    const need = net > 0 ? 3952 / net : Infinity;
+    document.getElementById('c6upR').innerHTML = `<div><b>${(net * 1000).toFixed(0)} 公釐/年</b><span>淨抬升（抬升 − 侵蝕）</span></div>
+      <div><b>${need === Infinity ? '長不高！' : Math.round(need / 1e4).toLocaleString() + ' 萬年'}</b><span>長到玉山的高度需要</span></div>
+      <div><b>${(+rate.value / 10).toFixed(1)} 公分</b><span>一年的抬升（比指甲長得還慢好幾倍）</span></div>`;
+  }
+  registerSim('t6', { start: drawU, resize: drawU });
+
+  mountSort(document.getElementById('c6io'), ['內營力（使地表起伏）', '外營力（使地表趨平）'], [
+    ['板塊運動', 0], ['火山活動', 0], ['褶皺與斷層', 0], ['河流', 1, '侵蝕、搬運、沉積。'], ['風', 1], ['冰川', 1], ['海浪', 1], ['地震把海岸抬高 4 公尺（日本能登）', 0, '地殼變動造成的隆起，是內營力。'],
+  ]);
+})();
+
+/* ==== t7.js ==== */
+/* ===== 第六章 分頁 7：岩層積木、排序挑戰、化石分類、46 億年月曆 =====
+   岩層積木的原理：畫面上每一點 (x, e)，沿著「事件清單」從最新往最舊倒推，算出它最初屬於哪一層。
+   e 是高度（往上為正）。基盤（最老的岩石）頂面在 e = BASE。 */
+(() => {
+  const cv = document.getElementById('c6strata'); if (!cv) return;
+  const GW = 240, GH = 150, BASE = 18, AIR = null;
+  const ROCK = {
+    cong: { n: '礫岩', c: [178, 150, 120], tex: 'big' }, sand: { n: '砂岩', c: [226, 196, 128], tex: 'dot' },
+    shale: { n: '頁岩', c: [140, 132, 120], tex: 'line' }, lime: { n: '石灰岩', c: [214, 210, 196], tex: 'shell' },
+    dike: { n: '岩脈（火成岩）', c: [150, 60, 50], tex: '' }, base: { n: '基盤', c: [95, 95, 105], tex: 'hatch' },
+  };
+  const FOS = { tri: ['🪲', '三葉蟲', '古生代', '海洋'], amm: ['🐚', '菊石', '中生代', '海洋'], dino: ['🦕', '恐龍', '中生代', '陸地'], mam: ['🦣', '哺乳類', '新生代', '陸地'], coral: ['🪸', '珊瑚', '（各時代都有）', '海洋'], leaf: ['🍃', '樹葉', '（各時代都有）', '陸地'] };
+  const COS60 = Math.cos(Math.PI / 3), SIN60 = Math.sin(Math.PI / 3);
+
+  /* ---- 核心：倒推 ---- */
+  function hw(ev, x, e) { return x > ev.fx + (GH - e) / Math.tan(Math.PI / 3); }
+  function colorAt(E, x, e, i) {
+    for (let k = i - 1; k >= 0; k--) {
+      const ev = E[k];
+      if (ev.t === 'dep') { if (e > ev.top) return AIR; const r = colorAt(E, x, e, k); return r === AIR ? { r: ev.rock, x, e, k } : r; }
+      if (ev.t === 'ero') { if (e > ev.level) return AIR; }
+      else if (ev.t === 'tilt' || ev.t === 'flip') {
+        const eNow = e, c = Math.cos(-ev.a), s = Math.sin(-ev.a), dx = x - ev.cx, de = e - ev.ce; x = ev.cx + dx * c - de * s; e = ev.ce + dx * s + de * c;
+        if (ev.t === 'flip') { const r = colorAt(E, x, e, k); return r === AIR && eNow <= ev.ce ? { r: 'base', x, e, k: -1 } : r; }   // 翻轉後底下補上基盤
+      }
+      else if (ev.t === 'fault') { if (hw(ev, x, e)) { x -= COS60 * ev.d; e += SIN60 * ev.d; } }
+      else if (ev.t === 'dike') { if (Math.abs(x - (ev.x + e * ev.k)) < ev.w) { const r = colorAt(E, x, e, k); return r === AIR ? AIR : { r: 'dike', x, e, k }; } }
+    }
+    return e <= BASE ? { r: 'base', x, e, k: -1 } : AIR;
+  }
+  // 往前推：化石現在在哪
+  function forward(E, f) {
+    let { x, e } = f;
+    for (let k = f.k + 1; k < E.length; k++) {
+      const ev = E[k];
+      if (ev.t === 'tilt' || ev.t === 'flip') { const c = Math.cos(ev.a), s = Math.sin(ev.a), dx = x - ev.cx, de = e - ev.ce; x = ev.cx + dx * c - de * s; e = ev.ce + dx * s + de * c; }
+      else if (ev.t === 'fault') { if (hw(ev, x, e)) { x += COS60 * ev.d; e -= SIN60 * ev.d; } }
+      else if (ev.t === 'ero') { if (e > ev.level) return null; }
+      else if (ev.t === 'dike') { if (Math.abs(x - (ev.x + e * ev.k)) < ev.w) return null; }
+    }
+    return { x, e };
+  }
+  function surface(E) {
+    let mx = -1e9, mn = 1e9;
+    for (let x = 4; x < GW - 4; x += 6) { let top = BASE; for (let e = GH; e > 0; e -= 1) { if (colorAt(E, x, e, E.length) !== AIR) { top = e; break; } } mx = Math.max(mx, top); mn = Math.min(mn, top); }
+    return [mn, mx];
+  }
+  function makeEvent(E, t, opt = {}) {
+    const [mn, mx] = surface(E);
+    if (t.startsWith('dep:')) return { t: 'dep', rock: t.slice(4), top: Math.min(GH - 6, mx + (opt.th || 22)), fos: opt.fos || '' };
+    if (t === 'ero') return { t: 'ero', level: Math.max(BASE + 4, mn + (mx - mn) * .45 - 6) };
+    if (t === 'tilt') return { t: 'tilt', a: (opt.a ?? 18) * Math.PI / 180, cx: GW / 2, ce: BASE };
+    if (t === 'flip') return { t: 'flip', a: Math.PI * .92, cx: GW / 2, ce: (BASE + mx) / 2 };
+    if (t === 'fault') return { t: 'fault', fx: opt.fx ?? GW * .38, d: opt.d ?? 16 };
+    if (t === 'dike') return { t: 'dike', x: opt.x ?? GW * .68, k: .12, w: 5 };
+  }
+  const NAME = ev => ev.t === 'dep' ? `${ROCK[ev.rock].n}沉積${ev.fos ? `（含${FOS[ev.fos][1]}化石）` : ''}` : { ero: '侵蝕作用', tilt: '岩層受力傾斜', flip: '強烈擠壓，岩層翻轉', fault: '發生斷層', dike: '岩漿侵入，形成岩脈' }[ev.t];
+
+  /* ---- 繪圖 ---- */
+  function render(St, E, opts = {}) {
+    const { ctx } = St; St.fit();
+    const off = document.createElement('canvas'); off.width = GW; off.height = GH; const ox = off.getContext('2d');
+    const img = ox.createImageData(GW, GH), d = img.data, kk = new Int16Array(GW * GH).fill(-9);
+    for (let y = 0; y < GH; y++) for (let x = 0; x < GW; x++) {
+      const e = GH - y, r = colorAt(E, x + .5, e - .5, E.length), i = (y * GW + x) * 4;
+      if (!r) { const sky = y < GH * .5; d[i] = sky ? 214 : 205; d[i + 1] = sky ? 232 : 226; d[i + 2] = sky ? 245 : 240; d[i + 3] = 255; continue; }
+      const R = ROCK[r.r]; let [cr, cg, cb] = R.c; kk[y * GW + x] = r.k;
+      const hx = Math.floor(r.x / 3), he = Math.floor(r.e / 3), h = (hx * 73856093 ^ he * 19349663) >>> 0;
+      let f = 1;
+      if (R.tex === 'big' && h % 7 === 0) f = .72; else if (R.tex === 'dot' && h % 5 === 0) f = .86;
+      else if (R.tex === 'line' && Math.floor(r.e) % 4 === 0) f = .82; else if (R.tex === 'shell' && h % 11 === 0) f = .8;
+      else if (R.tex === 'hatch' && Math.floor(r.x + r.e) % 6 === 0) f = .8;
+      d[i] = cr * f; d[i + 1] = cg * f; d[i + 2] = cb * f; d[i + 3] = 255;
+    }
+    // 層與層的界線加深
+    for (let y = 1; y < GH; y++) for (let x = 0; x < GW; x++) { const a = kk[y * GW + x], b = kk[(y - 1) * GW + x]; if (a !== -9 && b !== -9 && a !== b) { const i = (y * GW + x) * 4; d[i] *= .55; d[i + 1] *= .55; d[i + 2] *= .55; } }
+    ox.putImageData(img, 0, 0);
+    ctx.clearRect(0, 0, St.W, St.H); ctx.imageSmoothingEnabled = false; ctx.drawImage(off, 0, 0, St.W, St.H);
+    const sx = St.W / GW, sy = St.H / GH;
+    // 斷層線
+    E.forEach((ev, k) => { if (ev.t !== 'fault') return;
+      // 斷層之後如果還有傾斜，線也要轉；這裡用兩個端點往前推
+      const xAt = e => ev.fx + (GH - e) / Math.tan(Math.PI / 3), eTop = surface(E.slice(0, k))[1] - 1;
+      const p1 = forward(E, { x: xAt(eTop), e: eTop, k }) || forward(E, { x: xAt(BASE + 30), e: BASE + 30, k }), p2 = forward(E, { x: xAt(BASE - 30), e: BASE - 30, k });
+      if (p1 && p2) { ctx.strokeStyle = 'rgba(30,30,30,.75)'; ctx.setLineDash([5, 4]); ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(p1.x * sx, (GH - p1.e) * sy); ctx.lineTo(p2.x * sx, (GH - p2.e) * sy); ctx.stroke(); ctx.setLineDash([]); }
+    });
+    // 化石
+    if (!opts.noFossil) E.forEach((ev, k) => {
+      if (ev.t !== 'dep' || !ev.fos) return;
+      const prevTop = k ? surfaceAt(E.slice(0, k)) : BASE;
+      [.2, .5, .8].forEach(fx => {
+        const f0 = { x: GW * fx, e: (Math.min(ev.top, GH) + prevTop) / 2, k };
+        const p = forward(E, f0); if (!p || p.e < 0 || p.e > GH || p.x < 0 || p.x > GW) return;
+        const r = colorAt(E, p.x, p.e, E.length); if (!r || r.k !== k) return;
+        label(ctx, FOS[ev.fos][0], p.x * sx, (GH - p.e) * sy, { align: 'center', size: 18 });
+      });
+    });
+    return E;
+  }
+  const topCache = new Map();
+  function surfaceAt(E) { const key = JSON.stringify(E); if (!topCache.has(key)) topCache.set(key, surface(E)[1]); return topCache.get(key); }
+
+  /* ---- 岩層積木 ---- */
+  const S = stage(cv, 480, 300);
+  let E = [], fos = '';
+  function redraw() {
+    render(S, E);
+    document.getElementById('c6log').innerHTML = E.map(ev => `<li>${NAME(ev)}</li>`).join('') || '<li class="note" style="list-style:none;margin-left:-22px">一開始只有灰色的基盤。按左邊的按鈕開始堆積。</li>';
+    const used = new Set(E.filter(ev => ev.t === 'dep').map(ev => ev.rock)); if (E.some(ev => ev.t === 'dike')) used.add('dike');
+    document.getElementById('c6legend').innerHTML = [...used, 'base'].map(r => `<span style="display:inline-block;width:12px;height:12px;background:rgb(${ROCK[r].c});vertical-align:middle;border:1px solid #888"></span> ${ROCK[r].n}`).join('　');
+  }
+  document.querySelectorAll('#p-t7 [data-ev]').forEach(b => b.onclick = () => { if (E.length >= 12) return; E.push(makeEvent(E, b.dataset.ev, { fos })); redraw(); });
+  document.querySelectorAll('#c6fos .chip').forEach(b => b.onclick = () => { document.querySelectorAll('#c6fos .chip').forEach(x => x.classList.remove('on')); b.classList.add('on'); fos = b.dataset.f; });
+  document.getElementById('c6undo').onclick = () => { E.pop(); redraw(); };
+  document.getElementById('c6clear').onclick = () => { E = []; redraw(); };
+  // 課本 p.182：礫石沉積 → 傾斜＋侵蝕 → 砂岩沉積 → 岩脈 → 斷層 → 侵蝕
+  document.getElementById('c6pre1').onclick = () => {
+    E = []; const add = (t, o) => E.push(makeEvent(E, t, o));
+    add('dep:cong', { th: 44 }); add('tilt', { a: 16 }); add('ero'); add('dep:sand', { th: 40 }); add('dike', { x: 112 }); add('fault', { fx: 52, d: 16 }); add('ero'); redraw();
+  };
+  registerSim('t7', { start: redraw, resize: redraw });
+
+  /* ---- 排序挑戰 ---- */
+  const Q = stage(document.getElementById('c6quiz'), 480, 300);
+  let QE = [], order = [], cards = [];
+  function genQuiz() {
+    QE = []; const add = (t, o) => QE.push(makeEvent(QE, t, o));
+    const rocks = ['cong', 'sand', 'shale', 'lime'].sort(() => Math.random() - .5);
+    add('dep:' + rocks[0], { th: 24 }); add('dep:' + rocks[1], { th: 22 });
+    const mid = ['tilt', 'fault', 'dike'].sort(() => Math.random() - .5).slice(0, 1 + Math.floor(Math.random() * 2)).sort((a, b) => (b === 'tilt') - (a === 'tilt'));   // 傾斜一定排在前面，避免順序無法判斷
+    const fx = 50 + Math.random() * 60, dx = fx + 52 + Math.random() * 16;     // 岩脈放在斷層會經過的位置，兩者一定相交，順序才判斷得出來
+    mid.forEach(m => add(m, m === 'tilt' ? { a: 14 + Math.random() * 10 } : m === 'fault' ? { fx, d: 14 } : { x: dx }));
+    add('ero'); add('dep:' + rocks[2], { th: 22 });
+    if (Math.random() < .5) add(mid.includes('dike') ? 'fault' : 'dike', { fx: mid.includes('dike') ? fx + 70 : fx, d: 12, x: dx });   // 第二條斷層要和第一條分開，才看得出發生過兩次
+    cards = QE.map((ev, i) => ({ i, name: NAME(ev) })).sort(() => Math.random() - .5);
+    order = []; showQuiz();
+  }
+  function showQuiz() {
+    render(Q, QE);
+    document.getElementById('c6qCards').innerHTML = cards.map(c => `<button class="chip" data-i="${c.i}" ${order.includes(c.i) ? 'disabled style="opacity:.35"' : ''}>${c.name}</button>`).join('');
+    document.querySelectorAll('#c6qCards .chip').forEach(b => b.onclick = () => { order.push(+b.dataset.i); showQuiz(); });
+    document.getElementById('c6qPick').innerHTML = order.map(i => `<li>${NAME(QE[i])}</li>`).join('');
+    document.getElementById('c6qRes').style.display = 'none';
+  }
+  document.getElementById('c6qNew').onclick = genQuiz;
+  document.getElementById('c6qReset').onclick = () => { order = []; showQuiz(); };
+  document.getElementById('c6qCheck').onclick = () => {
+    const res = document.getElementById('c6qRes'); res.style.display = 'block';
+    // 同名事件（例如兩次侵蝕）視為可互換：比較名稱序列
+    const ok = order.length === QE.length && order.every((i, k) => NAME(QE[i]) === NAME(QE[k]));
+    res.className = 'callout ' + (ok ? 'good' : 'warn');
+    res.innerHTML = ok ? '✔ 完全正確！' : `還不對喔。正確順序是：<ol style="margin:4px 0">${QE.map(ev => `<li>${NAME(ev)}</li>`).join('')}</ol>提示：先找「切過別人」的事件（它比較晚），再找「被侵蝕面截斷」的岩層（它比較早）。`;
+  };
+  registerSim('t7', { start() { if (!QE.length) genQuiz(); else showQuiz(); } });
+
+  /* ---- 化石分類 ---- */
+  mountSort(document.getElementById('c6fsort'), ['海洋環境', '陸地環境'], [
+    ['三葉蟲（代表古生代）', 0], ['菊石（大多代表中生代）', 0], ['珊瑚', 0, '珊瑚只活在溫暖的淺海。'], ['魚類', 0],
+    ['樹葉', 1], ['恐龍（代表中生代）', 1, '課本把恐龍歸在陸地環境。'], ['象', 1, '例：澎湖水道的古菱齒象——所以那裡以前是陸地！'],
+  ]);
+
+  /* ---- 46 億年月曆 ---- */
+  const C = stage(document.getElementById('c6cal'), 760, 170), cx = C.ctx;
+  const AGE = 4567;   // 百萬年
+  const EVT = [
+    [4567, '地球形成', '地球誕生。接下來大約 40 億年都是「前寒武紀」，化石很少，沒有代表性化石。'],
+    [539, '古生代開始（三葉蟲）', '寒武紀開始，生物大量出現。三葉蟲是古生代的代表化石。'],
+    [252, '中生代開始（恐龍、菊石）', '恐龍和大部分菊石化石代表中生代。'],
+    [66, '恐龍滅絕，新生代開始', '哺乳類大量繁殖。新生代的化石以哺乳類為代表。'],
+    [6, '臺灣開始隆起', '板塊碰撞讓臺灣開始從海中隆起（約幾百萬年前）。'],
+    [2.6, '第四紀・人類出現', '人類屬的祖先出現。'],
+    [0.3, '現代人（智人）', '我們這個物種出現，大約 30 萬年前。'],
+  ];
+  const day = a => (AGE - a) / AGE * 365;
+  function fmt(a) {
+    const dd = day(a); const MD = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]; let m = 0, d = dd; while (m < 11 && d >= MD[m]) { d -= MD[m]; m++; }
+    if (m === 11 && dd > 364) { const mins = (dd - 364) * 24 * 60; return `12 月 31 日 ${String(Math.floor(mins / 60)).padStart(2, '0')}:${String(Math.floor(mins % 60)).padStart(2, '0')}`; }
+    return `${m + 1} 月 ${Math.floor(d) + 1} 日`;
+  }
+  let selC = -1;
+  function drawCal() {
+    C.fit(); cx.clearRect(0, 0, C.W, C.H);
+    const x0 = 30, x1 = 730, y = 80, X = dd => x0 + dd / 365 * (x1 - x0);
+    const eras = [[4567, 539, '前寒武紀', '#CFD8DC'], [539, 252, '古生代', '#B3E5FC'], [252, 66, '中生代', '#C8E6C9'], [66, 0, '新生代', '#FFE0B2']];
+    eras.forEach(([a, b, n, c]) => { cx.fillStyle = c; cx.fillRect(X(day(a)), y - 16, X(day(b)) - X(day(a)), 32); if (X(day(b)) - X(day(a)) > 70) label(cx, n, (X(day(a)) + X(day(b))) / 2, y, { align: 'center', size: 13, bold: true }); });
+    ['1月', '3月', '5月', '7月', '9月', '11月'].forEach((m, i) => label(cx, m, X(i * 61), y + 30, { size: 11, color: '#888' }));
+    EVT.forEach(([a, n], i) => {
+      const x = X(day(a)), up = i % 2 === 0;
+      cx.strokeStyle = i === selC ? '#C62828' : '#555'; cx.lineWidth = i === selC ? 3 : 1.5; cx.beginPath(); cx.moveTo(x, y - 16); cx.lineTo(x, up ? 30 : 140); cx.stroke();
+      cx.fillStyle = i === selC ? '#C62828' : '#455A64'; cx.beginPath(); cx.arc(x, up ? 30 : 140, 6, 0, 7); cx.fill();
+      EVT[i].hit = [x, up ? 30 : 140];
+      if (i < 3 || i === selC) label(cx, i === selC ? n : ['地球形成', '古生代開始', '中生代開始'][i], Math.min(x + 8, 700), up ? 18 : 156, { size: 12, bold: true, align: x > 600 ? 'right' : 'left', bg: 'rgba(255,255,255,.85)' });
+    });
+    label(cx, '12 月底擠滿了事件 → 點右邊的標記 ↘', 730, 12, { size: 11, align: 'right', color: '#C62828' });
+  }
+  document.getElementById('c6cal').addEventListener('pointerdown', e => {
+    const p = C.pt(e); let best = -1, bd = 1e9;
+    EVT.forEach((ev, i) => { const d = Math.abs(ev.hit[0] - p.x) + Math.abs(ev.hit[1] - p.y) * .3; if (d < bd) { bd = d; best = i; } });
+    if (best < 0) return; selC = best; drawCal();
+    const [a, n, t] = EVT[best];
+    document.getElementById('c6calTxt').innerHTML = `<b>${n}</b>：約 ${a >= 1 ? a.toLocaleString() + ' 百萬年' : (a * 100) + ' 萬年'}前 → 濃縮月曆上的 <b>${fmt(a)}</b><br>${t}`;
+  });
+  registerSim('t7', { start: drawCal, resize: drawCal });
+})();
+
+/* ==== t8.js ==== */
+/* ===== 分頁 8：總複習（心智圖翻牌、快問快答、迷思總整理） ===== */
+(() => {
+  const mapHost = document.getElementById('t8map'); if (!mapHost) return;
+  const MAP = [
+    ['6-1 地球的構造與板塊運動', '#1F6FB2', [
+      ['怎麼知道地球內部', '鑽井只能到十幾公里；科學家用地震波在地球內部傳遞的變化來推論分層。'],
+      ['地殼', '最外層。大陸地殼：較厚、密度小、花岡岩；海洋地殼：較薄、密度大、玄武岩。'],
+      ['地函', '地殼下方，密度更大的岩石，主要元素為氧、矽、鎂（大部分是固體）。'],
+      ['地核', '最內層，密度最大，主要由鐵、鎳組成。'],
+      ['岩石圈 vs 軟流圈', '岩石圈＝地殼＋部分地函（約 100 公里，堅硬）；軟流圈在其下方，具可塑性、緩慢移動。'],
+      ['板塊', '岩石圈裂成數個板塊，在軟流圈上緩慢移動，互相分離或聚合。'],
+      ['板塊分離', '海洋：中洋脊（例：冰島），離中洋脊愈遠岩石愈老；陸地：裂谷（例：東非大裂谷）。'],
+      ['板塊聚合', '密度大的隱沒：海溝、火山（例：安地斯山）；大陸撞大陸：造山（例：喜馬拉雅山）。'],
+    ]],
+    ['6-2 板塊運動與內營力', '#C62828', [
+      ['褶皺', '岩層受力彎曲，常見於地底深處高溫高壓的岩層（濕黏土）。'],
+      ['斷層', '岩層受力斷裂並沿斷裂面錯動。正斷層：上盤往下（張力）；逆斷層：上盤往上（擠壓）；平移斷層：水平錯動。'],
+      ['震源、震央', '震源＝岩層最先斷裂處；震央＝震源垂直投影到地表；兩者距離＝震源深度。'],
+      ['規模 vs 震度', '規模＝釋放能量，一次地震只有一個值；震度＝各地搖晃程度，0～7 級（5、6 級分強弱）。'],
+      ['地震災害與防災', '房屋倒塌、坡地崩塌、土壤液化。地震時：趴下、掩護、穩住。'],
+      ['地震與火山的分布', '和板塊交界大致吻合（環太平洋地震帶）。'],
+      ['臺灣的板塊', '菲律賓海板塊每年 7～8 公分往西北推擠歐亞板塊，交界在花東縱谷；山脈多為南北走向。'],
+      ['臺灣的火山', '大屯火山群、基隆火山群、龜山島、綠島、蘭嶼；伴隨噴氣孔、溫泉、金屬礦產。'],
+      ['地震預警', '利用電磁波比地震波快搶時間；不是地震預測。離震央太近會在盲區內。'],
+    ]],
+    ['6-3 岩層的紀錄', '#6D4C41', [
+      ['判斷原則 ①', '沉積岩在不受外力時，通常接近水平。'],
+      ['判斷原則 ②', '下方岩層比上方先沉積，年代較久遠。'],
+      ['判斷原則 ③', '較早的事件會被較晚的事件影響（被切過、被侵蝕）。'],
+      ['化石', '古代生物的遺骸或遺跡被沉積物掩埋保存，通常在沉積岩中。'],
+      ['判斷環境', '三葉蟲、菊石、魚類、珊瑚 → 海洋；樹葉、象 → 陸地。'],
+      ['判斷年代', '前寒武紀：無代表化石；古生代：三葉蟲；中生代：恐龍、菊石；新生代：哺乳類。地球約 46 億歲。'],
+    ]],
+  ];
+  mapHost.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px">` +
+    MAP.map(([t, c, items]) => `<div><div style="background:${c};color:#fff;border-radius:10px;padding:8px 12px;font-weight:bold">${t}</div>` +
+      items.map(([k, v]) => `<button class="opt flip" style="margin-top:6px;width:100%;display:block"><b style="color:${c}">${k}</b><div class="fv note" style="display:none;color:var(--ink);margin-top:4px">${v}</div><div class="fq note">（先說說看，再點開）</div></button>`).join('') + `</div>`).join('') + `</div>`;
+  const flip = (b, on) => { $('.fv', b).style.display = on ? 'block' : 'none'; $('.fq', b).style.display = on ? 'none' : 'block'; };
+  $$('.flip', mapHost).forEach(b => b.onclick = () => flip(b, $('.fv', b).style.display === 'none'));
+  $('#t8hide').onclick = () => $$('.flip', mapHost).forEach(b => flip(b, false));
+  $('#t8show').onclick = () => $$('.flip', mapHost).forEach(b => flip(b, true));
+
+  // [單元, 題目, 選項, 正解, 解說]
+  const QB = [
+    ['6-1', '科學家主要是利用什麼來推論地球內部的分層？', ['鑽井到地心取樣', '地震波在地球內部傳遞的變化', '火山噴出的岩漿', '衛星照片'], 1, '鑽井只能到十幾公里深。'],
+    ['6-1', '地球由外到內的分層順序是？', ['地殼、地函、地核', '地核、地函、地殼', '地函、地殼、地核', '岩石圈、地核、地函'], 0, '依密度與成分分層。'],
+    ['6-1', '海洋地殼和大陸地殼相比，何者正確？', ['海洋地殼較厚', '海洋地殼密度較大、以玄武岩為主', '大陸地殼以玄武岩為主', '兩者密度相同'], 1, '大陸地殼較厚、密度小、以花岡岩為主。'],
+    ['6-1', '地核主要由哪些元素組成？', ['氧、矽、鎂', '鐵、鎳', '碳、氫', '鈣、鈉'], 1, '地函才是氧、矽、鎂。'],
+    ['6-1', '「岩石圈」包含哪些部分？', ['只有地殼', '地殼和部分地函', '地函和地核', '只有軟流圈'], 1, '約從地表到 100 公里深。'],
+    ['6-1', '板塊是在哪一層上面緩慢移動？', ['地核', '軟流圈', '大氣圈', '水圈'], 1, '軟流圈具可塑性。'],
+    ['6-1', '冰島位在什麼樣的板塊交界？', ['板塊分離（中洋脊）', '大陸撞大陸', '海洋板塊隱沒', '平移'], 0, '北美洲板塊與歐亞板塊分離。'],
+    ['6-1', '喜馬拉雅山脈是怎麼形成的？', ['兩個大陸板塊互相擠壓', '板塊分離', '海洋板塊隱沒形成火山', '冰川堆積'], 0, '印度板塊與歐亞板塊。'],
+    ['6-1', '海洋板塊與大陸板塊聚合時，哪一塊會隱沒？', ['大陸板塊', '海洋板塊（密度較大）', '兩者都不會', '比較厚的那一塊'], 1, '交界處形成海溝。'],
+    ['6-1', '距離中洋脊愈遠的海洋地殼岩石，年齡會？', ['愈年輕', '愈古老', '都一樣', '沒有規律'], 1, '新地殼在中洋脊形成後向兩側移動。'],
+    ['6-2', '地底深處高溫高壓的岩層受擠壓，較容易形成？', ['斷層', '褶皺', '火山', '三角洲'], 1, '像濕黏土一樣會彎曲。'],
+    ['6-2', '斷層的「上盤」相對「下盤」往下移動，是哪一種斷層？', ['正斷層', '逆斷層', '平移斷層', '褶皺'], 0, '受張力作用。'],
+    ['6-2', '921 地震的車籠埔斷層是逆斷層，代表岩層受到？', ['張力', '擠壓力', '沒有受力', '重力'], 1, '上盤沿斷層面往上。'],
+    ['6-2', '岩層最先斷裂、引發地震的位置稱為？', ['震央', '震源', '震度', '斷層面'], 1, '震央是震源垂直投影到地表的位置。'],
+    ['6-2', '同一次地震，各地測站測得的規模會？', ['都相同', '愈近愈大', '愈遠愈大', '依建築物而定'], 0, '規模代表震源釋放的能量。'],
+    ['6-2', '中央氣象署將震度分為幾級？', ['0～5 級', '0～7 級（5、6 級分強弱）', '1～10 級', '1～12 級'], 1, '共 10 個等級。'],
+    ['6-2', '地震發生時，正確的避難動作是？', ['趕快搭電梯下樓', '趴下、掩護、穩住', '站在窗戶旁觀察', '跑到陽台'], 1, '躲到堅固的桌子下，護住頭頸部。'],
+    ['6-2', '全球地震與火山的分布有什麼特色？', ['平均分布', '和板塊交界大致吻合', '集中在赤道', '集中在極區'], 1, '例如環太平洋地震帶。'],
+    ['6-2', '臺灣位於哪兩個板塊的交界？', ['歐亞板塊與菲律賓海板塊', '太平洋板塊與北美洲板塊', '印澳板塊與南極板塊', '非洲板塊與歐亞板塊'], 0, '交界處在花東縱谷。'],
+    ['6-2', '菲律賓海板塊大約以什麼速率推擠歐亞板塊？', ['每年 7～8 公分', '每年 7～8 公尺', '每天 7～8 公分', '每年 7～8 公里'], 0, '朝西北方推擠。'],
+    ['6-2', '下列何者「不是」火山活動形成的？', ['龜山島', '綠島', '蘭嶼', '外傘頂洲'], 3, '外傘頂洲是海浪與河流帶來的沙堆積成的沙洲（第五章）。'],
+    ['deep', '地震預警系統利用的原理是？', ['可以預測地震發生的時間', '電磁波的傳播速率遠快於地震波', '動物比人先感覺到地震', '地震前地下水會變化'], 1, '目前仍無法預測地震。'],
+    ['deep', '甲地震規模 7.0、震源深 150 公里；乙地震規模 6.0、震源深 10 公里。震央處誰搖得較兇？', ['甲', '乙可能較兇', '一樣'], 1, '震度和距離震源的遠近有很大關係。'],
+    ['deep', 'S 波無法通過外核，這代表外核是？', ['固體', '液體', '氣體', '真空'], 1, 'S 波只能在固體中傳播。'],
+    ['6-3', '沉積岩在沒有受外力的情況下，通常呈現？', ['垂直', '接近水平', '彎曲', '傾斜 45 度'], 1, '判斷原則 ①。'],
+    ['6-3', '岩脈切穿了 A 岩層，代表？', ['A 比岩脈晚形成', 'A 比岩脈早形成', '兩者同時', '無法判斷'], 1, '判斷原則 ③。'],
+    ['6-3', '化石通常保存在哪一類岩石中？', ['火成岩', '沉積岩', '變質岩', '岩漿'], 1, '生物遺骸被泥沙掩埋。'],
+    ['6-3', '發現三葉蟲化石的岩層，最可能形成於？', ['前寒武紀', '古生代', '中生代', '新生代'], 1, '三葉蟲是古生代的代表化石。'],
+    ['6-3', '恐龍化石代表哪一個地質年代？', ['古生代', '中生代', '新生代', '前寒武紀'], 1, '大部分菊石也代表中生代。'],
+    ['6-3', '某岩層中發現珊瑚化石，代表當時是？', ['陸地', '海洋', '沙漠', '冰川'], 1, '珊瑚生活在溫暖淺海。'],
+    ['6-3', '地球大約形成於多久以前？', ['46 萬年前', '4600 萬年前', '46 億年前', '4600 億年前'], 2, '前寒武紀沒有代表性化石。'],
+    ['deep', '上層岩石有三葉蟲化石、下層有恐龍化石，最合理的解釋是？', ['恐龍比三葉蟲早', '岩層曾被強烈擠壓而翻轉', '化石會移動', '測量錯誤'], 1, '疊置原則的前提是「沒有受外力擾動」。'],
+  ];
+  let filt = 'all', cur = null, used = new Set();
+  const pool = () => QB.map((q, i) => [q, i]).filter(([q]) => filt === 'all' || q[0] === filt);
+  function upd() { document.getElementById('t8count').textContent = `題庫 ${pool().length} 題，已抽 ${[...used].filter(i => pool().some(p => p[1] === i)).length} 題`; }
+  function show() {
+    const host = document.getElementById('t8q');
+    if (cur === null) { host.innerHTML = '<p class="note">按「🎲 抽一題」開始。</p>'; return; }
+    const [u, q, opts] = QB[cur];
+    host.innerHTML = `<div class="note">${u === 'deep' ? '🟣 加深' : u}</div><div class="big" style="margin:6px 0 10px;font-size:1.35rem">${q}</div><div class="vl"></div><div class="reveal callout good" id="t8why"></div>`;
+    const v = voteList($('.vl', host), opts);
+    document.getElementById('t8ans').onclick = () => { v.reveal(QB[cur][3]); const w = document.getElementById('t8why'); w.innerHTML = '💡 ' + QB[cur][4]; w.classList.add('show'); };
+  }
+  document.getElementById('t8draw').onclick = () => {
+    let p = pool().filter(([, i]) => !used.has(i)); if (!p.length) { pool().forEach(([, i]) => used.delete(i)); p = pool(); }
+    cur = p[Math.floor(Math.random() * p.length)][1]; used.add(cur); show(); upd();
+  };
+  document.querySelectorAll('#t8filter .chip').forEach(b => b.onclick = () => { document.querySelectorAll('#t8filter .chip').forEach(x => x.classList.remove('on')); b.classList.add('on'); filt = b.dataset.f; upd(); });
+  show(); upd();
+
+  // 迷思總整理（從各分頁的擂台自動彙整）
+  document.getElementById('t8myth').innerHTML = '<tr><th>迷思</th><th>其實是</th><th>在哪一頁</th></tr>' +
+    Object.entries(ARENA).map(([k, a]) => {
+      const tab = k.replace(/b$/, ''), btn = document.querySelector(`nav.tabs button[data-tab="${tab}"]`);
+      return `<tr><td style="text-align:left">${a.title.replace(/^迷思 \d：/, '')}</td><td style="text-align:left">${a.short || a.opts[a.ans]}</td><td><button class="chip" onclick="showTab('${tab}')">${btn ? btn.textContent : tab}</button></td></tr>`;
+    }).join('');
+})();
+
+boot();
+</script>
+</body>
+</html>

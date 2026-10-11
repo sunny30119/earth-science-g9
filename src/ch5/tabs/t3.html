@@ -1,0 +1,70 @@
+<!--NAV: 水循環與鹹水湖-->
+<div class="pagehead">
+  <span class="ref">課本 p.136、140–141｜5-1 ②③</span>
+  <h2>一滴水的旅行，和海水為什麼是鹹的</h2>
+  <p class="hook"><b>回到 tell me why：</b>海水的鹽不是石磨磨出來的。那它是從哪裡來的？答案就藏在「水循環」裡。</p>
+</div>
+
+<details class="teacher"><summary>👩‍🏫 教學提示</summary><div class="inner">
+  ① 水循環：按「追蹤一滴水」，請學生說出這滴水經過哪些過程、在哪裡改變狀態（三態）。調高氣溫，看蒸發變多。<br>
+  ② 鹹水湖：先選「日月潭」、再選「死海」，比較兩者差在哪個條件。最後讓學生自己推論：海洋像哪一種湖？
+</div></details>
+
+<div class="card">
+  <h3>💧 水循環 <span class="tag note">藍點 = 液態水；淺色虛點 = 水蒸氣</span></h3>
+  <div class="grid2">
+    <canvas class="sim" id="t3cyc"></canvas>
+    <div class="controls">
+      <div class="ctl"><label>氣溫 <output for="t3temp"></output></label><input type="range" id="t3temp" min="0" max="40" value="22"></div>
+      <div class="btnrow"><button class="btn warn" id="t3track">🔍 追蹤一滴水</button></div>
+      <div class="callout" id="t3log" style="min-height:120px;font-size:.9rem">按「追蹤一滴水」，這裡會記錄它的旅程。</div>
+      <p class="note">水循環同時搬運了<b>水</b>和<b>熱</b>：蒸發時吸熱、凝結時放熱，所以能調節各地的溫度與氣候。</p>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h3>🧂 鹹水湖製造機</h3>
+  <div class="grid2">
+    <canvas class="sim" id="t3lake"></canvas>
+    <div class="controls">
+      <div class="btnrow">
+        <button class="btn ghost" data-pre="sun">日月潭</button>
+        <button class="btn ghost" data-pre="dead">死海</button>
+        <button class="btn ghost" data-pre="ocean">大海</button>
+      </div>
+      <div class="ctl"><label>河水流入量 <output for="t3in"></output></label><input type="range" id="t3in" min="0" max="100" value="60"></div>
+      <div class="ctl"><label>蒸發強度（氣候多乾） <output for="t3ev"></output></label><input type="range" id="t3ev" min="0" max="100" value="30"></div>
+      <label class="note"><input type="checkbox" id="t3out" checked> 湖有出口（水會繼續往下游流走）</label>
+      <div class="btnrow"><button class="btn" id="t3play">▶ 時間前進</button><button class="btn ghost" id="t3reset">↺ 重設</button></div>
+      <div class="readout" id="t3read"></div>
+    </div>
+  </div>
+</div>
+
+<div data-guess="t3"></div>
+
+<div class="cases">
+  <div class="case world">
+    <div class="where">🌍 國際｜以色列・約旦 死海</div>
+    <h4>每年下降超過 1 公尺的鹹水湖</h4>
+    <p>死海是河流的終點、沒有出口，又位在很乾燥的地方，所以鹹到人可以浮在上面看報紙。</p>
+    <p>近幾十年，上游的約旦河被大量引去用，流進死海的水從每年約 13 億立方公尺，掉到只剩約 1 億。湖面每年下降<span class="num">約 1 公尺以上</span>。</p>
+    <p>湖岸還冒出好幾千個「天坑」：淡水滲進地下，溶掉地底的鹽層，地面就塌下去。</p>
+    <div class="links"><a href="https://zmescience.com/ecology/the-dead-sea-is-draining-sinkholes-pop-up-all-along-its-shores-the-two-are-connected-researchers-say-583857" target="_blank" rel="noopener">ZME Science 報導（英）</a><a href="https://www.youtube.com/results?search_query=Dead+Sea+sinkholes" target="_blank" rel="noopener">🎬 YouTube：死海天坑</a></div>
+  </div>
+  <div class="case">
+    <div class="where">🇹🇼 臺灣｜七股・布袋鹽田</div>
+    <h4>人工版的「蒸發留下鹽」</h4>
+    <p>把海水引進淺淺的鹽田，讓太陽和風把水蒸發掉，鹽就留下來——這就是曬鹽。臺灣西南沿海晴天多、雨少，曾經是主要的鹽產地。</p>
+    <p>臺灣三百多年的曬鹽歷史在 2002 年停產，七股鹽山現在變成觀光景點。</p>
+    <p class="ask">想一想：為什麼鹽田在西南部，不在東北部？</p>
+    <div class="links"><a href="https://www.google.com/search?tbm=isch&q=%E4%B8%83%E8%82%A1%E9%B9%BD%E5%B1%B1+%E9%B9%BD%E7%94%B0" target="_blank" rel="noopener">📷 看照片</a></div>
+  </div>
+</div>
+
+<details class="deep"><summary>🧠 資優挑戰｜迷思擂台：河流一直把鹽帶進海裡，海水會愈來愈鹹嗎？</summary><div class="inner">
+  <div data-arena="t3"></div>
+</div></details>
+
+<div class="takeaway">💬 <b>一句話帶走：</b>海水的鹽來自______；水會蒸發，但______不會，所以留在海裡。</div>

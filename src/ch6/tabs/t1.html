@@ -1,0 +1,63 @@
+<!--NAV: 地球分層-->
+<div class="pagehead">
+  <span class="ref">課本 p.166–168｜6-1 ①②</span>
+  <h2>沒人去過的地球內部，科學家怎麼知道？</h2>
+  <p class="hook"><b>課本 tell me why：</b>《地心歷險記》的主角從火山口走到地心。以現在的科技，真的辦得到嗎？</p>
+</div>
+
+<details class="teacher"><summary>👩‍🏫 教學提示</summary><div class="inner">
+  ① 先投票「人類最深鑽到多深」，再用「放大鏡」從地球全貌一路放大到地表，看那口井有多短。② 點每一層看組成，對照課本隨堂筆記。③ 切到「岩石圈／軟流圈」視角，強調：分法不同（看成分 vs 看軟硬）。④ 資優班：地震波 X 光，用 S 波證明外核是液體、地函是固體。
+</div></details>
+
+<div data-guess="t1"></div>
+
+<div class="card">
+  <h3>🌍 地球切開來</h3>
+  <div class="grid2">
+    <canvas class="sim" id="c6earth" style="background:#0E1A2B"></canvas>
+    <div class="controls">
+      <div class="chips" id="c6view"><button class="chip on" data-v="comp">看成分：地殼／地函／地核</button><button class="chip" data-v="mech">看軟硬：岩石圈／軟流圈</button></div>
+      <div class="ctl"><label>放大鏡（往地表放大） <output for="c6zoom"></output></label><input type="range" id="c6zoom" min="0" max="100" value="0"></div>
+      <div class="callout" id="c6layer" style="min-height:110px">點圖上的任何一層，看它是什麼組成的。</div>
+    </div>
+  </div>
+  <table class="simple" style="margin-top:12px">
+    <tr><th></th><th>大陸地殼</th><th>海洋地殼</th></tr>
+    <tr><td>厚度</td><td>較厚（約 35 公里）</td><td>較薄（約 8 公里）</td></tr>
+    <tr><td>密度</td><td>較小</td><td>較大</td></tr>
+    <tr><td>主要岩石</td><td>花岡岩</td><td>玄武岩</td></tr>
+  </table>
+</div>
+
+<div class="cases">
+  <div class="case world">
+    <div class="where">🌍 國際｜俄羅斯 科拉半島</div>
+    <h4>人類挖過最深的洞：約 12 公里</h4>
+    <p>蘇聯從 1970 年開始鑽「科拉超深鑽孔」，花了將近 20 年，1989 年鑽到約 <span class="num">12.2 公里</span>深就停了——底部溫度高達約 180 °C，岩石變得像塑膠一樣軟，鑽頭鑽不下去。</p>
+    <p>12 公里，只有地球半徑（約 6370 公里）的 0.2%。連地殼都還沒鑽穿。</p>
+    <div class="links"><a href="https://en.wikipedia.org/wiki/Kola_Superdeep_Borehole" target="_blank" rel="noopener">維基百科（英）</a></div>
+  </div>
+  <div class="case">
+    <div class="where">🔬 科學家的方法</div>
+    <h4>用地震波幫地球照「X 光」</h4>
+    <p>第三冊學過：波遇到不同的介質，速度會改變、還會轉彎。地震時，全世界的地震站記錄地震波何時到、從哪裡來，科學家就能反推出地球內部的分層——就像醫生用超音波看身體裡面。</p>
+  </div>
+</div>
+
+<details class="deep"><summary>🧠 資優挑戰｜地震波 X 光＋迷思擂台：地殼下面是一片岩漿海？</summary><div class="inner">
+  <div class="card" style="margin:0 0 10px">
+    <h3>📡 地震波穿過地球</h3>
+    <div class="grid2">
+      <canvas class="sim" id="c6wave" style="background:#0E1A2B"></canvas>
+      <div class="controls">
+        <div class="chips" id="c6wtype"><button class="chip on" data-w="S">S 波（只能在固體中傳播）</button><button class="chip" data-w="P">P 波（固體、液體都能傳）</button></div>
+        <label class="note"><input type="checkbox" id="c6solid"> 假設：外核也是「固體」</label>
+        <div class="callout" id="c6wTxt" style="font-size:.9rem"></div>
+        <p class="note">上方紅星是地震的震源。線條是地震波走的路徑（簡化成直線，真實路徑會彎曲）。</p>
+      </div>
+    </div>
+  </div>
+  <div data-arena="t1"></div>
+</div></details>
+
+<div class="takeaway">💬 <b>一句話帶走：</b>看成分分成地殼、______、______；看軟硬分成堅硬的______圈和可塑的______圈。</div>

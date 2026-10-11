@@ -1,0 +1,2999 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第五章 地球的環境｜互動課本</title>
+<style>
+/* ====== 地科互動課本 共用樣式 ====== */
+:root {
+  --primary: #24584A;      /* 主色：深青綠 */
+  --primary-2: #3B7D6B;
+  --accent: #C46A28;       /* 強調：赭橘 */
+  --deep: #6A3FA0;         /* 資優層：紫 */
+  --deep-bg: #F5F0FB;
+  --bg: #F4F1EA;
+  --card: #FFFFFF;
+  --ink: #23302B;
+  --muted: #66736E;
+  --line: #DDD6C8;
+  --ok: #2E7D32;
+  --bad: #C62828;
+  --tw: #1F6FB2;           /* 臺灣案例 */
+  --world: #8A5A12;        /* 國際案例 */
+  --fs: 17px;
+}
+* { box-sizing: border-box; }
+html { font-size: var(--fs); }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+  line-height: 1.65;
+}
+body.proj { --fs: 21px; }
+body.proj .teacher { display: none !important; }
+body.proj .grid2:not(.even) { grid-template-columns: 1fr; }   /* 投影時：單張模擬圖佔滿整行；成對的圖（.even）保持左右並排 */
+body.proj canvas.sim { max-width: min(100%, calc((100vh - 170px) * var(--ar, 2))) !important; margin-left: auto; margin-right: auto; }   /* 用寬度限制高度：高度不超過一個螢幕 */
+
+/* ---------- 頁首 ---------- */
+header.top {
+  position: sticky; top: 0; z-index: 50;
+  background: var(--primary); color: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,.18);
+}
+.top-row { display: flex; align-items: center; gap: 12px; padding: 8px 16px; flex-wrap: wrap; }
+.top-row h1 { font-size: 1.15rem; margin: 0; white-space: nowrap; }
+.top-row h1 small { font-weight: normal; opacity: .8; font-size: .8rem; margin-left: 6px; }
+.top-tools { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.seg { display: inline-flex; background: rgba(255,255,255,.15); border-radius: 999px; padding: 3px; }
+.seg button {
+  border: 0; background: transparent; color: #fff; padding: 4px 12px; border-radius: 999px;
+  font-size: .85rem; cursor: pointer; font-family: inherit;
+}
+.seg button.on { background: #fff; color: var(--primary); font-weight: bold; }
+.seg button.on.deepon { color: var(--deep); }
+.tool-btn {
+  border: 1px solid rgba(255,255,255,.45); background: transparent; color: #fff;
+  border-radius: 8px; padding: 4px 10px; font-size: .85rem; cursor: pointer; font-family: inherit;
+}
+.tool-btn:hover { background: rgba(255,255,255,.12); }
+nav.tabs {
+  display: flex; gap: 4px; padding: 0 12px; overflow-x: auto; scrollbar-width: thin;
+  background: var(--primary-2);
+}
+nav.tabs button {
+  flex: 0 0 auto; border: 0; background: transparent; color: rgba(255,255,255,.85);
+  padding: 9px 12px 8px; font-size: .9rem; cursor: pointer; font-family: inherit;
+  border-bottom: 3px solid transparent;
+}
+nav.tabs button .n { display: inline-block; min-width: 1.4em; opacity: .7; }
+nav.tabs button.active { color: #fff; font-weight: bold; border-bottom-color: #FFD27A; }
+
+/* ---------- 主內容 ---------- */
+main { max-width: 1180px; margin: 0 auto; padding: 16px; }
+.panel { display: none; }
+.panel.active { display: block; animation: fadein .25s ease; }
+@keyframes fadein { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; } }
+
+.pagehead { margin: 4px 0 14px; }
+.pagehead .ref {
+  display: inline-block; font-size: .78rem; color: var(--primary); border: 1px solid var(--primary);
+  border-radius: 999px; padding: 0 10px; margin-bottom: 4px;
+}
+.pagehead h2 { margin: 2px 0 4px; font-size: 1.55rem; }
+.hook {
+  background: #FFF7E8; border-left: 5px solid var(--accent); padding: 8px 14px; border-radius: 0 8px 8px 0;
+  margin: 8px 0 0;
+}
+.hook b { color: var(--accent); }
+
+.card {
+  background: var(--card); border-radius: 12px; padding: 16px 18px; margin-bottom: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.08), 0 0 0 1px rgba(0,0,0,.03);
+}
+.card h3 { margin: 0 0 8px; font-size: 1.15rem; }
+.card h3 .tag { font-size: .72rem; font-weight: normal; vertical-align: middle; margin-left: 6px; }
+.grid2 { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(260px, 1fr); gap: 16px; align-items: start; }
+.grid2.even { grid-template-columns: 1fr 1fr; }
+@media (max-width: 860px) { .grid2, .grid2.even { grid-template-columns: 1fr; } }
+
+canvas.sim { width: 100%; display: block; border-radius: 10px; background: #EAF3F8; touch-action: none; }
+.controls { display: flex; flex-direction: column; gap: 12px; }
+.ctl label { display: flex; justify-content: space-between; font-size: .9rem; color: var(--muted); }
+.ctl label output { color: var(--ink); font-weight: bold; }
+.ctl input[type=range] { width: 100%; accent-color: var(--primary); height: 28px; }
+.btnrow { display: flex; flex-wrap: wrap; gap: 8px; }
+.btn {
+  border: 0; border-radius: 8px; padding: 8px 14px; font-size: .9rem; cursor: pointer; font-family: inherit;
+  background: var(--primary); color: #fff;
+}
+.btn:hover { filter: brightness(1.08); }
+.btn.ghost { background: transparent; color: var(--primary); border: 1px solid var(--primary); }
+.btn.warn { background: var(--accent); }
+.btn.deepb { background: var(--deep); }
+.btn.sel { outline: 3px solid #FFD27A; }
+.readout {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px;
+}
+.readout div { background: #F3F6F4; border-radius: 8px; padding: 6px 10px; }
+.readout b { display: block; font-size: 1.2rem; color: var(--primary); }
+.readout span { font-size: .78rem; color: var(--muted); }
+.note { font-size: .85rem; color: var(--muted); }
+.callout { background: #EEF6F2; border-radius: 10px; padding: 10px 14px; margin-top: 10px; }
+.callout.warn { background: #FDECEA; }
+.callout.good { background: #E8F5E9; }
+.big { font-size: 1.15rem; font-weight: bold; }
+
+/* ---------- 猜一猜（全班） ---------- */
+.guess { border: 2px dashed #E7C08E; background: #FFFBF4; }
+.guess .q { font-weight: bold; margin-bottom: 8px; }
+.opts { display: flex; flex-direction: column; gap: 6px; }
+.opt {
+  display: flex; align-items: center; gap: 10px; border: 1px solid var(--line); background: #fff;
+  border-radius: 8px; padding: 7px 12px; cursor: pointer; text-align: left; font-size: .95rem; font-family: inherit;
+  color: var(--ink);
+}
+.opt:hover { background: #F7F3EA; }
+.opt .letter {
+  flex: 0 0 auto; width: 26px; height: 26px; border-radius: 50%; background: #EFE7D8; display: grid;
+  place-items: center; font-weight: bold;
+}
+.opt .bar { margin-left: auto; display: flex; align-items: center; gap: 6px; font-size: .8rem; color: var(--muted); white-space: nowrap; }
+.opt .t { flex: 1 1 auto; }
+.opt.picked { outline: 3px solid #FFD27A; }
+.opt .bar i { display: block; height: 8px; background: var(--accent); border-radius: 4px; min-width: 2px; }
+.opt.right { border-color: var(--ok); background: #EEF8EE; }
+.opt.right .letter { background: var(--ok); color: #fff; }
+.opt.wrong { border-color: #E3B4B4; background: #FFF4F4; }
+.vote-ctl { display: flex; gap: 4px; margin-left: 6px; }
+.vote-ctl button { border: 1px solid var(--line); background: #fff; border-radius: 6px; width: 26px; height: 26px; cursor: pointer; }
+.reveal { display: none; margin-top: 10px; }
+.reveal.show { display: block; animation: fadein .3s; }
+
+/* ---------- 資優：迷思擂台 ---------- */
+details.deep {
+  border: 2px solid var(--deep); border-radius: 12px; background: var(--deep-bg); margin-bottom: 16px;
+}
+details.deep > summary {
+  cursor: pointer; padding: 10px 16px; color: var(--deep); font-weight: bold; list-style: none;
+}
+details.deep > summary::-webkit-details-marker { display: none; }
+details.deep > summary::before { content: "▸ "; }
+details.deep[open] > summary::before { content: "▾ "; }
+details.deep > .inner { padding: 0 16px 16px; }
+.arena { background: #fff; border-radius: 10px; padding: 14px 16px; margin-top: 10px; }
+.arena h4 { margin: 0 0 6px; color: var(--deep); font-size: 1.05rem; }
+.steps { display: flex; gap: 6px; margin: 8px 0 12px; flex-wrap: wrap; }
+.steps span {
+  font-size: .78rem; padding: 3px 10px; border-radius: 999px; background: #ECE4F6; color: #8A72AB;
+}
+.steps span.now { background: var(--deep); color: #fff; }
+.steps span.done { background: #D9CCEB; color: var(--deep); }
+.stage { display: none; }
+.stage.show { display: block; animation: fadein .3s; }
+.clash {
+  background: #FFF0F0; border-left: 5px solid var(--bad); padding: 8px 14px; border-radius: 0 8px 8px 0; margin: 8px 0;
+}
+.hint { background: #F4EEFB; border-radius: 8px; padding: 6px 12px; margin: 6px 0; display: none; }
+.hint.show { display: block; animation: fadein .3s; }
+.explain { background: #EDE7F6; border-radius: 8px; padding: 10px 14px; margin-top: 8px; }
+
+/* ---------- 真實案例 ---------- */
+.cases { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; margin-bottom: 16px; }
+.case { background: #fff; border-radius: 12px; padding: 14px 16px; border-top: 5px solid var(--tw); box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+.case.world { border-top-color: var(--world); }
+.case .where { font-size: .75rem; font-weight: bold; color: var(--tw); }
+.case.world .where { color: var(--world); }
+.case h4 { margin: 2px 0 6px; font-size: 1.02rem; }
+.case p { margin: 4px 0; font-size: .92rem; }
+.case .num { font-size: 1.35rem; font-weight: bold; color: var(--accent); }
+.case .links { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; }
+.case .links a {
+  font-size: .78rem; text-decoration: none; border: 1px solid var(--line); border-radius: 999px; padding: 2px 10px; color: var(--primary);
+}
+.case .links a:hover { background: #F3F6F4; }
+.case .ask { margin-top: 6px; font-size: .88rem; color: var(--deep); }
+
+/* ---------- 一句話帶走 / 教學提示 ---------- */
+.takeaway {
+  background: var(--primary); color: #fff; border-radius: 12px; padding: 12px 18px; margin-bottom: 20px;
+}
+.takeaway b { color: #FFD27A; }
+details.teacher {
+  border: 1px dashed #B9B2A3; border-radius: 10px; background: #FBFAF6; margin-bottom: 16px; font-size: .88rem;
+}
+details.teacher summary { cursor: pointer; padding: 6px 12px; color: var(--muted); }
+details.teacher .inner { padding: 0 14px 10px; }
+
+/* ---------- 小元件 ---------- */
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 4px 12px; cursor: pointer;
+  font-size: .88rem; font-family: inherit; color: var(--ink);
+}
+.chip.on { background: var(--primary); color: #fff; border-color: var(--primary); }
+.sortq { display: grid; gap: 8px; }
+.sortq .item { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 6px 10px; background: #F7F5EF; border-radius: 8px; }
+.sortq .item .txt { flex: 1 1 260px; }
+.sortq .item.ok { background: #E8F5E9; }
+.sortq .item.no { background: #FDECEA; }
+table.simple { border-collapse: collapse; width: 100%; font-size: .9rem; }
+table.simple th, table.simple td { border: 1px solid var(--line); padding: 5px 8px; text-align: center; }
+table.simple th { background: #EFEBE1; }
+.picker { position: fixed; inset: 0; background: rgba(0,0,0,.55); display: none; place-items: center; z-index: 100; }
+.picker.show { display: grid; }
+.picker .box { background: #fff; border-radius: 16px; padding: 24px 36px; text-align: center; min-width: 280px; }
+.picker .num { font-size: 5rem; font-weight: bold; color: var(--accent); line-height: 1.1; }
+kbd { background: #eee; border-radius: 4px; padding: 0 5px; font-size: .8em; border: 1px solid #ccc; }
+.footer { text-align: center; font-size: .78rem; color: var(--muted); padding: 10px 0 30px; }
+@media print { header.top, .btn, details.teacher { display: none !important; } .panel { display: block !important; } }
+
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-row">
+    <h1>🌏 第五章 地球的環境<small>國三上自然・地科｜互動電子課本</small></h1>
+    <div class="top-tools">
+      <div class="seg" id="modeSeg" title="資優班會自動展開所有紫色的「資優挑戰」">
+        <button data-mode="normal">一般班</button><button data-mode="deep" class="deepon">資優班</button>
+      </div>
+      <button class="tool-btn" id="pickBtn" title="隨機抽座號">🎲 抽號</button>
+      <button class="tool-btn" id="projBtn" title="字放大、隱藏教師提示">📽 投影模式</button>
+      <button class="tool-btn" id="fsBtn" title="全螢幕">⛶</button>
+    </div>
+  </div>
+  <nav class="tabs">
+    <button data-tab="t0"><span class="n">0</span>開場：臺灣地景巡禮</button>
+    <button data-tab="t1"><span class="n">1</span>地球三圈與水的分布</button>
+    <button data-tab="t2"><span class="n">2</span>地下水與地層下陷</button>
+    <button data-tab="t3"><span class="n">3</span>水循環與鹹水湖</button>
+    <button data-tab="t4"><span class="n">4</span>外營力與河流</button>
+    <button data-tab="t5"><span class="n">5</span>風・冰川・海浪</button>
+    <button data-tab="t6"><span class="n">6</span>河道與海岸線</button>
+    <button data-tab="t7"><span class="n">7</span>岩石與礦物</button>
+    <button data-tab="t8"><span class="n">8</span>總複習</button>
+  </nav>
+</header>
+
+<main>
+<section class="panel" id="p-t0">
+<!--NAV: 開場：臺灣地景巡禮-->
+<div class="pagehead">
+  <span class="ref">課本 p.132–134｜章首</span>
+  <h2>臺灣是一座「地形博物館」</h2>
+  <p class="hook"><b>探究提問：</b>課本章首的海蝕溝、海蝕洞、海蝕拱門、蕈狀岩……在臺灣哪些地方看得到？它們是被什麼力量「雕」出來的？</p>
+</div>
+
+<details class="teacher"><summary>👩‍🏫 教學提示（投影模式會自動隱藏）</summary><div class="inner">
+  建議 5 分鐘。先讓學生猜「哪個地點是海浪造成的」，再點地圖揭曉。上方篩選鈕可以一次只亮一種外營力。<br>
+  本頁也是全章導覽：每個地點的卡片都會告訴你「第幾分頁會學到」，複習時可以直接點過去。
+</div></details>
+
+<div class="grid2">
+  <div class="card">
+    <h3>🗺 點地圖上的地點</h3>
+    <div class="chips" id="t0f" style="margin-bottom:8px">
+      <button class="chip on" data-k="all">全部</button>
+      <button class="chip" data-k="wave">🌊 海浪</button>
+      <button class="chip" data-k="river">🏞 河流</button>
+      <button class="chip" data-k="wind">💨 風</button>
+      <button class="chip" data-k="rock">🪨 岩石</button>
+      <button class="chip" data-k="water">💧 水資源</button>
+    </div>
+    <canvas class="sim" id="t0map" style="background:#D8ECF5;max-width:520px;margin:0 auto"></canvas>
+  </div>
+  <div>
+    <div class="card" id="t0info">
+      <h3>👈 先點一個地點</h3>
+      <p>地圖上每個圓點都是課本出現過、或真的上過新聞的地方。</p>
+      <p class="note">小任務：不看說明，先猜猜看——哪三個地點是「海浪」造成的？</p>
+    </div>
+    <div class="card">
+      <h3>📚 這一章的三條線</h3>
+      <p style="margin:0">
+        <b>5-1 我們的地球</b>：水在哪裡？能用的有多少？<br>
+        <b>5-2 地表的改變與平衡</b>：水、風、冰、浪怎麼把地表「削平」<br>
+        <b>5-3 岩石與礦物</b>：石頭把這些過程記錄下來
+      </p>
+      <div class="callout" style="margin-top:8px">主線一句話：<b>水在動 → 地表被改寫 → 石頭把過程記下來</b></div>
+    </div>
+  </div>
+</div>
+
+<div class="takeaway">💬 <b>一句話帶走：</b>臺灣的海岸和山谷，是「______」日積月累雕出來的。（下課前寫在心智圖正中央）</div>
+
+</section>
+<section class="panel" id="p-t1">
+<!--NAV: 地球三圈與水的分布-->
+<div class="pagehead">
+  <span class="ref">課本 p.135–137｜5-1 ①②</span>
+  <h2>藍色星球上，水其實很「缺」</h2>
+  <p class="hook"><b>課本 tell me why：</b>民間故事說海裡有一個會一直磨出鹽巴的石磨。那海水的鹽到底從哪裡來？（答案在第 3 分頁揭曉，先記在心裡）</p>
+</div>
+
+<details class="teacher"><summary>👩‍🏫 教學提示</summary><div class="inner">
+  先做「三圈連連看」暖身（3 分鐘），再做「一千格的水」：先讓全班投票猜，再一步一步按按鈕把水「倒掉」，最後只剩一小撮能用。資優班接著打開紫色擂台：浮冰融化。
+</div></details>
+
+<div class="grid2 even">
+  <div class="card">
+    <h3>① 地球三圈連連看</h3>
+    <p class="note" style="margin-top:0">點一個事件，看看它牽動了哪幾個「圈」。</p>
+    <canvas class="sim" id="t1sph" style="background:#FAFAF6"></canvas>
+    <div class="chips" id="t1ev" style="margin-top:8px"></div>
+  </div>
+  <div class="card">
+    <h3>② 一千格的水</h3>
+    <p class="note" style="margin-top:0">把地球上所有的水縮成 1000 格（像一瓶 1 公升的寶特瓶，一格 = 1 毫升）。</p>
+    <canvas class="sim" id="t1grid" style="background:#fff"></canvas>
+    <div class="btnrow" style="margin-top:8px">
+      <button class="btn" data-v="all">全部的水</button>
+      <button class="btn" data-v="fresh">只看淡水</button>
+      <button class="btn warn" data-v="use">只看人能直接用的</button>
+    </div>
+    <div class="readout" id="t1read" style="margin-top:8px"></div>
+  </div>
+</div>
+
+<div data-guess="t1"></div>
+
+<div class="cases">
+  <div class="case world">
+    <div class="where">🌍 國際｜格陵蘭</div>
+    <h4>冰川一直在「瘦身」</h4>
+    <p>2025 年格陵蘭冰層淨流失約 <span class="num">1290 億噸</span>，比過去 20 年的平均少，因為那年雪下得多——但還是在流失。</p>
+    <p>這些融冰讓全球海平面在一年內上升約 <b>0.4 公釐</b>。如果整片冰層融光，海平面會上升約 <b>7 公尺</b>。</p>
+    <p class="ask">想一想：課本說冰川是淡水，為什麼它融化反而是壞消息？</p>
+    <div class="links"><a href="https://climate.copernicus.eu/esotc/2025/greenland-ice-sheet" target="_blank" rel="noopener">歐盟哥白尼氣候報告（英）</a><a href="https://svs.gsfc.nasa.gov/31156/" target="_blank" rel="noopener">🎬 NASA 動畫：2002–2025 冰量變化</a></div>
+  </div>
+  <div class="case">
+    <div class="where">🇹🇼 臺灣｜2021 年大旱</div>
+    <h4>雨下得多，水卻不夠用？</h4>
+    <p>2021 年春天，颱風少、梅雨遲到，水庫見底。臺中、苗栗一度實施「<b>供五停二</b>」——一週有兩天沒有自來水。</p>
+    <p>臺灣雨量不少，但山高、河短、坡陡，雨水很快就流進海裡，能留住的不多。</p>
+    <p class="ask">想一想：連結第 3 分頁的水循環——水「跑去哪裡」了？</p>
+    <div class="links"><a href="https://www.google.com/search?q=2021+%E4%BE%9B%E4%BA%94%E5%81%9C%E4%BA%8C+%E8%87%BA%E4%B8%AD+%E6%97%B1%E7%81%BD" target="_blank" rel="noopener">🔎 搜尋相關報導</a></div>
+  </div>
+</div>
+
+<details class="deep"><summary>🧠 資優挑戰｜迷思擂台：海上的冰山融化，海平面會上升嗎？</summary><div class="inner">
+  <div class="card" style="margin:0">
+    <h3>🧪 兩杯水實驗室</h3>
+    <div class="grid2">
+      <canvas class="sim" id="t1ice" style="background:#F7FAFC"></canvas>
+      <div class="controls">
+        <div class="ctl"><label>融化程度 <output for="t1melt"></output></label><input type="range" id="t1melt" min="0" max="100" value="0"></div>
+        <label class="note"><input type="checkbox" id="t1salt"> 杯子裡裝的是「海水」（比淡水重一點）</label>
+        <div class="readout" id="t1iceR"></div>
+        <p class="note">左杯：冰浮在水上（像北極海冰）。右杯：冰放在石頭上（像格陵蘭陸地上的冰）。兩杯一開始水面一樣高、冰一樣多。</p>
+      </div>
+    </div>
+  </div>
+  <div data-arena="t1"></div>
+</div></details>
+
+<div class="takeaway">💬 <b>一句話帶走：</b>地球的水有 97% 是______；人類能直接用的淡水大約只有______%。</div>
+
+</section>
+<section class="panel" id="p-t2">
+<!--NAV: 地下水與地層下陷-->
+<div class="pagehead">
+  <span class="ref">課本 p.138–140｜5-1 ② 地下水</span>
+  <h2>腳底下看不見的水庫</h2>
+  <p class="hook"><b>關鍵問題：</b>雨水滲到地下，會停在哪裡？如果我們抽得比雨水補回去的還快，會發生什麼事？</p>
+</div>
+
+<details class="teacher"><summary>👩‍🏫 教學提示</summary><div class="inner">
+  ① 先不按播放，讓學生指出「透水層、不透水層、地下水面」。② 把井的深度拉一拉，對應課本例題 5-1。③ 把抽水量拉到最大、按播放跑 30 年，觀察地面下沉與海水入侵。④ 按「停止抽水」再跑 30 年——水面回來了，地面沒有回來。
+</div></details>
+
+<div class="card">
+  <h3>🧪 地下水模擬器 <span class="tag note">剖面圖：左邊是內陸，右邊是海</span></h3>
+  <div class="grid2">
+    <canvas class="sim" id="t2cv"></canvas>
+    <div class="controls">
+      <div class="ctl"><label>每年降雨（補注）<output for="t2rain"></output></label><input type="range" id="t2rain" min="0" max="100" value="50"></div>
+      <div class="ctl"><label>每年抽水量 <output for="t2pump"></output></label><input type="range" id="t2pump" min="0" max="100" value="50"></div>
+      <div class="ctl"><label>水井深度 <output for="t2well"></output></label><input type="range" id="t2well" min="2" max="20" value="8"></div>
+      <div class="btnrow">
+        <button class="btn" id="t2play">▶ 時間前進</button>
+        <button class="btn warn" id="t2stop">🚫 停止抽水</button>
+        <button class="btn ghost" id="t2reset">↺ 重設</button>
+      </div>
+      <div class="readout" id="t2read"></div>
+    </div>
+  </div>
+</div>
+
+<div data-guess="t2"></div>
+
+<div class="cases">
+  <div class="case">
+    <div class="where">🇹🇼 臺灣｜雲林・高鐵沿線</div>
+    <h4>25 年來第一次：雲林沒有「顯著下陷」</h4>
+    <p>2025 年監測顯示，雲林全縣沒有任何地方的下陷速率超過每年 3 公分，是近 25 年來第一次。</p>
+    <p>原因：雨下得多，加上政府補助農民把稻田改種<b>比較不耗水</b>的作物，少抽了地下水，還在河邊做「補注」把水灌回地下。</p>
+    <p>為什麼特別緊張高鐵？高鐵公司曾評估：如果每年下陷約 <span class="num">7 公分</span>，10 年內可能危及行車安全。</p>
+    <div class="links"><a href="https://www.storm.mg/article/11146380" target="_blank" rel="noopener">📰 風傳媒報導</a><a href="https://www.google.com/search?tbm=isch&q=%E5%98%89%E7%BE%A9+%E6%9D%B1%E7%9F%B3+%E5%9C%B0%E5%B1%A4%E4%B8%8B%E9%99%B7" target="_blank" rel="noopener">📷 嘉義東石的老房子（課本圖 5-6）</a></div>
+  </div>
+  <div class="case world">
+    <div class="where">🌍 國際｜墨西哥・墨西哥城</div>
+    <h4>從太空看見城市在下沉</h4>
+    <p>NASA 和印度合作的 NISAR 雷達衛星（2025 年發射）發現：墨西哥城部分地區<span class="num">每個月</span>下沉約 2 公分，連機場和地標「獨立天使紀念柱」都在下沉。</p>
+    <p>這座城市蓋在古代湖底的軟黏土上，一百多年來大量抽地下水，黏土被壓扁。1990 年代最嚴重時，一年沉 35 公分。</p>
+    <div class="links"><a href="https://www.jpl.nasa.gov/news/us-indian-space-mission-maps-extreme-subsidence-in-mexico-city/" target="_blank" rel="noopener">NASA JPL 新聞稿（英）</a><a href="https://www.youtube.com/results?search_query=Mexico+City+sinking+NISAR" target="_blank" rel="noopener">🎬 YouTube 影片</a></div>
+  </div>
+  <div class="case world">
+    <div class="where">🌍 國際｜印尼・雅加達</div>
+    <h4>沉到要「搬首都」</h4>
+    <p>雅加達大約 40% 的土地已經低於海平面，北邊最嚴重的地方一年下沉可達 20 公分以上，連防海水的堤防都跟著沉。</p>
+    <p>印尼政府因此決定把首都遷到婆羅洲的「努山塔拉」。主要原因：大量抽取地下水。</p>
+    <div class="links"><a href="https://www.aljazeera.com/news/2022/11/9/hldwhyindonesia-is-abandoning-its-capital-jakarta-to-save-ithld" target="_blank" rel="noopener">半島電視台專題（英）</a></div>
+  </div>
+</div>
+
+<details class="deep"><summary>🧠 資優挑戰｜迷思擂台：停止抽水，地面會彈回來嗎？</summary><div class="inner">
+  <div data-arena="t2"></div>
+</div></details>
+
+<div class="takeaway">💬 <b>一句話帶走：</b>地下水抽得比補得快 → 地層______，而且______回不去。</div>
+
+</section>
+<section class="panel" id="p-t3">
+<!--NAV: 水循環與鹹水湖-->
+<div class="pagehead">
+  <span class="ref">課本 p.136、140–141｜5-1 ②③</span>
+  <h2>一滴水的旅行，和海水為什麼是鹹的</h2>
+  <p class="hook"><b>回到 tell me why：</b>海水的鹽不是石磨磨出來的。那它是從哪裡來的？答案就藏在「水循環」裡。</p>
+</div>
+
+<details class="teacher"><summary>👩‍🏫 教學提示</summary><div class="inner">
+  ① 水循環：按「追蹤一滴水」，請學生說出這滴水經過哪些過程、在哪裡改變狀態（三態）。調高氣溫，看蒸發變多。<br>
+  ② 鹹水湖：先選「日月潭」、再選「死海」，比較兩者差在哪個條件。最後讓學生自己推論：海洋像哪一種湖？
+</div></details>
+
+<div class="card">
+  <h3>💧 水循環 <span class="tag note">藍點 = 液態水；淺色虛點 = 水蒸氣</span></h3>
+  <div class="grid2">
+    <canvas class="sim" id="t3cyc"></canvas>
+    <div class="controls">
+      <div class="ctl"><label>氣溫 <output for="t3temp"></output></label><input type="range" id="t3temp" min="0" max="40" value="22"></div>
+      <div class="btnrow"><button class="btn warn" id="t3track">🔍 追蹤一滴水</button></div>
+      <div class="callout" id="t3log" style="min-height:120px;font-size:.9rem">按「追蹤一滴水」，這裡會記錄它的旅程。</div>
+      <p class="note">水循環同時搬運了<b>水</b>和<b>熱</b>：蒸發時吸熱、凝結時放熱，所以能調節各地的溫度與氣候。</p>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h3>🧂 鹹水湖製造機</h3>
+  <div class="grid2">
+    <canvas class="sim" id="t3lake"></canvas>
+    <div class="controls">
+      <div class="btnrow">
+        <button class="btn ghost" data-pre="sun">日月潭</button>
+        <button class="btn ghost" data-pre="dead">死海</button>
+        <button class="btn ghost" data-pre="ocean">大海</button>
+      </div>
+      <div class="ctl"><label>河水流入量 <output for="t3in"></output></label><input type="range" id="t3in" min="0" max="100" value="60"></div>
+      <div class="ctl"><label>蒸發強度（氣候多乾） <output for="t3ev"></output></label><input type="range" id="t3ev" min="0" max="100" value="30"></div>
+      <label class="note"><input type="checkbox" id="t3out" checked> 湖有出口（水會繼續往下游流走）</label>
+      <div class="btnrow"><button class="btn" id="t3play">▶ 時間前進</button><button class="btn ghost" id="t3reset">↺ 重設</button></div>
+      <div class="readout" id="t3read"></div>
+    </div>
+  </div>
+</div>
+
+<div data-guess="t3"></div>
+
+<div class="cases">
+  <div class="case world">
+    <div class="where">🌍 國際｜以色列・約旦 死海</div>
+    <h4>每年下降超過 1 公尺的鹹水湖</h4>
+    <p>死海是河流的終點、沒有出口，又位在很乾燥的地方，所以鹹到人可以浮在上面看報紙。</p>
+    <p>近幾十年，上游的約旦河被大量引去用，流進死海的水從每年約 13 億立方公尺，掉到只剩約 1 億。湖面每年下降<span class="num">約 1 公尺以上</span>。</p>
+    <p>湖岸還冒出好幾千個「天坑」：淡水滲進地下，溶掉地底的鹽層，地面就塌下去。</p>
+    <div class="links"><a href="https://zmescience.com/ecology/the-dead-sea-is-draining-sinkholes-pop-up-all-along-its-shores-the-two-are-connected-researchers-say-583857" target="_blank" rel="noopener">ZME Science 報導（英）</a><a href="https://www.youtube.com/results?search_query=Dead+Sea+sinkholes" target="_blank" rel="noopener">🎬 YouTube：死海天坑</a></div>
+  </div>
+  <div class="case">
+    <div class="where">🇹🇼 臺灣｜七股・布袋鹽田</div>
+    <h4>人工版的「蒸發留下鹽」</h4>
+    <p>把海水引進淺淺的鹽田，讓太陽和風把水蒸發掉，鹽就留下來——這就是曬鹽。臺灣西南沿海晴天多、雨少，曾經是主要的鹽產地。</p>
+    <p>臺灣三百多年的曬鹽歷史在 2002 年停產，七股鹽山現在變成觀光景點。</p>
+    <p class="ask">想一想：為什麼鹽田在西南部，不在東北部？</p>
+    <div class="links"><a href="https://www.google.com/search?tbm=isch&q=%E4%B8%83%E8%82%A1%E9%B9%BD%E5%B1%B1+%E9%B9%BD%E7%94%B0" target="_blank" rel="noopener">📷 看照片</a></div>
+  </div>
+</div>
+
+<details class="deep"><summary>🧠 資優挑戰｜迷思擂台：河流一直把鹽帶進海裡，海水會愈來愈鹹嗎？</summary><div class="inner">
+  <div data-arena="t3"></div>
+</div></details>
+
+<div class="takeaway">💬 <b>一句話帶走：</b>海水的鹽來自______；水會蒸發，但______不會，所以留在海裡。</div>
+
+</section>
+<section class="panel" id="p-t4">
+<!--NAV: 外營力與河流-->
+<div class="pagehead">
+  <span class="ref">課本 p.142–146｜5-2 ①②</span>
+  <h2>河流：把高山搬到海邊的輸送帶</h2>
+  <p class="hook"><b>課本 tell me why：</b>阿翰去泛舟，發現上游到下游的石頭大小不一樣。為什麼？</p>
+</div>
+
+<details class="teacher"><summary>👩‍🏫 教學提示</summary><div class="inner">
+  ① 先玩「這是哪個作用？」分類（5 分鐘），特別強調「風化不是風」。② 河流模擬：讓它跑 20 秒，請學生描述上、中、下游各堆了什麼。再按「⛈ 豪雨」看看巨石會不會被沖走。③ 把「地勢落差」調小，比較平原河流和山區河流。<br>
+  ④ 資優班：Hjulström 圖的迷思擂台約 15 分鐘。
+</div></details>
+
+<details class="card" style="padding:0">
+  <summary style="cursor:pointer;padding:14px 18px;font-weight:bold;font-size:1.15rem">🧩 暖身：外營力的四個作用，這是哪一個？（點開）</summary>
+  <div style="padding:0 18px 16px">
+  <p class="note" style="margin-top:0">風化（變碎、變質，留在原地）→ 侵蝕（離開原地）→ 搬運（被帶走）→ 沉積（停下來堆積）</p>
+  <div id="t4sort"></div>
+  </div>
+</details>
+
+<div class="card">
+  <h3>🏞 河流模擬器 <span class="tag note">從源頭（左）到出海口（右）的縱剖面</span></h3>
+  <canvas class="sim" id="t4cv" style="background:#EAF4FA"></canvas>
+  <div class="grid2" style="margin-top:10px">
+    <div class="controls">
+      <div class="ctl"><label>地勢落差（坡度） <output for="t4rel"></output></label><input type="range" id="t4rel" min="80" max="280" value="220"></div>
+      <div class="ctl"><label>河水流量 <output for="t4q"></output></label><input type="range" id="t4q" min="30" max="200" value="100"></div>
+      <div class="btnrow">
+        <button class="btn warn" id="t4flood">⛈ 豪雨（流量暫時變 3 倍）</button>
+        <button class="btn ghost" id="t4reset">↺ 清空河床</button>
+      </div>
+    </div>
+    <div>
+      <div class="readout" id="t4read"></div>
+      <p class="note">圖例：<span style="color:#78909C">●</span> 巨石　<span style="color:#A1887F">●</span> 鵝卵石　<span style="color:#E0B455">●</span> 細沙　<span style="color:#8D6E63">•</span> 泥</p>
+    </div>
+  </div>
+</div>
+
+<div data-guess="t4"></div>
+
+<div class="cases">
+  <div class="case">
+    <div class="where">🇹🇼 臺灣｜2004 艾利颱風・石門水庫</div>
+    <h4>泥沙多到整個桃園停水</h4>
+    <p>艾利颱風在山區降下豪雨，大量山坡土石被沖進河裡、一路搬運進石門水庫。水太混濁、淨水廠處理不了，桃園大規模停水十多天。</p>
+    <p>這是「豪雨 → 流量暴增 → 搬運力暴增」最真實的例子。之後石門水庫花了很多年做清淤和排砂。</p>
+    <div class="links"><a href="https://www.google.com/search?q=%E8%89%BE%E5%88%A9%E9%A2%B1%E9%A2%A8+%E7%9F%B3%E9%96%80%E6%B0%B4%E5%BA%AB+%E6%BF%81%E5%BA%A6+%E5%81%9C%E6%B0%B4" target="_blank" rel="noopener">🔎 搜尋相關報導</a></div>
+  </div>
+  <div class="case world">
+    <div class="where">🌍 國際｜中國・黃河</div>
+    <h4>河床比房子還高的「地上河」</h4>
+    <p>黃河流經黃土高原，帶走大量泥沙，是全世界含沙量最高的大河之一。到了下游，地勢平、流速慢，泥沙不斷<b>沉積</b>在河床上，河床愈墊愈高。</p>
+    <p>人們只好一直把堤防加高，結果河床竟然比兩岸的田地和城市還高，被稱為「懸河」。</p>
+    <p class="ask">想一想：用模擬器的哪個設定，可以模仿黃河下游？</p>
+    <div class="links"><a href="https://www.google.com/search?tbm=isch&q=%E9%BB%83%E6%B2%B3+%E6%87%B8%E6%B2%B3+%E7%A4%BA%E6%84%8F%E5%9C%96" target="_blank" rel="noopener">📷 看示意圖</a></div>
+  </div>
+</div>
+
+<details class="deep"><summary>🧠 資優挑戰｜迷思擂台：最細的泥，最容易被水沖走？</summary><div class="inner">
+  <div class="card" style="margin:0">
+    <h3>📈 流速 vs 顆粒大小（Hjulström 圖）</h3>
+    <div class="grid2">
+      <canvas class="sim" id="t4hj" style="background:#fff"></canvas>
+      <div class="controls">
+        <div class="ctl"><label>河水流速 <output for="t4v"></output></label><input type="range" id="t4v" min="0" max="100" value="20"></div>
+        <div id="t4hjList" style="font-size:.9rem"></div>
+        <p class="note">圖依 Hjulström（1935）的研究概略重繪，曲線位置為示意。紅線以上：河床上的顆粒會被「沖起來」；藍線以下：水中的顆粒會「沉下去」；兩線之間：已經在水裡的會繼續被帶著走。</p>
+      </div>
+    </div>
+  </div>
+  <div data-arena="t4"></div>
+</div></details>
+
+<div class="takeaway">💬 <b>一句話帶走：</b>上游流速快，以______作用為主，石頭______；出海口流速慢，以______作用為主，留下______。</div>
+
+</section>
+<section class="panel" id="p-t5">
+<!--NAV: 風・冰川・海浪-->
+<div class="pagehead">
+  <span class="ref">課本 p.143–148｜5-2 ② 風、冰川、海浪＋差異侵蝕</span>
+  <h2>風、冰、浪：另外三把雕刻刀</h2>
+  <p class="hook"><b>課本 In my life：</b>野柳女王頭的脖子為什麼一年比一年細？我們應該拯救她嗎？</p>
+</div>
+
+<details class="teacher"><summary>👩‍🏫 教學提示</summary><div class="inner">
+  這頁有四個模擬，可依時間挑 2–3 個。建議順序：女王頭（差異侵蝕，連結課本 In my life 討論）→ 海蝕地形演化 → 風 → 冰川。<br>
+  資優班的擂台放在冰川之後：用「冰磧石沒有分選」去撞第 4 分頁學到的「河流會把石頭排好」。
+</div></details>
+
+<div data-guess="t5"></div>
+
+<!-- ① 女王頭 -->
+<div class="card">
+  <h3>👑 女王頭的脖子：差異侵蝕</h3>
+  <div class="grid2">
+    <canvas class="sim" id="t5q" style="background:#DCEBF3"></canvas>
+    <div class="controls">
+      <div class="ctl"><label>年份 <output for="t5yr"></output></label><input type="range" id="t5yr" min="1994" max="2040" value="2024"></div>
+      <div class="ctl"><label>上下岩層的硬度差（只影響 2025 年以後的假設） <output for="t5hard"></output></label><input type="range" id="t5hard" min="0" max="100" value="60"></div>
+      <div class="readout" id="t5qR"></div>
+      <p class="note">● 實心點是北觀處的實際量測值；2025 年以後的虛線只是「如果照過去的速度」的假設，不是預測。</p>
+    </div>
+  </div>
+  <div class="cases" style="margin:12px 0 0">
+    <div class="case">
+      <div class="where">🇹🇼 臺灣｜新北 野柳地質公園</div>
+      <h4>30 年瘦了 103 公分</h4>
+      <p>北觀處量測：女王頭頸圍 1994 年約 <b>220 公分</b>，2024 年 10 月只剩 <span class="num">116.59 公分</span>。</p>
+      <p>2025 年 7 月網友發現後頸有「裂痕」，園方說明那是原本就有的<b>節理</b>（岩石天然的裂隙），目前沒有擴大。也曾研究用藥劑補強，但藥劑滲不進岩石內部，技術上還做不到。</p>
+      <div class="links"><a href="https://newtalk.tw/news/view/2025-07-19/982665" target="_blank" rel="noopener">📰 新頭殼 2025/07 報導</a><a href="https://news.pts.org.tw/article/415961" target="_blank" rel="noopener">📰 公視：頸圍年年縮</a><a href="https://www.google.com/search?tbm=isch&q=%E9%87%8E%E6%9F%B3%E5%A5%B3%E7%8E%8B%E9%A0%AD+%E6%AD%B7%E5%B9%B4" target="_blank" rel="noopener">📷 歷年照片</a></div>
+    </div>
+    <div class="case" style="border-top-color:#C46A28">
+      <div class="where" style="color:#C46A28">🗳 全班表態（課本 p.148）</div>
+      <h4>女王頭需要被拯救嗎？</h4>
+      <div id="t5poll"></div>
+      <p class="note">這題沒有標準答案。請每個選項找一位同學說出理由，理由要用到「風化」「侵蝕」這兩個詞。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ② 海蝕地形 -->
+<div class="card">
+  <h3>🌊 海蝕地形的一生</h3>
+  <div class="grid2">
+    <canvas class="sim" id="t5sea" style="background:#CFE6F5"></canvas>
+    <div class="controls">
+      <div class="ctl"><label>經過時間 <output for="t5st"></output></label><input type="range" id="t5st" min="0" max="100" value="0" step="any"></div>
+      <div class="btnrow"><button class="btn" id="t5seaPlay">▶ 自動播放</button></div>
+      <div class="callout" id="t5seaTxt"></div>
+    </div>
+  </div>
+  <div class="cases" style="margin:12px 0 0">
+    <div class="case world">
+      <div class="where">🌍 國際｜馬爾他 戈佐島</div>
+      <h4>「藍窗」一夜之間消失</h4>
+      <p>馬爾他著名的海蝕拱門「藍窗」，2017 年 3 月 8 日在一場暴風雨中整個崩塌，拱門頂部和右邊的柱子全部掉進海裡。</p>
+      <p class="ask">對照模擬：藍窗原本在哪個階段？它崩塌後幾乎什麼都沒留下——自然界不一定照模擬的每一步走，你覺得為什麼？</p>
+      <div class="links"><a href="https://en.wikipedia.org/wiki/Azure_Window" target="_blank" rel="noopener">維基百科（英）</a><a href="https://www.youtube.com/results?search_query=Azure+Window+collapse+2017" target="_blank" rel="noopener">🎬 崩塌前後影片</a></div>
+    </div>
+    <div class="case world">
+      <div class="where">🌍 國際｜英國 多塞特海岸</div>
+      <h4>一條海岸看完全部階段</h4>
+      <p>「杜朵門」是石灰岩海蝕拱門；不遠處的「老哈利岩」是海蝕柱。老哈利身旁原本還有一根「老哈利的妻子」，在 1896 年倒塌，只剩矮矮的殘根。</p>
+      <div class="links"><a href="https://dorsetlife.co.uk/treasures-of-dorset-durdle-door/" target="_blank" rel="noopener">Dorset Life 介紹（英）</a><a href="https://www.google.com/search?tbm=isch&q=Durdle+Door+Old+Harry+Rocks" target="_blank" rel="noopener">📷 看照片</a></div>
+    </div>
+    <div class="case">
+      <div class="where">🇹🇼 臺灣｜北海岸</div>
+      <h4>在臺灣找找看</h4>
+      <p>野柳、和平島（基隆）、深澳象鼻岩（新北瑞芳）、老梅綠石槽，都是海浪長期侵蝕的作品。象鼻岩就是一座海蝕拱門。</p>
+      <div class="links"><a href="https://www.google.com/search?tbm=isch&q=%E6%B7%B1%E6%BE%B3+%E8%B1%A1%E9%BC%BB%E5%B2%A9" target="_blank" rel="noopener">📷 深澳象鼻岩</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ③ 風 -->
+<div class="card">
+  <h3>💨 風：磨石頭、堆沙丘</h3>
+  <div class="grid2">
+    <canvas class="sim" id="t5wind" style="background:#FFF6E5"></canvas>
+    <div class="controls">
+      <div class="ctl"><label>風速 <output for="t5ws"></output></label><input type="range" id="t5ws" min="0" max="100" value="60"></div>
+      <label class="note"><input type="checkbox" id="t5fence" checked> 種一排防風林</label>
+      <div class="btnrow"><button class="btn ghost" id="t5windReset">↺ 換一顆新石頭</button></div>
+      <p class="note">觀察：沙粒都在「多高」的地方跳？石頭哪個部位被磨得最多？防風林後面發生什麼事？</p>
+    </div>
+  </div>
+  <div class="cases" style="margin:12px 0 0">
+    <div class="case">
+      <div class="where">🇹🇼 臺灣｜雲林・彰化 濁水溪</div>
+      <h4>冬天的「河川揚塵」</h4>
+      <p>秋冬枯水期，濁水溪下游大片河床露出來，東北季風一吹，細沙漫天，南岸空氣品質常常變成「紫爆」。</p>
+      <p>對策正好用到這一頁學的原理：把河床弄濕（水覆蓋）、種草（綠覆蓋）、鋪稻草蓆和防塵網——讓風「抓」不到沙。</p>
+      <div class="links"><a href="https://news.pts.org.tw/article/447358" target="_blank" rel="noopener">📰 公視：揚塵提早</a><a href="https://news.tvbs.com.tw/life/970518" target="_blank" rel="noopener">📰 TVBS：揚塵改善</a></div>
+    </div>
+    <div class="case world">
+      <div class="where">🌍 國際｜撒哈拉沙漠 → 亞馬遜雨林</div>
+      <h4>風把沙漠的沙送去當肥料</h4>
+      <p>NASA 用衛星追蹤發現：每年平均約 <span class="num">2770 萬噸</span> 撒哈拉沙塵飄過大西洋，落在南美洲亞馬遜雨林。</p>
+      <p>沙塵裡帶有磷（植物的養分），每年約 2 萬 2 千噸，差不多補回雨林被雨水沖走的量。</p>
+      <div class="links"><a href="https://svs.gsfc.nasa.gov/11775" target="_blank" rel="noopener">🎬 NASA 動畫（英）</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ④ 冰川 -->
+<div class="card">
+  <h3>🧊 冰川：慢速推土機</h3>
+  <div class="grid2">
+    <canvas class="sim" id="t5ice" style="background:#EEF5FB"></canvas>
+    <div class="controls">
+      <div class="ctl"><label>冰川流過的時間 <output for="t5age"></output></label><input type="range" id="t5age" min="0" max="100" value="0"></div>
+      <div class="ctl"><label>氣溫 <output for="t5tmp"></output></label><input type="range" id="t5tmp" min="0" max="100" value="30"></div>
+      <div class="btnrow"><button class="btn ghost" id="t5iceReset">↺ 重來</button></div>
+      <p class="note">左圖：山谷的橫切面。右圖：冰川的前端（冰舌）。冰裡夾著大大小小的石頭，跟著冰一起慢慢往前移動。調高氣溫看看冰舌和石頭。</p>
+    </div>
+  </div>
+  <div class="cases" style="margin:12px 0 0">
+    <div class="case world">
+      <div class="where">🌍 國際｜瑞士 布拉滕村</div>
+      <h4>冰川崩塌，村子九成被掩埋</h4>
+      <p>2025 年 5 月 28 日，瑞士阿爾卑斯山的比爾希冰川有一大段崩落，冰和岩石沖下山谷，布拉滕村幾乎九成被埋。</p>
+      <p>好消息是：科學家事先監測到冰川移動從每天不到 1 公尺，在崩塌前幾天加速到約每天 10 公尺；5 月 19 日（提前 9 天）就撤離了約 300 位居民和牲畜。冰面上堆積的岩屑最厚約 80 公尺。崩塌前，冰川上方的岩坡（永凍土）反覆崩落，大量岩石堆壓在冰川上，讓冰川加速、最後整段斷裂。科學家認為，暖化讓高山永凍土變弱，這類崩落會更常發生。</p>
+      <div class="links"><a href="https://www.earth.com/news/glacier-collapse-buried-a-village-in-the-swiss-alps" target="_blank" rel="noopener">Earth.com 報導（英）</a><a href="https://www.youtube.com/results?search_query=Blatten+glacier+collapse" target="_blank" rel="noopener">🎬 YouTube 影片</a></div>
+    </div>
+    <div class="case world" style="grid-column:1/-1">
+      <div class="where">🌍 國際｜尼泊爾・西藏邊界 朗塘山谷（2026 年 8 月 26 日）</div>
+      <h4>冰川崩塌變成土石洪流：一次看到第五章的好幾個概念</h4>
+      <p>朗塘里朗峰北坡的一塊冰川（約 0.2 平方公里）在海拔約 5200 公尺處斷裂，連同岩石往下墜落約 1200 公尺，變成高速的「岩冰崩落」，接著轉成<b>土石流</b>，沿著特蘇利河（Trishuli River）一路沖到下游約 100 公里遠。</p>
+      <p>對照這一章：<br>
+        🧊 <b>冰川</b>：冰川本身移動很慢，衛星看到它崩塌前每月只動約 1 公分，崩塌前幾週才突然加快。<br>
+        🏞 <b>搬運</b>：土石流的速度估計約每秒 52 公尺（時速約 190 公里），水量和速度暴增，搬運力跟著暴增，連房子都被沖走。<br>
+        🪨 <b>沉積</b>：災區堆了 1.5 公尺以上的泥沙；土石把河道堵住，還形成兩個<b>堰塞湖</b>。<br>
+        🌡 <b>暖化</b>：有學者認為，原本把岩石和冰「凍在一起」的永凍土因暖化變弱，讓這類崩塌更容易發生；也有研究者提醒，這次的直接原因還在研究中。</p>
+      <p>這是一場嚴重的災難。根據統計（截至 2026 年 10 月 4 日），尼泊爾至少 1,454 人罹難、5,000 多人失蹤（失蹤數字官方仍在核實，可能有重複），12 座水力發電廠受損；數字仍在更新。</p>
+      <p class="ask">想一想：①這場土石流留下的沉積物，會像河流一樣「大的在上游、小的在下游」排好嗎？（對照下面的擂台）②比較瑞士布拉滕村：為什麼一個能提前撤離，一個幾乎來不及？</p>
+      <div class="links"><a href="https://en.wikipedia.org/wiki/2026_Nepal%E2%80%93Tibet_floods" target="_blank" rel="noopener">維基百科整理（英）</a><a href="https://www.undp.org/asia-pacific/nepal-floods-2026" target="_blank" rel="noopener">聯合國開發計畫署（英）</a><a href="https://www.unicef.org/emergencies/nepal-flood" target="_blank" rel="noopener">聯合國兒童基金會（英）</a><a href="https://www.youtube.com/results?search_query=Nepal+Langtang+glacier+collapse+flood+2026" target="_blank" rel="noopener">🎬 YouTube 影片</a></div>
+    </div>
+    <div class="case">
+      <div class="where">🇹🇼 臺灣｜雪山</div>
+      <h4>臺灣也有冰川留下的痕跡？</h4>
+      <p>臺灣現在沒有冰川，但許多學者認為雪山主峰附近的「圈谷」，是上一次冰河時期留下的冰川地形。</p>
+      <p class="ask">想一想：如果要證明這裡曾經有冰川，你要去找什麼證據？（提示：看下面的擂台）</p>
+      <div class="links"><a href="https://www.google.com/search?tbm=isch&q=%E9%9B%AA%E5%B1%B1%E5%9C%88%E8%B0%B7" target="_blank" rel="noopener">📷 雪山圈谷</a></div>
+    </div>
+  </div>
+</div>
+
+<details class="deep"><summary>🧠 資優挑戰｜迷思擂台：冰川也會把石頭「排好」嗎？</summary><div class="inner">
+  <div data-arena="t5"></div>
+</div></details>
+
+<div class="takeaway">💬 <b>一句話帶走：</b>風化不是「風」的專利；風、冰川、海浪都會______、______、______和______。</div>
+
+</section>
+<section class="panel" id="p-t6">
+<!--NAV: 河道與海岸線-->
+<div class="pagehead">
+  <span class="ref">課本 p.149–151、163｜5-2 ③ 河道與海岸線的變化＋科學大事記</span>
+  <h2>動一個地方，整條河、整片海岸都會「回應」</h2>
+  <p class="hook"><b>核心想法：</b>河床和海岸線一直在追求「平衡」——突起的被削平、低窪的被填滿、沙進來和沙出去打平。人類一出手，平衡就會往別的地方「討回來」。</p>
+</div>
+
+<details class="teacher"><summary>👩‍🏫 教學提示</summary><div class="inner">
+  ① 挖砂石：先問「在下游挖，上游的橋會不會有事？」投票後再跑模擬。② 海岸線：依序試「上游蓋水庫」「蓋漁港突堤」，對照課本圖 5-19 的大武漁港（淤積）與馬沙溝（流失）。③ 資優班：截彎取直擂台，對應課本 p.163 基隆河的科學大事記。
+</div></details>
+
+<div class="card">
+  <h3>⛏ 挖砂石，橋為什麼會危險？ <span class="tag note">河流縱剖面：左上游、右下游</span></h3>
+  <div class="grid2">
+    <canvas class="sim" id="t6bed" style="background:#EAF4FA"></canvas>
+    <div class="controls">
+      <div class="btnrow">
+        <button class="btn warn" id="t6dig">⛏ 在下游持續挖砂石</button>
+        <button class="btn ghost" id="t6bump">⛰ 加一塊突起的岩盤</button>
+      </div>
+      <div class="btnrow">
+        <button class="btn" id="t6bedPlay">▶ 時間前進</button>
+        <button class="btn ghost" id="t6bedReset">↺ 重設</button>
+      </div>
+      <div class="readout" id="t6bedR"></div>
+      <p class="note">紅色虛線是原本的河床。河床會自己「找平衡」：突起處被侵蝕、低窪處被沉積填補（課本 p.149）。</p>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h3>🏖 海岸線的收支平衡 <span class="tag note">從空中往下看：上面是陸地，下面是海</span></h3>
+  <div class="grid2">
+    <canvas class="sim" id="t6coast" style="background:#4F86C6"></canvas>
+    <div class="controls">
+      <div class="ctl"><label>河川帶來的沙 <output for="t6sup"></output></label><input type="range" id="t6sup" min="0" max="100" value="60"></div>
+      <div class="ctl"><label>波浪強度 <output for="t6wave"></output></label><input type="range" id="t6wave" min="10" max="100" value="50"></div>
+      <div class="btnrow">
+        <button class="btn warn" id="t6dam">🏗 上游蓋水庫（攔住八成的沙）</button>
+        <button class="btn warn" id="t6jetty">⚓ 蓋漁港突堤</button>
+      </div>
+      <div class="btnrow"><button class="btn" id="t6coastPlay">▶ 時間前進</button><button class="btn ghost" id="t6coastReset">↺ 重設</button></div>
+      <div class="readout" id="t6coastR"></div>
+      <p class="note">沿岸流把沙從左往右帶。沉積的沙 ＞ 被帶走的沙 → 海岸線前進；反過來就後退。</p>
+    </div>
+  </div>
+</div>
+
+<div data-guess="t6"></div>
+
+<div class="cases">
+  <div class="case">
+    <div class="where">🇹🇼 臺灣｜臺中 大甲溪 后豐大橋</div>
+    <h4>2008 年，颱風沖斷了橋墩</h4>
+    <p>辛樂克颱風帶來豪雨，大甲溪暴漲，沖斷后豐大橋的橋墩，造成 6 人罹難。</p>
+    <p>事後交通部全面檢查河川橋梁的「水下基礎」，並花了十多億元改建、修繕將近兩百座橋。河床被沖刷降低、橋墩基礎外露，正是橋梁最怕的事。</p>
+    <div class="links"><a href="https://news.tvbs.com.tw/life/181416" target="_blank" rel="noopener">📰 TVBS 2008 報導</a><a href="https://news.tvbs.com.tw/life/109310" target="_blank" rel="noopener">📰 一步一腳印：重建斷橋</a></div>
+  </div>
+  <div class="case">
+    <div class="where">🇹🇼 臺灣｜雲林・嘉義外海 外傘頂洲</div>
+    <h4>「會移動的國土」正在縮小</h4>
+    <p>外傘頂洲是臺灣最大的沙洲。有保育單位統計，2003 到 2023 年間面積少了約 <span class="num">823 公頃</span>（約 30 個大安森林公園），而且整個沙洲一直往南漂。</p>
+    <p>原因之一：河川上游的攔沙壩讓送到海邊的沙變少，海浪和季風卻照樣把沙帶走。現在地方居民用竹籬和蚵殼「護沙」。</p>
+    <div class="links"><a href="https://news.pts.org.tw/article/479079" target="_blank" rel="noopener">📰 公視報導</a><a href="https://www.taiwannews.com.tw/news/5903194" target="_blank" rel="noopener">📰 台灣英文新聞（英）</a></div>
+  </div>
+  <div class="case">
+    <div class="where">🇹🇼 臺灣｜臺南 七股潟湖</div>
+    <h4>水庫＋突堤，沙洲往陸地退</h4>
+    <p>七股潟湖被三座沙洲圍住。曾文水庫蓋好後，河川送來的沙變少；漁港的突堤又擋住沿岸流，沙洲持續往東、往南退縮。蚵農說：「沙洲一直往內陸移，蚵架都在外海了。」</p>
+    <div class="links"><a href="https://news.pts.org.tw/article/542605" target="_blank" rel="noopener">📰 公視報導</a></div>
+  </div>
+  <div class="case world">
+    <div class="where">🌍 國際｜埃及 尼羅河三角洲</div>
+    <h4>一座水庫，讓整個三角洲變瘦</h4>
+    <p>1970 年完工的亞斯文高壩，攔住了尼羅河約九成的泥沙。三角洲得不到新的沙補充，海岸開始後退，有些地方一年退了好幾十公尺，有的村子已經消失。</p>
+    <p class="ask">想一想：這和七股、外傘頂洲有什麼共同點？</p>
+    <div class="links"><a href="https://eastleighvoice.co.ke/ethiopia/380673/study-says-egypts-aswan-high-dam-accelerated-nile-delta-erosion-land-subsidence" target="_blank" rel="noopener">報導（英）</a><a href="https://www.google.com/search?tbm=isch&q=Nile+delta+coastal+erosion+Rosetta" target="_blank" rel="noopener">📷 衛星對照圖</a></div>
+  </div>
+</div>
+
+<details class="deep"><summary>🧠 資優挑戰｜迷思擂台：河道拉直，水流得快，下游就不淹水？</summary><div class="inner">
+  <div class="card" style="margin:0">
+    <h3>〰 截彎取直模擬（基隆河的故事）</h3>
+    <div class="grid2">
+      <canvas class="sim" id="t6mea" style="background:#fff"></canvas>
+      <div class="controls">
+        <div class="ctl"><label>截彎取直的程度 <output for="t6str"></output></label><input type="range" id="t6str" min="0" max="100" value="0"></div>
+        <div class="readout" id="t6meaR"></div>
+        <p class="note">上圖：從空中看河道（起點和終點的高度差不變）。下圖：一場大雨後，下游測站的水量變化。灰線＝原本彎曲時；藍線＝現在。</p>
+      </div>
+    </div>
+  </div>
+  <div data-arena="t6"></div>
+</div></details>
+
+<div class="takeaway">💬 <b>一句話帶走：</b>沉積的沙 ＞ 被帶走的沙 → 海岸線______；上游攔住了沙 → 下游的海岸會______。</div>
+
+</section>
+<section class="panel" id="p-t7">
+<!--NAV: 岩石與礦物-->
+<div class="pagehead">
+  <span class="ref">課本 p.152–161｜5-3 岩石與礦物</span>
+  <h2>石頭是地球的「日記本」</h2>
+  <p class="hook"><b>課本 tell me why：</b>人類用岩石蓋房子、做雕刻。這些岩石外觀為什麼差那麼多？——因為它們的「出生方式」不一樣。</p>
+</div>
+
+<details class="teacher"><summary>👩‍🏫 教學提示</summary><div class="inner">
+  三種岩類各一個「岩石製造機」，每個 5 分鐘：火成岩（冷卻快慢 → 晶體大小）、沉積岩（第 4 分頁的沉積物 → 壓密膠結）、變質岩（加溫加壓）。<br>
+  接著做「虛擬實驗桌」對應實驗 5-1 與探討活動 5-1（可在真實驗之前預習，或之後複習）。資優班有兩個擂台：岩石循環、冰算不算礦物。
+</div></details>
+
+<div data-guess="t7"></div>
+
+<!-- 火成岩 -->
+<div class="card">
+  <h3>🌋 火成岩製造機：岩漿冷卻</h3>
+  <div class="grid2">
+    <canvas class="sim" id="t7ign" style="background:#222"></canvas>
+    <div class="controls">
+      <div><div class="note">① 岩漿的成分</div>
+        <div class="chips" id="t7comp"><button class="chip on" data-c="light">淺色（富含矽）</button><button class="chip" data-c="mid">中間</button><button class="chip" data-c="dark">深色（富含鐵、鎂）</button></div></div>
+      <div class="ctl"><label>② 在哪裡冷卻 <output for="t7cool"></output></label><input type="range" id="t7cool" min="0" max="100" value="15"></div>
+      <div class="btnrow"><button class="btn warn" id="t7go">🔥→🪨 讓岩漿冷卻</button></div>
+      <div class="callout" id="t7ignName" style="min-height:70px">選好條件，按「讓岩漿冷卻」。</div>
+    </div>
+  </div>
+</div>
+
+<!-- 沉積岩 -->
+<div class="card">
+  <h3>🏞 沉積岩製造機：堆積＋壓密＋膠結</h3>
+  <div class="grid2">
+    <canvas class="sim" id="t7sed" style="background:#CFE6F5"></canvas>
+    <div class="controls">
+      <div class="note">選一種沉積物（想想它在第 4 分頁的河流哪一段出現）：</div>
+      <div class="chips" id="t7sedC">
+        <button class="chip on" data-s="0">礫石（上游）</button><button class="chip" data-s="1">沙（中下游）</button><button class="chip" data-s="2">泥（出海口）</button>
+        <button class="chip" data-s="3">貝殼、珊瑚</button><button class="chip" data-s="4">鹽的結晶</button>
+      </div>
+      <div class="btnrow"><button class="btn warn" id="t7press">⬇ 一層層堆上去、壓緊</button><button class="btn ghost" id="t7sedReset">↺ 重來</button></div>
+      <div class="callout" id="t7sedName" style="min-height:70px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 變質岩 -->
+<div class="card">
+  <h3>🔥 變質岩製造機：高溫高壓，但不熔化</h3>
+  <div class="grid2">
+    <canvas class="sim" id="t7met" style="background:#fff"></canvas>
+    <div class="controls">
+      <div class="chips" id="t7metC"><button class="chip on" data-m="0">頁岩</button><button class="chip" data-m="1">石灰岩</button><button class="chip" data-m="2">花岡岩</button></div>
+      <div class="ctl"><label>埋得多深（溫度＋壓力） <output for="t7heat"></output></label><input type="range" id="t7heat" min="0" max="100" value="0"></div>
+      <div class="callout" id="t7metName" style="min-height:70px"></div>
+    </div>
+  </div>
+</div>
+
+<div class="cases">
+  <div class="case">
+    <div class="where">🇹🇼 臺灣｜澎湖 大菓葉</div>
+    <h4>柱狀玄武岩</h4>
+    <p>澎湖群島主要由玄武岩質的岩漿冷卻形成。岩漿在地表冷卻時會收縮，收縮的力量把岩石拉裂成一根根六角形的柱子。</p>
+    <div class="links"><a href="https://www.google.com/search?tbm=isch&q=%E6%BE%8E%E6%B9%96+%E5%A4%A7%E8%8F%93%E8%91%89+%E6%9F%B1%E7%8B%80%E7%8E%84%E6%AD%A6%E5%B2%A9" target="_blank" rel="noopener">📷 看照片</a></div>
+  </div>
+  <div class="case world">
+    <div class="where">🌍 國際｜英國 北愛爾蘭</div>
+    <h4>巨人堤道：澎湖的遠房親戚</h4>
+    <p>大約 5000 萬到 6000 萬年前，大量熔岩從地殼裂縫湧出，冷卻收縮後形成約四萬根玄武岩柱，大多是六角形，像有人鋪好的石階。</p>
+    <p>研究發現：玄武岩大約在冷卻到 840–890 °C 時開始裂開。柱子的粗細，和熔岩冷卻得多快有關。</p>
+    <div class="links"><a href="https://www.smithsonianmag.com/smart-news/researchers-reveal-how-giants-causeway-was-formed-180968806/" target="_blank" rel="noopener">史密森尼雜誌（英）</a><a href="https://www.google.com/search?tbm=isch&q=Giant%27s+Causeway" target="_blank" rel="noopener">📷 看照片</a></div>
+  </div>
+  <div class="case">
+    <div class="where">🇹🇼 臺灣｜花蓮 太魯閣・豐田</div>
+    <h4>大理岩峽谷與「臺灣玉」</h4>
+    <p>太魯閣的峽谷是立霧溪切穿厚厚的<b>大理岩</b>（石灰岩變質而成）形成的。</p>
+    <p>花蓮豐田出產的「臺灣玉」（閃玉），是蛇紋岩被熱水改造而成的。1975 年全盛時期，產量曾占全世界約九成。</p>
+    <div class="links"><a href="https://www.google.com/search?tbm=isch&q=%E5%A4%AA%E9%AD%AF%E9%96%A3+%E7%87%95%E5%AD%90%E5%8F%A3" target="_blank" rel="noopener">📷 太魯閣</a><a href="https://www.google.com/search?tbm=isch&q=%E8%B1%90%E7%94%B0+%E9%96%83%E7%8E%89+%E8%87%BA%E7%81%A3%E7%8E%89" target="_blank" rel="noopener">📷 臺灣玉</a></div>
+  </div>
+  <div class="case world">
+    <div class="where">🌍 國際｜印度 泰姬瑪哈陵</div>
+    <h4>白色大理岩蓋的陵墓</h4>
+    <p>質地細緻的大理岩容易雕刻、拋光後很漂亮，所以常被用在建築與雕像上。泰姬瑪哈陵就是用白色大理岩蓋成的。課本提到的奇美博物館，也大量使用大理岩。</p>
+    <p class="ask">想一想：大理岩含有碳酸鈣。遇到酸雨會怎樣？（提示：虛擬實驗桌滴鹽酸）</p>
+  </div>
+</div>
+
+<!-- 虛擬實驗桌 -->
+<div class="card">
+  <h3>🔬 虛擬實驗桌 <span class="tag note">實驗 5-1 猜猜我是誰＋探討活動 5-1</span></h3>
+  <p class="note" style="margin-top:0">選一個標本，再選一個工具。</p>
+  <div class="chips" id="t7spec"></div>
+  <div class="btnrow" style="margin:10px 0" id="t7tools">
+    <button class="btn ghost" data-t="look">🔍 放大鏡觀察</button><button class="btn ghost" data-t="acid">💧 滴稀鹽酸</button>
+    <button class="btn ghost" data-t="nail">💅 用指甲刻</button><button class="btn ghost" data-t="iron">🔩 用鐵釘刻</button>
+  </div>
+  <div class="grid2">
+    <canvas class="sim" id="t7lab" style="background:#F7F3EA"></canvas>
+    <div class="callout" id="t7labOut" style="min-height:120px">結果會顯示在這裡。</div>
+  </div>
+  <h3 style="margin-top:14px">✍ 把六塊岩石分類</h3>
+  <div id="t7sort"></div>
+</div>
+
+<details class="deep"><summary>🧠 資優挑戰｜迷思擂台：岩石循環一定照順序走？冰算不算礦物？</summary><div class="inner">
+  <div class="card" style="margin:0 0 10px">
+    <h3>♻ 岩石循環地圖</h3>
+    <div class="grid2">
+      <canvas class="sim" id="t7cyc" style="background:#fff"></canvas>
+      <div class="controls">
+        <div class="btnrow"><button class="btn deepb" id="t7walk">🎲 讓一顆石頭隨機走 6 步</button></div>
+        <div class="callout" id="t7walkLog" style="min-height:140px;font-size:.9rem">點圖上的箭頭看說明，或讓石頭隨機走走看。</div>
+      </div>
+    </div>
+  </div>
+  <div data-arena="t7"></div>
+  <div class="card" style="margin:10px 0">
+    <h3>📋 礦物檢查表：天然產生？原子規則排列？固體？無機物？四個都「是」才算礦物</h3>
+    <div id="t7min"></div>
+  </div>
+  <div data-arena="t7b"></div>
+</div></details>
+
+<div class="takeaway">💬 <b>一句話帶走：</b>火成岩看「冷卻快慢」，沉積岩看「顆粒大小與來源」，變質岩看「原本是什麼岩石」。</div>
+
+</section>
+<section class="panel" id="p-t8">
+<!--NAV: 總複習-->
+<div class="pagehead">
+  <span class="ref">全章統整｜課本 p.160–162 圖解 point</span>
+  <h2>總複習：先想，再翻牌</h2>
+  <p class="hook"><b>玩法：</b>每張卡先蓋著。抽一位同學說出卡片內容，說完再翻開對答案——先「想出來」，比「看一遍」記得牢。</p>
+</div>
+
+<details class="teacher"><summary>👩‍🏫 教學提示</summary><div class="inner">
+  ① 心智圖翻牌（15 分鐘）：配合學生 A3 心智圖，一個分支一個分支翻，翻完讓學生補自己的圖。② 快問快答：按 🎲 抽題＋右上角 🎲 抽號，答對的人可以抽下一位。③ 資優班最後看「迷思總整理」，請學生用自己的話說出每一條為什麼錯。
+</div></details>
+
+<div class="card">
+  <h3>🧠 心智圖翻牌</h3>
+  <div class="btnrow" style="margin-bottom:10px"><button class="btn ghost" id="t8hide">全部蓋起來</button><button class="btn ghost" id="t8show">全部翻開</button></div>
+  <div id="t8map"></div>
+</div>
+
+<div class="card">
+  <h3>⚡ 快問快答 <span class="tag note" id="t8count"></span></h3>
+  <div class="chips" style="margin-bottom:10px" id="t8filter">
+    <button class="chip on" data-f="all">全部</button><button class="chip" data-f="5-1">5-1</button><button class="chip" data-f="5-2">5-2</button><button class="chip" data-f="5-3">5-3</button><button class="chip" data-f="deep">🟣 加深</button>
+  </div>
+  <div id="t8q" style="min-height:240px"></div>
+  <div class="btnrow" style="margin-top:10px"><button class="btn warn" id="t8draw">🎲 抽一題</button><button class="btn" id="t8ans">公布答案</button></div>
+</div>
+
+<details class="deep"><summary>🧠 資優挑戰｜迷思總整理</summary><div class="inner">
+  <div class="card" style="margin:0">
+    <table class="simple" id="t8myth"></table>
+    <p class="note">挑戰：遮住右邊那一欄，用自己的話說出「為什麼錯」，再翻回來對照。</p>
+  </div>
+</div></details>
+
+<div class="takeaway">💬 <b>全章一句話：</b>水在動 → 地表被改寫 → 石頭把過程記下來。</div>
+
+</section>
+<div class="footer">鍵盤 <kbd>←</kbd> <kbd>→</kbd> 或簡報筆可以換分頁｜課本：115 學年度國中自然 3 上 第 5 章｜案例資料查證日期：2026-10-11</div>
+</main>
+
+<div class="picker" id="picker"><div class="box">
+  <div>🎲 抽到的座號</div><div class="num" id="pickNum">?</div>
+  <div class="note">全班人數 <input id="pickMax" type="number" value="30" min="2" max="60" style="width:60px"></div>
+  <div class="btnrow" style="justify-content:center;margin-top:12px"><button class="btn" id="pickAgain">再抽一次</button><button class="btn ghost" id="pickClose">關閉</button></div>
+</div></div>
+
+<script>
+const STORE_KEY = 'geo-ch5-v1';
+/* ==== core.js ==== */
+/* =====================================================================
+   地科互動課本 共用引擎
+   - 分頁切換、一般班／資優班、投影模式、抽號、鍵盤翻頁
+   - 畫布工具 stage()／loop()
+   - 「猜一猜」(全班) 與「迷思擂台」(資優) 兩種互動元件
+   ===================================================================== */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const lerp = (a, b, t) => a + (b - a) * t;
+
+/* ---------- 存檔（只存介面偏好，壞掉也不影響使用） ---------- */
+const store = {
+  get() { try { return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; } catch { return {}; } },
+  set(o) { try { localStorage.setItem(STORE_KEY, JSON.stringify({ ...store.get(), ...o })); } catch {} },
+};
+
+/* ---------- 分頁 ---------- */
+const SIMS = {};
+let curTab = null;
+function registerSim(tab, obj) {
+  (SIMS[tab] ||= []).push(obj);
+  if (curTab === tab && obj.start) obj.start();
+}
+function showTab(id) {
+  if (!document.getElementById('p-' + id)) return;
+  if (curTab && SIMS[curTab]) SIMS[curTab].forEach(s => s.stop && s.stop());
+  $$('nav.tabs button').forEach(b => b.classList.toggle('active', b.dataset.tab === id));
+  $$('.panel').forEach(p => p.classList.toggle('active', p.id === 'p-' + id));
+  curTab = id;
+  requestAnimationFrame(() => (SIMS[id] || []).forEach(s => s.start && s.start()));
+  store.set({ tab: id });
+  window.scrollTo({ top: 0 });
+  const b = $(`nav.tabs button[data-tab="${id}"]`);
+  if (b) b.scrollIntoView({ inline: 'center', block: 'nearest' });
+}
+function stepTab(d) {
+  const ids = $$('nav.tabs button').map(b => b.dataset.tab);
+  const i = ids.indexOf(curTab);
+  showTab(ids[clamp(i + d, 0, ids.length - 1)]);
+}
+
+/* ---------- 一般班 / 資優班 ---------- */
+function setMode(m) {
+  $$('#modeSeg button').forEach(b => b.classList.toggle('on', b.dataset.mode === m));
+  $$('details.deep').forEach(d => d.open = (m === 'deep'));
+  document.body.dataset.mode = m;
+  store.set({ mode: m });
+}
+
+/* ---------- 畫布工具：用固定的邏輯座標 W×H 作畫，自動配合螢幕寬度 ---------- */
+function stage(cv, W, H) {
+  cv.style.aspectRatio = `${W} / ${H}`;
+  cv.style.setProperty('--ar', W / H);
+  const ctx = cv.getContext('2d');
+  const s = { cv, ctx, W, H, fit() {
+    const dpr = window.devicePixelRatio || 1;
+    const cw = cv.clientWidth || 600;
+    const pw = Math.round(cw * dpr), ph = Math.round(cw * H / W * dpr);
+    if (cv.width !== pw || cv.height !== ph) { cv.width = pw; cv.height = ph; }
+    ctx.setTransform(pw / W, 0, 0, ph / H, 0, 0);
+  }, pt(e) {
+    const r = cv.getBoundingClientRect();
+    return { x: (e.clientX - r.left) / r.width * W, y: (e.clientY - r.top) / r.height * H };
+  } };
+  return s;
+}
+/* 動畫迴圈：分頁不在畫面上就停，省電 */
+function loop(fn) {
+  let id = null, last = 0;
+  return {
+    start() {
+      if (id) return; last = performance.now();
+      const f = t => { const dt = Math.min(0.05, (t - last) / 1000); last = t; fn(dt); id = requestAnimationFrame(f); };
+      id = requestAnimationFrame(f);
+    },
+    stop() { cancelAnimationFrame(id); id = null; },
+  };
+}
+/* 滑桿綁定：<input id> + <output for=id> */
+function bindRange(id, fmt, onChange) {
+  const el = document.getElementById(id);
+  const out = $(`output[for="${id}"]`);
+  const lab = () => { if (out) out.textContent = fmt ? fmt(+el.value) : el.value; };
+  el.addEventListener('input', () => { lab(); onChange && onChange(+el.value); });
+  lab();   // 一開始只更新文字，不觸發重畫（畫布可能還沒準備好）
+  return el;
+}
+/* 常用繪圖 */
+function rrect(ctx, x, y, w, h, r) {
+  ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+}
+function label(ctx, txt, x, y, opt = {}) {
+  ctx.save();
+  const sz = Math.max(13, opt.size || 15);   // 投影時畫布會縮小，文字至少 13
+  ctx.font = `${opt.bold ? 'bold ' : ''}${sz}px "PingFang TC","Microsoft JhengHei",sans-serif`;
+  ctx.textAlign = opt.align || 'left'; ctx.textBaseline = opt.base || 'middle';
+  if (opt.bg) {
+    const w = ctx.measureText(txt).width, h = sz + 8;
+    const x0 = opt.align === 'center' ? x - w / 2 - 6 : opt.align === 'right' ? x - w - 6 : x - 6;
+    ctx.fillStyle = opt.bg; rrect(ctx, x0, y - h / 2, w + 12, h, 5); ctx.fill();
+  }
+  ctx.fillStyle = opt.color || '#23302B'; ctx.fillText(txt, x, y);
+  ctx.restore();
+}
+function arrow(ctx, x1, y1, x2, y2, color = '#333', w = 2, head = 9) {
+  const a = Math.atan2(y2 - y1, x2 - x1);
+  ctx.save(); ctx.strokeStyle = ctx.fillStyle = color; ctx.lineWidth = w;
+  ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2 - Math.cos(a) * head * .6, y2 - Math.sin(a) * head * .6); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x2, y2);
+  ctx.lineTo(x2 - head * Math.cos(a - .45), y2 - head * Math.sin(a - .45));
+  ctx.lineTo(x2 - head * Math.cos(a + .45), y2 - head * Math.sin(a + .45)); ctx.closePath(); ctx.fill();
+  ctx.restore();
+}
+/* 可重現的亂數（同一個種子每次畫出一樣的圖） */
+function rng(seed) { let s = seed >>> 0 || 1; return () => (s = (s * 1664525 + 1013904223) >>> 0) / 4294967296; }
+
+/* ---------- 投票選項（老師數舉手，點 + / −） ---------- */
+function voteList(host, opts, onPick) {
+  const counts = opts.map(() => 0);
+  host.innerHTML = '';
+  const wrap = document.createElement('div'); wrap.className = 'opts';
+  const rows = opts.map((t, i) => {
+    const row = document.createElement('div'); row.className = 'opt'; row.tabIndex = 0;
+    row.innerHTML = `<span class="letter">${'ABCDEF'[i]}</span><span class="t">${t}</span>
+      <span class="bar"><i style="width:0"></i><em>0 人</em></span>
+      <span class="vote-ctl"><button title="少一票">−</button><button title="多一票">＋</button></span>`;
+    const [minus, plus] = $$('.vote-ctl button', row);
+    const upd = () => {
+      const tot = counts.reduce((a, b) => a + b, 0) || 1;
+      rows.forEach((r, k) => { $('.bar i', r).style.width = (counts[k] / tot * 90) + 'px'; $('.bar em', r).textContent = counts[k] + ' 人'; });
+    };
+    plus.onclick = e => { e.stopPropagation(); counts[i]++; upd(); };
+    minus.onclick = e => { e.stopPropagation(); counts[i] = Math.max(0, counts[i] - 1); upd(); };
+    row.onclick = () => { rows.forEach(r => r.classList.remove('picked')); row.classList.add('picked'); onPick && onPick(i); };
+    wrap.appendChild(row);
+    return row;
+  });
+  host.appendChild(wrap);
+  return {
+    counts,
+    reveal(ans) { rows.forEach((r, k) => r.classList.add(k === ans ? 'right' : 'wrong')); },
+  };
+}
+
+/* ---------- 猜一猜（全班版：先猜 → 操作模擬 → 公布） ---------- */
+function mountGuess(host, g) {
+  host.classList.add('card', 'guess');
+  host.innerHTML = `<h3>🤔 猜一猜 <span class="tag note">先舉手投票，再用這一頁的模擬驗證</span></h3>
+    <div class="q">${g.q}</div><div class="vl"></div>
+    <div class="btnrow" style="margin-top:10px"><button class="btn warn">公布答案</button></div>
+    <div class="reveal callout good">${g.after}</div>`;
+  const v = voteList($('.vl', host), g.opts);
+  $('.btn', host).onclick = () => { v.reveal(g.ans); $('.reveal', host).classList.add('show'); };
+}
+
+/* ---------- 迷思擂台（資優版：先賭 → 跑模擬 → 撞牆 → 重建 → 再考） ---------- */
+function mountArena(host, a) {
+  const names = ['① 先賭', '② 跑模擬', '③ 撞牆', '④ 重建', '⑤ 換情境再考'];
+  host.classList.add('arena');
+  host.innerHTML = `<h4>⚔️ ${a.title}</h4>
+    <div class="steps">${names.map(n => `<span>${n}</span>`).join('')}</div>
+    <div class="stage s0"><div class="q big" style="margin-bottom:8px">${a.q}</div><div class="vl"></div>
+      <div class="btnrow" style="margin-top:10px"><button class="btn deepb go1">鎖定預測，去驗證 →</button></div></div>
+    <div class="stage s1"><div class="callout">${a.sim}</div>
+      <div class="btnrow" style="margin-top:10px"><button class="btn deepb go2">做完了，對照全班的預測 →</button></div></div>
+    <div class="stage s2"><div class="clash"><b>結果：</b><span class="stat"></span><br>${a.clash}</div>
+      <div class="btnrow"><button class="btn deepb go3">我們來把它想清楚 →</button></div></div>
+    <div class="stage s3">${a.hints.map((h, i) => `<div class="hint">💡 提示 ${i + 1}：${h}</div>`).join('')}
+      <div class="btnrow" style="margin-top:8px"><button class="btn ghost more">下一個提示</button>
+      <button class="btn deepb go4" style="display:none">看完整解釋 →</button></div>
+      <div class="explain" style="display:none">${a.explain}</div>
+      <div class="btnrow" style="margin-top:10px"><button class="btn deepb go5" style="display:none">換個情境考考你 →</button></div></div>
+    <div class="stage s4"><div class="q big" style="margin-bottom:8px">${a.transfer.q}</div><div class="vt"></div>
+      <div class="reveal explain tw">${a.transfer.why}</div>
+      <div class="btnrow" style="margin-top:10px"><button class="btn ghost restart">↺ 重新開始這一關</button></div></div>`;
+  const stages = $$('.stage', host), chips = $$('.steps span', host);
+  const go = (n, quiet) => {
+    stages.forEach((s, i) => s.classList.toggle('show', i <= n));
+    chips.forEach((c, i) => { c.classList.toggle('now', i === n); c.classList.toggle('done', i < n); });
+    if (!quiet) stages[n].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  };
+  const v = voteList($('.vl', host), a.opts);
+  $('.go1', host).onclick = () => go(1);
+  $('.go2', host).onclick = () => {
+    const tot = v.counts.reduce((x, y) => x + y, 0);
+    const right = v.counts[a.ans];
+    $('.stat', host).innerHTML = tot
+      ? `全班 ${tot} 人中，有 <b>${right}</b> 人選了正確答案（${Math.round(right / tot * 100)}%）。正確答案是 <b>${'ABCDEF'[a.ans]}</b>。`
+      : `正確答案是 <b>${'ABCDEF'[a.ans]}</b>。`;
+    v.reveal(a.ans); go(2);
+  };
+  let hi = 0;
+  const hints = $$('.hint', host);
+  const showHint = () => {
+    if (hi < hints.length) hints[hi++].classList.add('show');
+    if (hi >= hints.length) { $('.more', host).style.display = 'none'; $('.go4', host).style.display = ''; }
+  };
+  $('.go3', host).onclick = () => { go(3); if (hi === 0) showHint(); };
+  $('.more', host).onclick = showHint;
+  $('.go4', host).onclick = () => { $('.explain', host).style.display = 'block'; $('.go5', host).style.display = ''; };
+  $('.go5', host).onclick = () => go(4);
+  const t = a.transfer;
+  const vt = voteList($('.vt', host), t.opts, () => { vt.reveal(t.ans); $('.tw', host).classList.add('show'); });
+  $('.restart', host).onclick = () => mountArena(host, a);
+  go(0, true);
+}
+
+/* ---------- 分類小遊戲：每列一個敘述，點選它屬於哪一類 ---------- */
+function mountSort(host, cats, items) {
+  host.classList.add('sortq');
+  host.innerHTML = items.map((it, i) => `<div class="item" data-i="${i}"><span class="txt">${it[0]}</span>
+     <span class="chips">${cats.map((c, k) => `<button class="chip" data-k="${k}">${c}</button>`).join('')}</span></div>`).join('')
+    + `<div class="note">點錯也沒關係，會顯示原因。</div>`;
+  $$('.item', host).forEach(row => {
+    const it = items[+row.dataset.i];
+    $$('.chip', row).forEach(ch => ch.onclick = () => {
+      $$('.chip', row).forEach(c => c.classList.remove('on')); ch.classList.add('on');
+      const ok = +ch.dataset.k === it[1];
+      row.classList.toggle('ok', ok); row.classList.toggle('no', !ok);
+      let why = $('.why', row);
+      if (!why) { why = document.createElement('div'); why.className = 'why note'; why.style.flexBasis = '100%'; row.appendChild(why); }
+      why.textContent = (ok ? '✔ ' : '✘ ') + (it[2] || '');
+    });
+  });
+}
+
+/* ---------- 啟動 ---------- */
+function boot() {
+  $$('nav.tabs button').forEach(b => b.addEventListener('click', () => showTab(b.dataset.tab)));
+  $$('#modeSeg button').forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
+  $('#projBtn').onclick = () => { document.body.classList.toggle('proj'); store.set({ proj: document.body.classList.contains('proj') }); window.dispatchEvent(new Event('resize')); };
+  $('#fsBtn').onclick = () => document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen?.();
+  // 抽號
+  const pk = $('#picker');
+  $('#pickBtn').onclick = () => { pk.classList.add('show'); spin(); };
+  const spin = () => {
+    const max = +$('#pickMax').value || 30; let n = 0;
+    const t = setInterval(() => { $('#pickNum').textContent = 1 + Math.floor(Math.random() * max); if (++n > 14) clearInterval(t); }, 60);
+  };
+  $('#pickAgain').onclick = spin;
+  $('#pickClose').onclick = () => pk.classList.remove('show');
+  // 鍵盤：← → 翻分頁（正在拖滑桿或打字時不搶）
+  document.addEventListener('keydown', e => {
+    const tag = (e.target.tagName || '').toLowerCase();
+    if (['input', 'textarea', 'select'].includes(tag)) return;
+    if (e.key === 'ArrowRight' || e.key === 'PageDown') { stepTab(1); e.preventDefault(); }
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') { stepTab(-1); e.preventDefault(); }
+  });
+  // 掛上「猜一猜」「迷思擂台」
+  $$('[data-guess]').forEach(h => mountGuess(h, GUESS[h.dataset.guess]));
+  $$('[data-arena]').forEach(h => mountArena(h, ARENA[h.dataset.arena]));
+  // 紫色卡片打開時，裡面的畫布要重畫（收合時寬度是 0）
+  $$('details').forEach(d => d.addEventListener('toggle', () => window.dispatchEvent(new Event('resize'))));
+  window.addEventListener('resize', () => (SIMS[curTab] || []).forEach(s => s.resize ? s.resize() : (s.stop && s.stop(), s.start && s.start())));
+  const st = store.get();
+  if (st.proj) document.body.classList.add('proj');
+  setMode(st.mode || 'normal');
+  showTab(st.tab && document.getElementById('p-' + st.tab) ? st.tab : $$('nav.tabs button')[0].dataset.tab);
+}
+
+/* ==== taiwan.js ==== */
+/* ===== 共用地理資料：臺灣海岸線（經度, 緯度），示意精度 ===== */
+const TW_COAST = [[121.54,25.30],[121.62,25.27],[121.70,25.20],[121.75,25.14],[121.87,25.12],[122.00,25.01],[121.92,24.95],
+  [121.83,24.86],[121.82,24.70],[121.86,24.60],[121.84,24.45],[121.72,24.25],[121.62,24.02],[121.57,23.80],[121.50,23.50],
+  [121.40,23.15],[121.27,22.95],[121.15,22.75],[121.00,22.55],[120.90,22.35],[120.87,22.10],[120.85,21.90],[120.78,21.93],
+  [120.72,21.95],[120.70,22.05],[120.62,22.30],[120.55,22.40],[120.40,22.50],[120.28,22.62],[120.18,22.90],[120.12,23.05],
+  [120.07,23.15],[120.13,23.40],[120.18,23.60],[120.25,23.80],[120.32,24.05],[120.48,24.25],[120.60,24.45],[120.75,24.65],
+  [120.90,24.85],[121.02,25.00],[121.15,25.08],[121.40,25.18]];
+/* 點是否在多邊形內 */
+function inPoly(pt, poly) {
+  let c = false;
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    const [xi, yi] = poly[i], [xj, yj] = poly[j];
+    if (((yi > pt[1]) !== (yj > pt[1])) && (pt[0] < (xj - xi) * (pt[1] - yi) / (yj - yi) + xi)) c = !c;
+  }
+  return c;
+}
+/* 臺灣主要城市（經度, 緯度） */
+const TW_CITY = [['臺北', 121.52, 25.04], ['基隆', 121.74, 25.13], ['宜蘭', 121.75, 24.75], ['新竹', 120.97, 24.80], ['臺中', 120.68, 24.15],
+  ['南投', 120.68, 23.91], ['花蓮', 121.60, 23.98], ['嘉義', 120.45, 23.48], ['臺南', 120.21, 22.99], ['臺東', 121.15, 22.76], ['高雄', 120.30, 22.63], ['恆春', 120.74, 22.00]];
+
+/* ==== 00_data.js ==== */
+/* ===== 第五章：「猜一猜」與「迷思擂台」題目資料 ===== */
+const GUESS = {};
+const ARENA = {};
+
+/* ---------- 分頁 1 ---------- */
+GUESS.t1 = {
+  q: '地球上所有的水當中，人類可以「直接」拿來用的淡水（地下水、河流、湖泊）大約占多少？',
+  opts: ['約 70%', '約 30%', '約 3%', '約 1%'], ans: 3,
+  after: '答案是 <b>約 1%</b>。鹹水占了約 97%；剩下約 3% 的淡水裡，又有約 2% 凍在極區和高山的冰川裡，不容易直接用。真正能用的地下水、河流、湖泊加起來只有約 1%，其中河流和湖泊連一格都不到！按上面的「只看人能直接用的」對照看看。',
+};
+ARENA.t1 = {
+  short: '漂浮的冰融化，海平面幾乎不變；陸地上的冰融化才會讓海平面上升。',
+  title: '迷思 1：海上的冰山融化，海平面會上升嗎？',
+  q: '北極海上「漂浮」的海冰如果全部融化，海平面會怎樣？',
+  opts: ['明顯上升', '幾乎不變', '下降'], ans: 1,
+  sim: '用上面的「兩杯水實驗室」：先<b>不要</b>勾「海水」，把融化程度拉到 100%，記下左杯、右杯水面各上升多少。',
+  clash: '很多人以為「冰融化 → 水變多 → 水面上升」。可是左杯（浮冰）的水面一點都沒動！只有右杯（陸地上的冰）明顯上升。',
+  hints: [
+    '冰塊浮著的時候，泡在水裡的那一部分，其實「已經」把一些水擠開了。',
+    '浮著的冰，擠開的水有多重？——剛好等於冰塊自己的重量（浮力等於重量）。',
+    '冰融化後重量不變，變成的水剛好「填回」它當初擠開的空間。那右杯的冰，一開始有擠開任何水嗎？',
+  ],
+  explain: '<b>浮著的冰</b>：本來就擠開了和自己一樣重的水，融化後剛好補回那個空間，所以水面幾乎不變。<br><b>陸地上的冰</b>（格陵蘭冰層、南極冰層、高山冰川）：本來不在海裡，融化後流進海裡，是「新加進來」的水，海平面就上升。<br>🔬 <b>再深一層：</b>海水比淡水重一點點。勾選「海水」再試一次，左杯會「微微」上升——因為淡水冰融成的淡水，體積比它當初擠開的海水多約 2.4%。',
+  transfer: {
+    q: '下列哪一種冰融化，對「海平面上升」影響最大？',
+    opts: ['北極海上的海冰', '格陵蘭島上的冰層', '飲料杯裡的冰塊', '浮在南極海面上的冰棚'], ans: 1,
+    why: '格陵蘭冰層壓在陸地上，融化後是「新加入」海洋的水。2025 年格陵蘭淨流失約 1290 億噸冰，讓全球海平面一年上升約 0.4 公釐。<br>補充：冰棚本身浮著，融化不太影響水位；但冰棚像「門擋」，它崩解後，後方陸地上的冰會流得更快——這才是科學家擔心的地方。',
+  },
+};
+
+/* ---------- 分頁 2 ---------- */
+GUESS.t2 = {
+  q: '在「海邊」超抽地下水，除了地層下陷，還可能發生什麼事？',
+  opts: ['井裡的地下水變鹹', '地下水變熱', '冒出溫泉', '引發火山噴發'], ans: 0,
+  after: '答案是 <b>地下水變鹹</b>。地下水面降低後，旁邊海水的「推力」比較大，鹹水會從海那一側滲進透水層（模擬圖右下角的紅色區域會變大）。沿海的井一旦抽到鹹水，就不能喝、也不能灌溉。',
+};
+ARENA.t2 = {
+  short: '黏土層被壓密是永久的，地層下陷不可逆。',
+  title: '迷思 2：停止抽水，地面會彈回來嗎？',
+  q: '某地超抽地下水 30 年，地面下陷了 2 公尺。現在「完全停止抽水」，再過 30 年，地面會怎樣？',
+  opts: ['完全彈回原本的高度', '彈回大約一半', '幾乎回不去'], ans: 2,
+  sim: '用上面的地下水模擬器：① 把抽水量拉到「超抽」、按 ▶ 跑大約 30 年 ② 按「🚫 停止抽水」再跑 30 年。注意看兩件事：<b>藍色地下水面</b>和<b>紅色虛線（原本地面）</b>。',
+  clash: '地下水面回來了，地面卻停在低處，完全沒有往上彈！「水回來了，土為什麼不回來？」',
+  hints: [
+    '想像黏土裡的小顆粒像一間用撲克牌搭的「卡片屋」，牌和牌之間撐著很多空隙，空隙裡塞滿了水。',
+    '把水抽走，撐住空隙的力量不見了，上面的泥土一壓——卡片屋垮成一疊整齊的牌。',
+    '現在把水加回去，水會把那疊牌「重新蓋」成卡片屋嗎？',
+  ],
+  explain: '黏土顆粒是扁扁的薄片，原本雜亂地撐出很多孔隙，孔隙裡的水也幫忙「頂住」上面的重量。抽走水後，顆粒被壓得整整齊齊、孔隙消失——這個變形是<b>永久的</b>。水回來只能填進剩下的小縫，沒辦法把顆粒重新撐開，所以地層下陷<b>不可逆</b>（課本 p.139）。<br>🔬 <b>再深一層：</b>砂層比較像彈珠，被壓會稍微反彈一點；真正「回不去」的主要是黏土層。所以墨西哥城（蓋在古湖底的軟黏土上）才會沉得那麼兇。',
+  transfer: {
+    q: '既然下陷回不去，下列哪一種做法「最」能防止情況繼續惡化？',
+    opts: ['把下陷的地方用土填高', '減少抽水，並把河水引到地下「補注」', '多挖更深的井', '在地面蓋更重的建築把土壓實'], ans: 1,
+    why: '填土、墊高只是治標；真正的關鍵是讓「抽出去的 ≤ 補進來的」。雲林就是靠農田改種不耗水的作物（少抽）＋在新虎尾溪做地下水補注（多補），2025 年才出現 25 年來第一次「沒有顯著下陷」。挖更深的井、蓋更重的房子都會讓情況更糟。',
+  },
+};
+
+/* ---------- 分頁 3 ---------- */
+GUESS.t3 = {
+  q: '海水的鹽，主要是從哪裡來的？',
+  opts: ['海底有一個會一直磨出鹽的石磨', '雨水本來就是鹹的', '河流和地下水溶解岩石裡的鹽類，帶進大海；水蒸發了，鹽卻留下來', '海裡的魚排出來的'], ans: 2,
+  after: '答案是 <b>C</b>（課本 p.136）。雨水本身幾乎不鹹，但它流過岩石時會溶解一點點礦物質和鹽類。河流把這些鹽帶進海裡；海水蒸發時只有水離開，鹽留下來——日積月累，海就變鹹了。用這一頁的「鹹水湖製造機」選「大海」跑跑看。',
+};
+ARENA.t3 = {
+  short: '鹽有進也有出（沉積、生物利用），海水鹽度大致穩定。',
+  title: '迷思 3：河流一直把鹽帶進海裡，海水會愈來愈鹹嗎？',
+  q: '河流每天都把鹽送進海裡，而且幾億年來從沒停過。那麼現在的海水，應該是……',
+  opts: ['一直愈來愈鹹，總有一天會鹹到鹽結晶', '鹽度大致維持穩定', '愈來愈淡'], ans: 1,
+  sim: '在「鹹水湖製造機」選「死海」，按 ▶ 跑久一點（幾萬年）。盯著「湖水鹽度」：它會一直往上衝嗎？最後湖底出現了什麼？',
+  clash: '鹽明明一直被河水送進來，鹽度卻在某個值「停住」了！而且真實的海洋，地質學家推論它的鹽度長期以來變化不大，一直在 3.5% 左右——只有飽和濃度的約七分之一。鹽跑去哪了？',
+  hints: [
+    '一個帳戶的存款要維持不變，「存進來的錢」要等於什麼？',
+    '在模擬裡，鹽度停住的時候，湖底多了一層白色的東西。那就是鹽的「出口」之一。',
+    '海洋的鹽還有別的出口：很多海洋生物會把海水中的鈣「拿去」做成貝殼和珊瑚骨骼……牠們死後呢？（提示：第 7 分頁的石灰岩）',
+  ],
+  explain: '海洋的鹽像一個<b>收支平衡的帳戶</b>：河流每年存進鹽，同時也有好幾條「出口」把鹽提走——<br>① 封閉的海灣強烈蒸發，鹽結晶沉積成<b>鹽岩</b>；② 貝類、珊瑚把鈣做成殼和骨骼，死後堆積成<b>石灰岩</b>；③ 一部分鹽類被海底的泥沙和岩石吸收、埋藏。<br>進來 ≈ 出去，所以海水鹽度大致穩定。<br>🔬 補充：海鹽（氯化鈉）裡的「鈉」主要來自岩石風化，「氯」則有很大一部分來自古代火山噴出的氣體。<br>🔬 <b>和湖有什麼不一樣？</b>死海這類湖沒有其他出口，只能鹹到「飽和」才讓鹽結晶；海洋在遠遠還沒飽和之前，就有生物和沉積把鹽帶走了。',
+  transfer: {
+    q: '上游的水被大量引走，死海每年下降超過 1 公尺。接下來最可能發生什麼？',
+    opts: ['湖水變淡', '湖水更鹹，岸邊露出更多鹽層，還出現天坑', '什麼都不會改變'], ans: 1,
+    why: '流進來的淡水變少、蒸發不變 → 水變少、鹽還在，所以更鹹，鹽在岸邊結晶露出。更麻煩的是：湖面下降後，地下淡水往湖的方向流，順路把地底的古老鹽層溶出空洞，地面就塌成天坑。以色列地質調查所估計，每年約新增 500 個天坑。',
+  },
+};
+
+/* ---------- 分頁 4 ---------- */
+GUESS.t4 = {
+  q: '沿著河流從上游走到出海口，河床上的石頭會怎麼變化？',
+  opts: ['大小都差不多', '愈往下游愈大顆', '愈往下游愈小、愈圓滑', '完全沒有規律'], ans: 2,
+  after: '答案是 <b>C</b>。上游坡陡、流速快，連巨石都搬得動，只有最大的石頭留下來；愈往下游，坡度變緩、流速變慢，大石頭先沉下來，只剩小顆的繼續走，最後出海口只剩泥沙。石頭一路滾、一路互相碰撞摩擦，稜角被磨掉，變成圓滑的鵝卵石（課本 p.144–146）。',
+};
+ARENA.t4 = {
+  short: '最容易被沖起的是細沙；黏土有黏性反而難沖，但被沖起後很難沉下。',
+  title: '迷思 4：最細的泥，最容易被水沖走？',
+  q: '河水流速從 0 開始慢慢加快。河床上的「泥」「細沙」「礫石」，哪一種會「最先」被沖起來？',
+  opts: ['泥（最細、最輕）', '細沙', '礫石', '三種同時'], ans: 1,
+  sim: '打開上面的「流速 vs 顆粒大小」圖。把流速從最左邊<b>慢慢</b>往右拉，盯著黑色虛線：哪一種顆粒的點「最先」變成紅色？',
+  clash: '最先被沖起來的是<b>細沙</b>，不是最細的泥！黏土反而要比細沙快好幾倍的水流，才沖得起來。「愈小愈好沖」這個直覺，在最小的那一端失靈了。',
+  hints: [
+    '想一想：雨後乾掉的泥巴地，和海邊的沙灘，哪一個用手比較容易撥散？',
+    '黏土顆粒非常小、又扁，會互相「黏」在一起；而且泥巴地表面很平滑，水流不容易「抓」到單一顆粒。',
+    '但是——泥一旦被沖進水裡，要多慢才會沉下去？看看藍色的「沉積」線，黏土那一端畫到哪裡？',
+  ],
+  explain: '<b>沖起來</b>和<b>沉下去</b>是兩回事：<br>① 細沙（約 0.2–0.5 毫米）最容易被沖起，大約每秒 20 公分就夠。<br>② 比它大的顆粒太重，要更快的水；比它小的黏土顆粒因為<b>黏性</b>彼此吸附、河床表面又平滑，反而需要更快的水。<br>③ 但黏土一旦被捲進水中，因為非常細，幾乎不會沉——要到水接近靜止（湖泊、出海口、潟湖）才會慢慢沉積。所以出海口的泥灘那麼細，河水也常常混濁好幾天。',
+  transfer: {
+    q: '颱風過後好幾天，濁水溪的流速早就變慢了，河水卻還是一片混濁。最好的解釋是？',
+    opts: ['細泥被沖進水裡後，要水流幾乎靜止才會沉下去', '泥比砂重，所以浮在水面', '上游一直在下大雨'], ans: 0,
+    why: '對照 Hjulström 圖：流速降下來後，還是在黏土、粉砂的「搬運區」裡，所以它們繼續懸浮在水中，河水看起來一直很混濁。濁水溪的名字正是這樣來的——它流經容易風化的板岩、頁岩地區，水中常帶大量細泥。',
+  },
+};
+
+/* ---------- 分頁 5 ---------- */
+GUESS.t5 = {
+  q: '「風化作用」一定跟「風」有關嗎？',
+  opts: ['一定有關，風化就是被風吹壞', '不一定：陽光、水、生物、空氣都能讓岩石風化', '只跟雨有關'], ans: 1,
+  after: '答案是 <b>B</b>（課本 p.144「風化作用不是特指風的作用哦！」）。<br>☀️ 陽光：熱脹冷縮讓外層裂開　💧 水：岩縫中的水結冰膨脹　🌱 生物：樹根撐裂岩石　🌬 空氣：鐵和氧反應變成紅褐色。<br>「風化」的「風」是「風吹日曬、經年累月」的意思，不是專指風。',
+};
+ARENA.t5 = {
+  short: '冰川是固體，留下的冰磧石大小混雜、沒有分選。',
+  title: '迷思 5：冰川也會把石頭「排好」嗎？',
+  q: '在第 4 分頁，河流把石頭從大到小排好了。那麼在冰川融化的前端，堆積下來的石頭會長什麼樣？',
+  opts: ['跟出海口一樣，都是細泥', '像河流一樣，大的先停、小的在後面，排得整整齊齊', '大大小小混在一起，沒有排好', '只有巨石，小的都流走了'], ans: 2,
+  sim: '到上面的「🧊 冰川」模擬：先維持「很冷」讓冰舌前進一陣子，再把氣溫慢慢調高，讓冰舌後退。觀察冰舌前端留下來的那一堆石頭。',
+  clash: '冰磧石是<b>大小混雜</b>的！明明都是「搬運 → 沉積」，為什麼冰川不像河流一樣把石頭排好？',
+  hints: [
+    '河流會把石頭排好，是因為「流速一變慢，重的先沉下去」。冰川裡的石頭有機會「沉下去」嗎？',
+    '冰是固體。石頭被凍在冰裡，就像被冷凍在冰塊裡的水果——大的、小的都被一起「鎖住」。',
+    '那冰什麼時候才會「放手」？放手的時候，大的和小的有先後順序嗎？',
+  ],
+  explain: '<b>河流</b>是流體：流速變慢時，搬運能力降低，重的顆粒先沉、輕的繼續走 → 依大小<b>分選</b>（排好）。<br><b>冰川</b>是固體：石頭被凍在冰裡，大小一起被推著走，冰川前端融化時一次「倒」出來 → <b>沒有分選</b>，大小混雜，就是冰磧石（課本 p.147）。<br>🔬 所以地質學家看到一堆「大小混雜、表面有刮痕」的石頭，就能推論：這裡以前可能有冰川！這種用「現在的證據」推回「過去發生什麼」的思考，第六章岩層的紀錄還會用到。',
+  transfer: {
+    q: '登山客在臺灣某座高山的山谷裡，發現一大片「大小混雜、表面有平行刮痕」的石頭，旁邊的山谷剖面是 U 形。最合理的推論是？',
+    opts: ['這裡曾經是河流的出海口', '這裡在冰河時期可能有過冰川', '這是颱風剛帶來的土石流', '這是人類搬來的石頭'], ans: 1,
+    why: '「大小混雜（沒有分選）」＋「冰川刮痕」＋「U 形谷」三個證據指向同一個答案：冰川。許多學者就是用類似的證據，推論雪山的圈谷是冰河時期留下的。注意：土石流也會大小混雜，但通常不會有 U 形谷和平行刮痕——多個證據一起看，推論才可靠。',
+  },
+};
+
+/* ---------- 分頁 6 ---------- */
+GUESS.t6 = {
+  q: '一條河的上游蓋了一座大水庫。幾十年後，這條河出海口附近的海灘最可能會怎樣？',
+  opts: ['變寬，因為水庫讓河水比較平穩', '沒有影響，水庫離海很遠', '變窄、海岸線後退'], ans: 2,
+  after: '答案是 <b>變窄、海岸線後退</b>。水庫攔住的不只是水，還有河流帶來的沙。海浪照樣每天把沙帶走，可是補進來的沙變少了 → 沉積的沙 ＜ 被搬走的沙 → 海岸線後退（課本 p.151）。在「海岸線」模擬按「上游蓋水庫」驗證看看；臺南七股、埃及尼羅河三角洲都是真實例子。',
+};
+ARENA.t6 = {
+  short: '截彎取直讓洪水更快、更集中地衝到下游，下游反而更易淹水。',
+  title: '迷思 6：河道拉直，水流得快，下游就不淹水？',
+  q: '基隆河以前彎彎曲曲，颱風時常淹水。政府把它「截彎取直」，讓水更快流走。對「中、下游」來說，淹水的風險會……',
+  opts: ['降低，因為水很快就流走了', '可能反而提高', '完全沒影響'], ans: 1,
+  sim: '打開上面的「截彎取直模擬」，把程度從 0% 慢慢拉到 100%。盯著下圖：藍線的「最高點」比灰線高還是低？出現得比較早還是比較晚？有沒有超過紅色的堤防線？',
+  clash: '拉得愈直，下游的洪峰<b>愈高</b>、而且<b>來得愈早</b>，甚至超過堤防！「讓水快點流走」對上游是好事，對下游卻變成「一大波水同時湧到」。',
+  hints: [
+    '起點和終點的高度差沒變，河道卻變短了。那麼「坡度」會怎麼變？',
+    '坡度變陡 → 流速變快 → 上游各處的雨水「幾乎同時」衝到下游。',
+    '彎彎曲曲的河道，就像遊樂園排隊時繞來繞去的欄杆——它的作用其實是把人潮「分批」放出去。拉直之後呢？',
+  ],
+  explain: '截彎取直縮短河道 → 坡度變陡、流速加快 → 上游和取直段的水退得快，但水<b>集中、提早</b>湧到中下游，洪峰變高，下游反而更容易淹水；再遇上漲潮，海水還會往上游頂，水更排不出去（課本 p.163）。<br>所以基隆河後來又興建了<b>員山子分洪道</b>：在上游開一條隧道，把一部分洪水直接分流到海裡，減輕下游的壓力。<br>🔬 這是「系統思考」的經典例子：解決 A 處的問題，可能把問題搬到 B 處。',
+  transfer: {
+    q: '某城市的河流下游常淹水。下列哪一個方案的想法，最接近基隆河的「員山子分洪道」？',
+    opts: ['把下游的河道也拉直', '在上游另開一條通道，把一部分洪水直接引到海裡', '把河邊的堤防拆掉', '在河床上多挖砂石讓河變深'], ans: 1,
+    why: '分洪道的想法是「減少流到下游的總水量」，而不是只讓水跑更快。拉直下游會把問題再往更下游推；拆堤防會直接淹水；挖砂石會讓河床失去平衡、上游橋墩裸露（本頁第一個模擬）。',
+  },
+};
+
+/* ---------- 分頁 7 ---------- */
+GUESS.t7 = {
+  q: '花岡岩和玄武岩都是岩漿冷卻形成的。為什麼花岡岩的顆粒（晶體）比較大？',
+  opts: ['花岡岩的岩漿比較多', '花岡岩在地底深處慢慢冷卻，晶體有時間長大', '玄武岩後來被敲碎了', '花岡岩年紀比較大'], ans: 1,
+  after: '答案是 <b>B</b>（課本 p.152）。岩漿在地底深處被厚厚的岩石包住，熱散得很慢，可能要上萬年才凝固，晶體有充足的時間長大；噴出地表的岩漿接觸空氣或海水，很快就冷卻，晶體來不及長大。用這一頁的「火成岩製造機」把冷卻地點拉到兩端比較看看。',
+};
+ARENA.t7 = {
+  short: '岩石循環沒有固定順序，任何一類岩石都能變成另外兩類。',
+  title: '迷思 7：岩石循環一定照「火成 → 沉積 → 變質」的順序走？',
+  q: '一塊大理岩（變質岩），有可能「不經過熔化」，就變成沉積岩的一部分嗎？',
+  opts: ['不可能，一定要先熔成岩漿、變成火成岩', '可能：被抬升到地表，經過風化、侵蝕、搬運、沉積，再壓密膠結', '只有在海底才可能'], ans: 1,
+  sim: '在「岩石循環地圖」按幾次「🎲 隨機走 6 步」，或自己點箭頭，找出一條從「變質岩」到「沉積岩」、而且<b>不經過「岩漿」</b>的路。',
+  clash: '這樣的路不只一條！岩石循環不是只有一個方向的圓圈，比較像「捷運路線圖」——從任何一站都可以轉到好幾站。',
+  hints: [
+    '任何岩石只要被抬升到地表，就會遇到第 4 分頁的哪四個作用？',
+    '風化、侵蝕後的碎屑，不管原本是哪一類岩石，都叫做什麼？',
+    '反過來想：火成岩可以不熔化，就直接變成變質岩嗎？（看看「變質岩製造機」裡的花岡岩）',
+  ],
+  explain: '岩石循環<b>沒有固定順序</b>。三大類岩石都可以：<br>⬆ 被抬升到地表 → 風化、侵蝕、搬運、沉積 → 沉積岩<br>⬇ 被深埋 → 高溫高壓 → 變質岩<br>🔥 溫度更高 → 熔融成岩漿 → 冷卻成火成岩<br>每一類都能走向另外兩類，也能「重新來過」變成同一類（例如沉積岩被侵蝕後，又變成新的沉積岩）。<br>🔬 臺灣就是活生生的例子：中央山脈的變質岩被抬升、被河流切割，碎屑沖到海邊，未來可能變成新的沉積岩。',
+  transfer: {
+    q: '太魯閣的大理岩被立霧溪沖成碎石，一路搬運到出海口堆積。很久很久以後，這些碎石被壓密膠結，最可能變成哪一種岩石？',
+    opts: ['大理岩', '礫岩或砂岩（沉積岩）', '花岡岩', '玄武岩'], ans: 1,
+    why: '岩石屬於哪一類，看的是它「最後一次是怎麼形成的」。碎屑沉積後壓密膠結 → 沉積岩，就算碎屑原本是大理岩也一樣。<br>但「成分」會被繼承：這種礫岩裡的大理岩礫石，滴鹽酸照樣會冒泡！',
+  },
+};
+ARENA.t7b = {
+  short: '冰符合礦物的四個條件，是礦物；玻璃、合成鑽石不是。',
+  title: '迷思 8：冰算不算礦物？',
+  q: '依照課本對礦物的定義（天然產生、原子排列規則的固體無機物），冰河裡的「冰」算不算礦物？',
+  opts: ['算', '不算，因為冰就是水', '不算，因為冰會融化'], ans: 0,
+  sim: '用上面的「📋 礦物檢查表」把每一樣東西分類。特別注意三個：<b>冰</b>、<b>玻璃</b>、<b>合成鑽石</b>。',
+  clash: '冰是礦物，但閃亮的玻璃、和天然鑽石一模一樣的合成鑽石卻不是！我們心中的「礦物」常常等於「漂亮、值錢的石頭」，和科學定義差很多。',
+  hints: [
+    '逐條檢查冰：它是天然形成的嗎？',
+    '冰裡的水分子有沒有排成規則的結構？（想想雪花為什麼都是六角形）',
+    '「會不會融化」有出現在定義裡嗎？石英加熱到一千多度也會熔化喔。',
+  ],
+  explain: '<b>冰河的冰</b>：天然產生 ✔、水分子規則排列成晶體 ✔、在冰河中是固體 ✔、無機物 ✔ → 是礦物！礦物學家真的把冰列為礦物。<br><b>玻璃</b>：原子排列沒有規則，而且大多是人造 ✘。<br><b>合成鑽石</b>：結構和天然鑽石一樣，但不是天然產生 ✘。<br><b>煤</b>：由古代植物遺骸形成，屬於有機物 ✘。<br>🔬 科學定義看的是「怎麼形成、原子怎麼排列」，不是好不好看、值不值錢。',
+  transfer: {
+    q: '從天空飄下來的「雪花」，算不算礦物？',
+    opts: ['算', '不算'], ans: 0,
+    why: '雪花是天然形成、水分子規則排列的冰晶，是固體、也是無機物——四條全部符合，所以算！雪花漂亮的六角形，正是水分子「規則排列」留下的證據。',
+  },
+};
+
+/* ==== t0.js ==== */
+/* ===== 分頁 0：臺灣地景地圖 ===== */
+(() => {
+  const cv = document.getElementById('t0map'); if (!cv) return;
+  const S = stage(cv, 500, 620), ctx = S.ctx;
+  const P = (lon, lat) => [40 + (lon - 119.3) * 140, 30 + (25.45 - lat) * 154];
+  const COAST = [[121.54,25.30],[121.62,25.27],[121.70,25.20],[121.75,25.14],[121.87,25.12],[122.00,25.01],[121.92,24.95],
+    [121.83,24.86],[121.82,24.70],[121.86,24.60],[121.84,24.45],[121.72,24.25],[121.62,24.02],[121.57,23.80],[121.50,23.50],
+    [121.40,23.15],[121.27,22.95],[121.15,22.75],[121.00,22.55],[120.90,22.35],[120.87,22.10],[120.85,21.90],[120.78,21.93],
+    [120.72,21.95],[120.70,22.05],[120.62,22.30],[120.55,22.40],[120.40,22.50],[120.28,22.62],[120.18,22.90],[120.12,23.05],
+    [120.07,23.15],[120.13,23.40],[120.18,23.60],[120.25,23.80],[120.32,24.05],[120.48,24.25],[120.60,24.45],[120.75,24.65],
+    [120.90,24.85],[121.02,25.00],[121.15,25.08],[121.40,25.18]];
+  const IMG = q => 'https://www.google.com/search?tbm=isch&q=' + encodeURIComponent(q);
+  // k：分類；tab：在哪個分頁學
+  const SPOTS = [
+    { n: '老梅綠石槽', ll: [121.53, 25.27], k: 'wave', tab: 't5', d: '海浪長期沿著岩層的弱處侵蝕，切出一條條長溝（海蝕溝）。春天長滿綠藻，才變成「綠」石槽。', q: '老梅綠石槽' },
+    { n: '富貴角 風稜石', ll: [121.56, 25.31], k: 'wind', tab: 't5', d: '強風吹起沙粒，像砂紙一樣把石頭磨出稜角。', q: '富貴角 風稜石', dx: 14, dy: -6 },
+    { n: '野柳 女王頭', ll: [121.69, 25.21], k: 'wave', tab: 't5', d: '上面的岩石比較硬、下面比較軟，軟的被侵蝕得快——脖子愈來愈細（差異侵蝕）。', q: '野柳 女王頭' },
+    { n: '九份・金瓜石', ll: [121.86, 25.10], k: 'rock', tab: 't7', d: '火成岩裡常藏有金屬礦產，這裡曾是臺灣重要的金礦區。', q: '金瓜石 黃金博物館 礦石' },
+    { n: '基隆河 截彎取直', ll: [121.57, 25.07], k: 'river', tab: 't6', d: '為了防洪把彎曲河道拉直，結果流速變快、下游反而更容易淹水。', q: '基隆河 截彎取直 舊河道', dx: -10, dy: 10 },
+    { n: '觀音 沙丘', ll: [121.08, 25.03], k: 'wind', tab: 't5', d: '風力減弱時，沙粒落下堆積成沙丘（風的沉積作用）。', q: '桃園 觀音 沙丘' },
+    { n: '蘭陽溪', ll: [121.70, 24.63], k: 'river', tab: 't4', d: '課本圖 5-12：從源頭的巨石，到中下游的鵝卵石，再到出海口的泥沙。', q: '蘭陽溪 河口' },
+    { n: '苗栗 火炎山', ll: [120.76, 24.43], k: 'rock', tab: 't7', d: '礫岩膠結差、容易崩落，裸露出紅色土壤，夕陽下像火焰。', q: '苗栗 火炎山' },
+    { n: '太魯閣 大理岩峽谷', ll: [121.50, 24.17], k: 'rock', tab: 't7', d: '石灰岩經高溫高壓變成大理岩，再被立霧溪切出深峽谷。', q: '太魯閣 燕子口 大理岩' },
+    { n: '日月潭', ll: [120.91, 23.86], k: 'water', tab: 't3', d: '臺灣最大的淡水湖。', q: '日月潭' },
+    { n: '濁水溪 河川揚塵', ll: [120.42, 23.83], k: 'wind', tab: 't5', d: '冬天枯水期河床裸露，東北季風把細沙吹起來，下游空氣品質變差。', q: '濁水溪 揚塵', dx: -4, dy: 4 },
+    { n: '雲林 地層下陷', ll: [120.32, 23.68], k: 'water', tab: 't2', d: '超抽地下水使地層被壓縮。高鐵經過這裡，所以特別受到關注。', q: '雲林 地層下陷 高鐵' },
+    { n: '外傘頂洲', ll: [120.07, 23.47], k: 'wave', tab: 't6', d: '「會移動的國土」：沙洲面積愈來愈小，而且一直往南漂。', q: '外傘頂洲', dx: -16 },
+    { n: '七股潟湖・馬沙溝', ll: [120.06, 23.15], k: 'wave', tab: 't6', d: '曾文溪上游蓋了水庫、海邊蓋了突堤，沙子變少，沙洲往陸地後退。', q: '七股 頂頭額汕 沙洲', dx: -16 },
+    { n: '澎湖 柱狀玄武岩', ll: [119.58, 23.60], k: 'rock', tab: 't7', d: '岩漿噴出地表快速冷卻、收縮裂開，形成一根根六角形石柱。', q: '澎湖 大菓葉 柱狀玄武岩' },
+    { n: '大武漁港 淤積', ll: [120.90, 22.35], k: 'wave', tab: 't6', d: '泥沙沉積得比被帶走的多，港口被淤塞，要一直用機具清淤。', q: '大武漁港 淤積' },
+    { n: '墾丁 船帆石', ll: [120.86, 21.97], k: 'rock', tab: 't7', d: '珊瑚礁形成的石灰岩，高約 18 公尺。', q: '墾丁 船帆石' },
+  ];
+  const ICON = { wave: ['#1F6FB2', '🌊'], river: ['#2E8B57', '🏞'], wind: ['#C9A227', '💨'], rock: ['#8D6E63', '🪨'], water: ['#00A0B0', '💧'] };
+  let filter = 'all', sel = null;
+
+  function draw() {
+    S.fit();
+    ctx.clearRect(0, 0, S.W, S.H);
+    // 海
+    ctx.fillStyle = '#D8ECF5'; ctx.fillRect(0, 0, S.W, S.H);
+    // 臺灣本島
+    ctx.beginPath(); COAST.forEach(([lo, la], i) => { const [x, y] = P(lo, la); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.closePath();
+    const g = ctx.createLinearGradient(380, 0, 200, 0); g.addColorStop(0, '#B9D3A0'); g.addColorStop(1, '#DCE8C4');
+    ctx.fillStyle = g; ctx.fill(); ctx.strokeStyle = '#6E8B5A'; ctx.lineWidth = 1.5; ctx.stroke();
+    // 中央山脈示意
+    ctx.save(); ctx.strokeStyle = 'rgba(110,90,60,.35)'; ctx.lineWidth = 12; ctx.lineCap = 'round';
+    ctx.beginPath(); [[121.5, 24.85], [121.25, 24.2], [121.05, 23.5], [120.88, 22.6]].forEach(([lo, la], i) => { const [x, y] = P(lo, la); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.stroke();
+    ctx.restore();
+    label(ctx, '中央山脈', ...P(121.2, 23.75), { color: 'rgba(90,70,40,.7)', size: 13, align: 'center' });
+    // 澎湖
+    ctx.fillStyle = '#C9DCAF'; [[119.58, 23.57, 9, 14], [119.65, 23.67, 6, 7], [119.50, 23.47, 5, 6]].forEach(([lo, la, rx, ry]) => {
+      const [x, y] = P(lo, la); ctx.beginPath(); ctx.ellipse(x, y, rx, ry, .3, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); });
+    label(ctx, '澎湖', ...P(119.45, 23.85), { size: 13, color: '#456' });
+    label(ctx, '臺灣海峽', 90, 330, { size: 14, color: '#6A93AA' });
+    label(ctx, '太平洋', 445, 420, { size: 14, color: '#6A93AA' });
+    // 指北
+    arrow(ctx, 470, 80, 470, 40, '#456', 2); label(ctx, 'N', 470, 95, { align: 'center', size: 13, color: '#456' });
+    // 地點
+    SPOTS.forEach(s => {
+      const [x, y] = P(...s.ll); s.x = x + (s.dx || 0) * .4; s.y = y + (s.dy || 0) * .4;
+      const on = filter === 'all' || filter === s.k;
+      const [c] = ICON[s.k];
+      ctx.globalAlpha = on ? 1 : .18;
+      if (s === sel) { ctx.fillStyle = 'rgba(255,210,122,.6)'; ctx.beginPath(); ctx.arc(s.x, s.y, 16, 0, 7); ctx.fill(); }
+      ctx.fillStyle = c; ctx.strokeStyle = '#fff'; ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.arc(s.x, s.y, 8, 0, 7); ctx.fill(); ctx.stroke();
+      if (on && (filter !== 'all' || s === sel)) label(ctx, s.n, s.x + (s.x > 330 ? -12 : 12), s.y, { size: 13, align: s.x > 330 ? 'right' : 'left', bg: 'rgba(255,255,255,.85)' });
+      ctx.globalAlpha = 1;
+    });
+  }
+  function info(s) {
+    const [c, ic] = ICON[s.k];
+    const tabBtn = document.querySelector(`nav.tabs button[data-tab="${s.tab}"]`);
+    document.getElementById('t0info').innerHTML = `<h3 style="color:${c}">${ic} ${s.n}</h3><p>${s.d}</p>
+      <div class="btnrow"><a class="btn ghost" href="${IMG(s.q)}" target="_blank" rel="noopener">📷 看照片（開新分頁）</a>
+      <button class="btn" onclick="showTab('${s.tab}')">→ 到「${tabBtn ? tabBtn.textContent.replace(/^\d/, '') : ''}」學</button></div>`;
+  }
+  cv.addEventListener('pointerdown', e => {
+    const p = S.pt(e);
+    let best = null, bd = 22;
+    SPOTS.forEach(s => { if (filter !== 'all' && filter !== s.k) return; const d = Math.hypot(s.x - p.x, s.y - p.y); if (d < bd) { bd = d; best = s; } });
+    if (best) { sel = best; info(best); draw(); }
+  });
+  document.querySelectorAll('#t0f .chip').forEach(b => b.onclick = () => {
+    document.querySelectorAll('#t0f .chip').forEach(x => x.classList.remove('on')); b.classList.add('on');
+    filter = b.dataset.k; draw();
+  });
+  registerSim('t0', { start: draw });
+})();
+
+/* ==== t1.js ==== */
+/* ===== 分頁 1：地球三圈、一千格的水、浮冰融化 ===== */
+(() => {
+  /* ---------- 三圈連連看 ---------- */
+  const cv = document.getElementById('t1sph'); if (!cv) return;
+  const S = stage(cv, 520, 360), ctx = S.ctx;
+  const C = { A: { n: '大氣圈', x: 260, y: 110, c: '#7FB3E0' }, W: { n: '水圈', x: 170, y: 245, c: '#3E7CC0' }, R: { n: '岩石圈', x: 350, y: 245, c: '#A1887F' } };
+  const EV = [
+    ['🌋 火山噴發，火山灰衝上天空', [['R', 'A']]],
+    ['🌧 雲變成雨落下來', [['A', 'W']]],
+    ['☀️ 海水蒸發變成雲', [['W', 'A']]],
+    ['🏞 河水溶解岩石裡的鹽類', [['R', 'W']]],
+    ['💨 強風把沙吹起來磨石頭', [['A', 'R']]],
+    ['🧊 冰川把山谷刮成 U 形', [['W', 'R']]],
+    ['🌊 海浪拍打海岸，打出海蝕洞', [['W', 'R']]],
+  ];
+  let ev = null;
+  function draw() {
+    S.fit(); ctx.clearRect(0, 0, S.W, S.H);
+    Object.entries(C).forEach(([k, s]) => {
+      const on = !ev || ev[1].some(p => p.includes(k));
+      ctx.globalAlpha = on ? .55 : .15; ctx.fillStyle = s.c;
+      ctx.beginPath(); ctx.arc(s.x, s.y, 92, 0, 7); ctx.fill();
+      ctx.globalAlpha = 1;
+      label(ctx, s.n, s.x + (k === 'A' ? 0 : k === 'W' ? -35 : 35), s.y + (k === 'A' ? -40 : 30), { align: 'center', bold: true, size: 18, color: on ? '#1d2b26' : '#9aa' });
+    });
+    if (ev) {
+      ev[1].forEach(([a, b]) => {
+        const p = C[a], q = C[b], dx = q.x - p.x, dy = q.y - p.y, L = Math.hypot(dx, dy);
+        arrow(ctx, p.x + dx / L * 30, p.y + dy / L * 30, q.x - dx / L * 30, q.y - dy / L * 30, '#C46A28', 5, 18);
+      });
+      label(ctx, ev[0], 260, 345, { align: 'center', size: 16, bold: true, bg: '#FFF3DC' });
+    } else label(ctx, '三圈互相影響，共同塑造我們的環境', 260, 345, { align: 'center', size: 15, color: '#667' });
+  }
+  const evBox = document.getElementById('t1ev');
+  EV.forEach(e => {
+    const b = document.createElement('button'); b.className = 'chip'; b.textContent = e[0];
+    b.onclick = () => { evBox.querySelectorAll('.chip').forEach(x => x.classList.remove('on')); b.classList.add('on'); ev = e; draw(); };
+    evBox.appendChild(b);
+  });
+  registerSim('t1', { start: draw });
+
+  /* ---------- 一千格的水 ---------- */
+  const g = document.getElementById('t1grid');
+  const G = stage(g, 520, 360), gx = G.ctx;
+  const COLS = 40, ROWS = 25, cell = 12, ox = 20, oy = 18;
+  // 依課本：鹹水約 97%、冰川約 2%、地下水約 1%、河流湖泊遠小於 1%
+  const PART = [['鹹水（海洋為主）', 970, '#1E5B94'], ['冰川（淡水）', 20, '#E8F1F8'], ['地下水（淡水）', 10, '#8FB996']];
+  let view = 'all';
+  function drawGrid() {
+    G.fit(); gx.clearRect(0, 0, G.W, G.H);
+    let i = 0;
+    PART.forEach(([n, cnt, col], pi) => {
+      for (let k = 0; k < cnt; k++, i++) {
+        const r = Math.floor(i / COLS), c = i % COLS;
+        const vis = view === 'all' || (view === 'fresh' && pi > 0) || (view === 'use' && pi === 2);
+        gx.fillStyle = vis ? col : '#F1F1EE';
+        gx.fillRect(ox + c * cell, oy + r * cell, cell - 1.5, cell - 1.5);
+        if (vis && pi === 1) { gx.strokeStyle = '#9BB7CF'; gx.lineWidth = .6; gx.strokeRect(ox + c * cell, oy + r * cell, cell - 1.5, cell - 1.5); }
+      }
+    });
+    // 河流湖泊：連一格都不到
+    const last = { x: ox + 39 * cell + 5, y: oy + 24 * cell + 5 };
+    gx.fillStyle = '#E53935'; gx.beginPath(); gx.arc(last.x, last.y, 2.2, 0, 7); gx.fill();
+    if (view !== 'all') { arrow(gx, last.x - 60, last.y + 30, last.x - 4, last.y + 4, '#E53935', 2); label(gx, '河流＋湖泊：不到 1 格！', last.x - 62, last.y + 36, { align: 'right', size: 13, color: '#C62828', bold: true }); }
+    const n = view === 'all' ? 1000 : view === 'fresh' ? 30 : 10;
+    document.getElementById('t1read').innerHTML =
+      `<div><b>${n} 格</b><span>${view === 'all' ? '全部的水' : view === 'fresh' ? '淡水（約 3%）' : '地下水＋河湖（約 1%）'}</span></div>` +
+      PART.map(([nm, c, col]) => `<div><b style="color:${col === '#E8F1F8' ? '#7A9AB8' : col}">${c} 格</b><span>${nm}</span></div>`).join('');
+  }
+  document.querySelectorAll('#p-t1 [data-v]').forEach(b => b.onclick = () => { view = b.dataset.v; drawGrid(); });
+  registerSim('t1', { start: drawGrid });
+
+  /* ---------- 兩杯水：浮冰 vs 陸冰 ---------- */
+  const ic = document.getElementById('t1ice');
+  const I = stage(ic, 520, 300), ix = I.ctx;
+  const melt = document.getElementById('t1melt'), salt = document.getElementById('t1salt');
+  function drawIce() {
+    I.fit(); ix.clearRect(0, 0, I.W, I.H);
+    const f = +melt.value / 100, rho = salt.checked ? 1.025 : 1.0;
+    const cupW = 180, cupH = 200, base = 260, A = cupW;           // 截面寬度（2D 示意）
+    const ice0 = 3600;                                             // 冰的「質量」（面積單位）
+    const water0 = 18000;                                          // 原本的水
+    const iceLeft = ice0 * (1 - f);
+    // 左杯：浮冰排開的水 = 剩下冰的重 / 水的密度；融出的淡水 = 融化的冰
+    const levL = (water0 + iceLeft / rho + ice0 * f / 1.0) / A;
+    // 右杯：石頭佔掉固定體積；冰在石頭上不排水；融水全部流進杯中
+    const rock = 2600;
+    const levR = (water0 + rock + ice0 * f) / A;
+    const lev0 = (water0 + ice0 / rho) / A;     // 左杯起始水位
+    const lev0R = (water0 + rock) / A;
+    [[60, levL, lev0, 'L'], [290, levR, lev0R, 'R']].forEach(([x0, lev, l0, side]) => {
+      // 水
+      ix.fillStyle = salt.checked ? '#7DB7D6' : '#9FD0EE';
+      ix.fillRect(x0, base - lev, cupW, lev);
+      // 起始水位虛線
+      ix.setLineDash([5, 4]); ix.strokeStyle = '#C62828'; ix.lineWidth = 1.5;
+      ix.beginPath(); ix.moveTo(x0 - 8, base - l0); ix.lineTo(x0 + cupW + 8, base - l0); ix.stroke(); ix.setLineDash([]);
+      if (side === 'L') {
+        // 浮冰：水下部分 = 冰重/水密度
+        const s = Math.sqrt(iceLeft / .92) * 1.0, sub = s * .92 / rho;
+        if (s > 2) { ix.fillStyle = 'rgba(240,248,255,.95)'; ix.strokeStyle = '#8AB'; ix.fillRect(x0 + cupW / 2 - s / 2, base - lev - (s - sub), s, s); ix.strokeRect(x0 + cupW / 2 - s / 2, base - lev - (s - sub), s, s); }
+      } else {
+        // 石頭（島）與上面的冰
+        ix.fillStyle = '#8D7B6A'; ix.beginPath(); ix.moveTo(x0 + 40, base); ix.lineTo(x0 + 60, base - 140); ix.lineTo(x0 + 120, base - 140); ix.lineTo(x0 + 140, base); ix.fill();
+        const s = Math.sqrt(iceLeft / .92);
+        if (s > 2) { ix.fillStyle = 'rgba(240,248,255,.95)'; ix.strokeStyle = '#8AB'; ix.fillRect(x0 + 90 - s / 2, base - 140 - s, s, s); ix.strokeRect(x0 + 90 - s / 2, base - 140 - s, s, s); }
+        if (f > 0 && f < 1) { ix.strokeStyle = '#5BA3D6'; ix.lineWidth = 2; ix.beginPath(); ix.moveTo(x0 + 120, base - 138); ix.quadraticCurveTo(x0 + 135, base - 90, x0 + 150, base - lev); ix.stroke(); }
+      }
+      // 杯子
+      ix.strokeStyle = '#555'; ix.lineWidth = 3; ix.beginPath(); ix.moveTo(x0, base - cupH); ix.lineTo(x0, base); ix.lineTo(x0 + cupW, base); ix.lineTo(x0 + cupW, base - cupH); ix.stroke();
+      label(ix, side === 'L' ? '冰浮在水上（海冰）' : '冰在陸地上（冰層）', x0 + cupW / 2, 28, { align: 'center', bold: true, size: 15 });
+      const d = lev - l0;
+      label(ix, `水面上升：${d.toFixed(1)} 公釐`, x0 + cupW / 2, 284, { align: 'center', size: 14, color: d < .05 ? '#2E7D32' : '#C62828', bold: true });
+    });
+    label(ix, '紅色虛線 = 一開始的水面', 260, 52, { align: 'center', size: 12, color: '#C62828' });
+    document.getElementById('t1iceR').innerHTML = `<div><b>${Math.round(f * 100)}%</b><span>冰已融化</span></div><div><b>${salt.checked ? '海水' : '淡水'}</b><span>杯中的水</span></div>`;
+  }
+  bindRange('t1melt', v => v + '%', drawIce);
+  salt.onchange = drawIce;
+  registerSim('t1', { start: drawIce });
+})();
+
+/* ==== t2.js ==== */
+/* ===== 分頁 2：地下水模擬器（地層下陷、海水入侵） =====
+   比例：畫面 10 px = 1 公尺。地面起始 y=150，海平面 y=168。
+   下陷只在地下水面降到「歷史最低點」以下時發生，水面回升時不會反彈（不可逆）。 */
+(() => {
+  const cv = document.getElementById('t2cv'); if (!cv) return;
+  const S = stage(cv, 760, 430), ctx = S.ctx;
+  const G0 = 150, SEA = 168, AQ_BOT = 330, COAST = 640, PX = 10;
+  const st = { year: 0, wt: 162, wtMin: 162, sub: 0, playing: false };
+  const rain = bindRange('t2rain', v => v < 25 ? '少（旱）' : v < 70 ? '普通' : '多（雨季）', () => draw());
+  const pump = bindRange('t2pump', v => v === 0 ? '不抽' : v < 40 ? '少' : v < 75 ? '多' : '超抽！', () => draw());
+  const well = bindRange('t2well', v => v + ' 公尺', () => draw());
+  const rnd = rng(7);
+  const sandDots = Array.from({ length: 900 }, () => [rnd() * 760, rnd()]);
+
+  function step(dt) {
+    if (!st.playing) return;
+    const yrs = dt * 3;                                   // 1 秒 = 3 年
+    st.year += yrs;
+    const ground = G0 + st.sub;
+    const dwt = (+pump.value * 0.05 - +rain.value * 0.05) * yrs;   // 正值 = 水面變深
+    st.wt = clamp(st.wt + dwt, ground + 5, AQ_BOT - 8);
+    if (st.wt > st.wtMin) {                               // 低於過去最低點 → 黏土被壓密
+      st.sub += (st.wt - st.wtMin) * 0.28;
+      st.wtMin = st.wt;
+    }
+    draw();
+  }
+  function draw() {
+    S.fit(); ctx.clearRect(0, 0, S.W, S.H);
+    const ground = G0 + st.sub;
+    // 天空
+    ctx.fillStyle = '#E3F1FA'; ctx.fillRect(0, 0, S.W, S.H);
+    // 海（右側）
+    ctx.fillStyle = '#5E9ECF'; ctx.fillRect(COAST, SEA, S.W - COAST, AQ_BOT - SEA);
+    // 透水層（砂）
+    ctx.fillStyle = '#E8D6A8'; ctx.fillRect(0, ground, COAST, AQ_BOT - ground);
+    ctx.fillStyle = 'rgba(150,120,70,.45)';
+    sandDots.forEach(([x, f]) => { if (x < COAST) ctx.fillRect(x, ground + f * (AQ_BOT - ground), 2, 2); });
+    // 地下水（飽和帶）
+    ctx.fillStyle = 'rgba(70,140,210,.42)'; ctx.fillRect(0, st.wt, COAST, AQ_BOT - st.wt);
+    // 海水入侵：地下水面愈低，鹹水楔形伸得愈進來
+    const push = clamp((st.wt - SEA) * 4, 30, 420);
+    ctx.save(); ctx.beginPath(); ctx.rect(0, Math.max(st.wt, SEA), COAST, AQ_BOT); ctx.clip();   // 鹹水只出現在飽和帶裡
+    ctx.fillStyle = 'rgba(200,60,60,.38)';
+    ctx.beginPath(); ctx.moveTo(COAST, SEA + 4); ctx.lineTo(COAST, AQ_BOT); ctx.lineTo(COAST - push, AQ_BOT); ctx.closePath(); ctx.fill();
+    ctx.restore();
+    // 不透水層（黏土）
+    ctx.fillStyle = '#8C7A6B'; ctx.fillRect(0, AQ_BOT, S.W, S.H - AQ_BOT);
+    ctx.strokeStyle = 'rgba(0,0,0,.15)'; for (let y = AQ_BOT + 10; y < S.H; y += 12) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(S.W, y); ctx.stroke(); }
+    // 地表（草）
+    ctx.fillStyle = '#7CB342'; ctx.fillRect(0, ground - 4, COAST, 6);
+    // 原本的地面高度
+    if (st.sub > 1) {
+      ctx.setLineDash([6, 4]); ctx.strokeStyle = '#C62828'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(0, G0); ctx.lineTo(COAST, G0); ctx.stroke(); ctx.setLineDash([]);
+      label(ctx, '原本的地面', 10, G0 - 10, { color: '#C62828', size: 13, bold: true });
+      arrow(ctx, 470, G0, 470, ground - 2, '#C62828', 2, 8);
+    }
+    // 海水倒灌：地面比海還低
+    if (ground > SEA - 2) { ctx.fillStyle = 'rgba(94,158,207,.6)'; ctx.fillRect(420, SEA - 2, COAST - 420, ground - SEA + 2); label(ctx, '⚠ 低於海面，容易淹水、海水倒灌', 530, SEA - 16, { align: 'center', size: 13, color: '#0D47A1', bold: true, bg: 'rgba(255,255,255,.8)' }); }
+    // 房子（跟著地面一起沉）＋ 後來墊高的馬路
+    const hx = 90, hy = ground - 4;
+    ctx.fillStyle = '#F5F0E6'; ctx.fillRect(hx, hy - 50, 60, 50); ctx.strokeStyle = '#6D5D4B'; ctx.lineWidth = 2; ctx.strokeRect(hx, hy - 50, 60, 50);
+    ctx.fillStyle = '#B5523B'; ctx.beginPath(); ctx.moveTo(hx - 6, hy - 50); ctx.lineTo(hx + 30, hy - 78); ctx.lineTo(hx + 66, hy - 50); ctx.fill();
+    ctx.fillStyle = '#6D5D4B'; ctx.fillRect(hx + 24, hy - 26, 14, 26);
+    if (st.sub > 6) { ctx.fillStyle = '#666'; ctx.fillRect(160, G0 - 6, 140, 8 + st.sub * 0); label(ctx, '後來墊高的馬路', 230, G0 - 16, { align: 'center', size: 12, color: '#444' }); }
+    // 水井＋抽水機
+    const wx = 380, wBot = ground + +well.value * PX;
+    ctx.fillStyle = '#fff'; ctx.fillRect(wx - 5, ground - 20, 10, wBot - ground + 20);
+    ctx.strokeStyle = '#455A64'; ctx.lineWidth = 2; ctx.strokeRect(wx - 5, ground - 20, 10, wBot - ground + 20);
+    const wet = wBot > st.wt;
+    if (wet) { ctx.fillStyle = '#4A8CD2'; ctx.fillRect(wx - 4, st.wt, 8, wBot - st.wt); }
+    ctx.fillStyle = '#455A64'; ctx.fillRect(wx - 14, ground - 32, 28, 14);
+    label(ctx, wet ? '💧 抽得到水' : '✘ 抽不到水', wx, ground - 46, { align: 'center', size: 13, bold: true, color: wet ? '#1565C0' : '#C62828', bg: 'rgba(255,255,255,.85)' });
+    // 標示
+    label(ctx, '地下水面', 12, st.wt - 9, { size: 13, color: '#0D47A1', bold: true });
+    ctx.strokeStyle = '#0D47A1'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(0, st.wt); ctx.lineTo(COAST, st.wt); ctx.stroke();
+    label(ctx, '透水層（砂，孔隙多）', 520, AQ_BOT - 14, { size: 13, color: '#5D4037', align: 'right' });
+    label(ctx, '不透水層（黏土）', 12, AQ_BOT + 20, { size: 13, color: '#fff' });
+    label(ctx, '海', 700, SEA + 30, { size: 16, color: '#fff', bold: true, align: 'center' });
+    if (push > 60) label(ctx, '鹹水入侵', COAST - 50, AQ_BOT - 30, { size: 13, color: '#B71C1C', bold: true, align: 'right' });
+    // 雨
+    const r = +rain.value;
+    ctx.strokeStyle = 'rgba(30,90,160,.5)'; ctx.lineWidth = 1.5;
+    for (let i = 0; i < r / 4; i++) { const x = (i * 97 + st.year * 40) % COAST; ctx.beginPath(); ctx.moveTo(x, 20 + (i * 37) % 60); ctx.lineTo(x - 4, 32 + (i * 37) % 60); ctx.stroke(); }
+    // 讀數
+    document.getElementById('t2read').innerHTML =
+      `<div><b>${Math.floor(st.year)} 年</b><span>經過時間</span></div>
+       <div><b>${((st.wt - ground) / PX).toFixed(1)} m</b><span>地下水面深度</span></div>
+       <div><b style="color:${st.sub > 1 ? '#C62828' : ''}">${(st.sub / PX * 100).toFixed(0)} cm</b><span>累積地層下陷</span></div>`;
+  }
+  const L = loop(step);
+  const playBtn = document.getElementById('t2play');
+  playBtn.onclick = () => { st.playing = !st.playing; playBtn.textContent = st.playing ? '⏸ 暫停' : '▶ 時間前進'; };
+  document.getElementById('t2stop').onclick = () => { pump.value = 0; pump.dispatchEvent(new Event('input')); if (!st.playing) playBtn.click(); };
+  document.getElementById('t2reset').onclick = () => { Object.assign(st, { year: 0, wt: 162, wtMin: 162, sub: 0 }); rain.value = 50; pump.value = 50; [rain, pump].forEach(e => e.dispatchEvent(new Event('input'))); draw(); };
+  registerSim('t2', { start() { draw(); L.start(); }, stop() { L.stop(); }, resize: draw });
+})();
+
+/* ==== t3.js ==== */
+/* ===== 分頁 3：水循環動畫、鹹水湖製造機 ===== */
+(() => {
+  /* ---------- 水循環 ---------- */
+  const cv = document.getElementById('t3cyc'); if (!cv) return;
+  const S = stage(cv, 760, 400), ctx = S.ctx;
+  const temp = bindRange('t3temp', v => v + ' °C');
+  // 路線：每段 [名稱, 點列, 狀態('l' 液態 / 'g' 氣態)]
+  const SEG = {
+    evapO: ['蒸發', [[120, 330], [160, 200], [250, 95]], 'g'],
+    evapL: ['蒸發', [[560, 250], [560, 160], [520, 95]], 'g'],
+    cloud: ['凝結（水蒸氣變成小水滴，形成雲）', [[250, 95], [390, 80], [520, 95]], 'c'],
+    rainO: ['降水（落回海洋）', [[300, 100], [290, 330]], 'l'],
+    rainL: ['降水（落在陸地上）', [[520, 100], [560, 200], [560, 250]], 'l'],
+    river: ['河流把水帶回海洋', [[560, 250], [470, 290], [380, 318], [300, 336]], 'l'],
+    infil: ['滲入地下，變成地下水', [[560, 250], [560, 340], [400, 365], [260, 360]], 'l'],
+  };
+  // 每段走完要去哪（機率）
+  const NEXT = { evapO: [['cloud', 1]], evapL: [['cloud', 1]], cloud: [['rainO', .55], ['rainL', .45]], rainO: [['ocean', 1]],
+    rainL: [['river', .45], ['infil', .35], ['evapL', .2]], river: [['ocean', 1]], infil: [['ocean', 1]] };
+  const parts = [];
+  let tracked = null, logLines = [], spawn = 0;
+  function pick(arr) { let r = Math.random(); for (const [k, p] of arr) { if ((r -= p) <= 0) return k; } return arr[arr.length - 1][0]; }
+  function newPart(seg) { return { seg, t: 0, x: 0, y: 0, jit: Math.random() * 16 - 8 }; }
+  function pos(p) {
+    const pts = SEG[p.seg][1]; const n = pts.length - 1; const f = clamp(p.t, 0, 1) * n; const i = Math.min(n - 1, Math.floor(f)); const u = f - i;
+    p.x = lerp(pts[i][0], pts[i + 1][0], u) + p.jit; p.y = lerp(pts[i][1], pts[i + 1][1], u) + p.jit * .4;
+  }
+  function log(s) { logLines.push(s); document.getElementById('t3log').innerHTML = logLines.map((l, i) => `${i + 1}. ${l}`).join('<br>'); }
+  function step(dt) {
+    const T = +temp.value, k = .3 + T / 30;                 // 溫度愈高，跑得愈快、蒸發愈多
+    spawn += dt * (2 + T * .35);
+    while (spawn > 1 && parts.length < 160) { spawn--; parts.push(newPart('evapO')); }
+    for (let i = parts.length - 1; i >= 0; i--) {
+      const p = parts[i]; p.t += dt * k * (p.seg === 'infil' ? .25 : p.seg === 'cloud' ? .45 : .6);
+      if (p.t >= 1) {
+        const nx = pick(NEXT[p.seg]);
+        if (nx === 'ocean') {
+          if (p === tracked) { log('回到海洋。🎉 一趟旅程完成！（再按一次可以追蹤新的一滴）'); tracked = null; }
+          parts.splice(i, 1); continue;
+        }
+        p.seg = nx; p.t = 0;
+        if (p === tracked) log(SEG[nx][0]);
+      }
+      pos(p);
+    }
+    draw(T);
+  }
+  function draw(T) {
+    S.fit(); ctx.clearRect(0, 0, S.W, S.H);
+    const sky = ctx.createLinearGradient(0, 0, 0, 300); sky.addColorStop(0, T > 28 ? '#FFE8C2' : '#CFE7F7'); sky.addColorStop(1, '#F2F8FC');
+    ctx.fillStyle = sky; ctx.fillRect(0, 0, S.W, S.H);
+    // 太陽
+    ctx.fillStyle = `rgba(255,${200 - T * 2},60,.9)`; ctx.beginPath(); ctx.arc(60, 55, 22 + T * .3, 0, 7); ctx.fill();
+    // 海洋
+    ctx.fillStyle = '#3E7CC0'; ctx.fillRect(0, 320, 320, 80);
+    label(ctx, '海洋', 60, 365, { color: '#fff', bold: true, size: 16 });
+    // 陸地與山
+    ctx.fillStyle = '#9CCC65'; ctx.beginPath(); ctx.moveTo(300, 330); ctx.lineTo(470, 290); ctx.lineTo(600, 160); ctx.lineTo(700, 120); ctx.lineTo(760, 150); ctx.lineTo(760, 400); ctx.lineTo(300, 400); ctx.fill();
+    ctx.fillStyle = '#C8A97E'; ctx.fillRect(300, 350, 460, 50);
+    label(ctx, '地下水', 650, 375, { color: '#5D4037', size: 14, bold: true });
+    ctx.strokeStyle = '#3E7CC0'; ctx.lineWidth = 6; ctx.lineCap = 'round';
+    ctx.beginPath(); SEG.river[1].forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.stroke();
+    label(ctx, '河流', 470, 305, { size: 13, color: '#0D47A1' });
+    // 雲
+    ctx.fillStyle = 'rgba(255,255,255,.95)';
+    [[260, 92, 34], [300, 80, 40], [350, 88, 34], [440, 82, 38], [500, 92, 32]].forEach(([x, y, r]) => { ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fill(); });
+    // 過程標籤
+    [['蒸發', 140, 250], ['凝結', 390, 50], ['降水', 280, 220], ['降水', 600, 210], ['滲入', 585, 320], ['蒸發', 520, 175]].forEach(([t, x, y]) => label(ctx, t, x, y, { size: 14, bold: true, color: '#C46A28', bg: 'rgba(255,255,255,.75)', align: 'center' }));
+    // 水分子
+    parts.forEach(p => {
+      const st = SEG[p.seg][2];
+      if (st === 'g') { ctx.strokeStyle = 'rgba(70,130,200,.6)'; ctx.setLineDash([2, 2]); ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, 7); ctx.stroke(); ctx.setLineDash([]); }
+      else if (st === 'c') { ctx.fillStyle = 'rgba(160,190,220,.9)'; ctx.beginPath(); ctx.arc(p.x, p.y, 2.5, 0, 7); ctx.fill(); }
+      else { ctx.fillStyle = '#1565C0'; ctx.beginPath(); ctx.arc(p.x, p.y, 3.5, 0, 7); ctx.fill(); }
+    });
+    if (tracked) {
+      ctx.strokeStyle = '#E53935'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(tracked.x, tracked.y, 11, 0, 7); ctx.stroke();
+      label(ctx, '我在這！', tracked.x + 14, tracked.y - 12, { color: '#C62828', bold: true, size: 13, bg: 'rgba(255,255,255,.85)' });
+    }
+  }
+  document.getElementById('t3track').onclick = () => {
+    tracked = newPart('evapO'); parts.push(tracked); logLines = []; log('從海洋表面「蒸發」，液態水變成看不見的水蒸氣（氣態），往上飄。');
+  };
+  const L = loop(step);
+  registerSim('t3', { start() { L.start(); }, stop() { L.stop(); } });
+
+  /* ---------- 鹹水湖製造機 ---------- */
+  const lc = document.getElementById('t3lake');
+  const K = stage(lc, 520, 330), kx = K.ctx;
+  const inR = bindRange('t3in', v => v < 20 ? '很少' : v < 60 ? '中等' : '很多', () => drawLake());
+  const evR = bindRange('t3ev', v => v < 25 ? '濕潤' : v < 65 ? '普通' : '非常乾燥', () => drawLake());
+  const outC = document.getElementById('t3out');
+  const C_IN = 0.5, SAT = 260, VMAX = 100;                 // 河水鹽度 0.5‰（示意）、飽和約 260‰
+  const L0 = { year: 0, V: 70, M: 70 * C_IN, crust: 0, play: false, ocean: false };
+  const lk = { ...L0 };
+  function lakeStep(dt) {
+    if (!lk.play) return;
+    const yrs = dt * 1500; lk.year += yrs;
+    const sub = 40, h = yrs / sub;
+    for (let i = 0; i < sub; i++) {
+      const Qin = +inR.value / 100 * 1.2, E = +evR.value / 100 * 1.6 * Math.sqrt(Math.max(lk.V, 0) / VMAX);
+      let dV = Qin - E, out = 0;
+      if (outC.checked && lk.V + dV * h > VMAX) { out = (lk.V + dV * h - VMAX) / h; dV -= out; }
+      const c = lk.V > .5 ? lk.M / lk.V : 0;
+      const sink = lk.ocean ? 1.3e-4 * lk.M : 0;      // 大海：生物做殼、沉積、鹽岩……把鹽帶走
+      lk.M += (Qin * C_IN - out * c - sink) * h;
+      lk.V = clamp(lk.V + dV * h, 0.3, VMAX + 5);
+      if (lk.M / lk.V > SAT) { lk.crust += lk.M - SAT * lk.V; lk.M = SAT * lk.V; }   // 超過飽和 → 鹽在湖底結晶
+    }
+    drawLake();
+  }
+  function drawLake() {
+    K.fit(); kx.clearRect(0, 0, K.W, K.H);
+    kx.fillStyle = '#F4EEDF'; kx.fillRect(0, 0, K.W, K.H);
+    const c = lk.V > .5 ? lk.M / lk.V : 0;
+    // 盆地
+    const bx0 = 110, bx1 = 430, top = 120, bot = 280;
+    const depth = (bot - top) * lk.V / (VMAX + 5);
+    const lvl = bot - depth;
+    kx.fillStyle = '#A1887F'; kx.beginPath(); kx.moveTo(0, top); kx.lineTo(bx0, top); kx.quadraticCurveTo(270, 2 * bot - top, bx1, top); kx.lineTo(K.W, top);
+    kx.lineTo(K.W, K.H); kx.lineTo(0, K.H); kx.fill();
+    // 湖水
+    kx.save(); kx.beginPath(); kx.moveTo(bx0, top); kx.quadraticCurveTo(270, 2 * bot - top, bx1, top); kx.closePath(); kx.clip();
+    const sal = clamp(c / 120, 0, 1);
+    kx.fillStyle = `rgb(${Math.round(lerp(70, 110, sal))},${Math.round(lerp(140, 190, sal))},${Math.round(lerp(210, 170, sal))})`;
+    kx.fillRect(0, lvl, K.W, K.H);
+    // 鹽粒
+    const r = rng(3), dots = Math.min(500, Math.round(c * 2));
+    kx.fillStyle = 'rgba(255,255,255,.85)';
+    for (let i = 0; i < dots; i++) { const x = bx0 + r() * (bx1 - bx0), y = lvl + r() * (bot - lvl); kx.fillRect(x, y, 2, 2); }
+    // 湖底鹽層
+    if (lk.crust > 0) { const th = Math.min(30, 3 + lk.crust / 400); kx.fillStyle = '#FAFAFA'; kx.fillRect(0, bot - th, K.W, th + 10); }
+    kx.restore();
+    if (lk.crust > 0) label(kx, '⬆ 鹽在湖底結晶（鹽岩的開始！）', 270, bot + 25, { align: 'center', size: 13, bold: true, color: '#5D4037', bg: 'rgba(255,255,255,.8)' });
+    // 河流進來
+    const qin = +inR.value;
+    kx.strokeStyle = '#4A8CD2'; kx.lineWidth = 2 + qin / 12; kx.beginPath(); kx.moveTo(0, top - 6); kx.lineTo(bx0 + 10, top - 4); kx.stroke();
+    label(kx, '河水（帶著一點點溶解的鹽）→', 8, top - 24, { size: 12, color: '#0D47A1' });
+    // 出口
+    if (outC.checked) { kx.strokeStyle = '#4A8CD2'; kx.lineWidth = 4; kx.beginPath(); kx.moveTo(bx1 - 10, top - 4); kx.lineTo(K.W, top - 6); kx.stroke(); label(kx, '→ 出口', K.W - 8, top - 24, { size: 12, color: '#0D47A1', align: 'right' }); }
+    else { kx.fillStyle = '#6D4C41'; kx.fillRect(bx1 - 4, top - 20, 10, 20); label(kx, '沒有出口', K.W - 8, top - 24, { size: 12, color: '#6D4C41', align: 'right', bold: true }); }
+    // 蒸發
+    const ev = +evR.value;
+    for (let i = 0; i < ev / 10; i++) { const x = bx0 + 30 + i * 28; arrow(kx, x, lvl - 6, x, lvl - 40, 'rgba(230,120,40,.7)', 2, 7); }
+    label(kx, '☀️ 蒸發只帶走「水」，鹽留下來', 270, 30, { align: 'center', size: 14, bold: true, color: '#BF360C' });
+    // 讀數
+    if (lk.ocean) label(kx, '大海模式：鹽也有「出口」（生物做成貝殼、沉積成岩石）', 270, 56, { align: 'center', size: 13, color: '#2E7D32', bold: true, bg: 'rgba(255,255,255,.85)' });
+    const word = c < 1 ? '淡水' : c < 10 ? '微鹹' : c < 30 ? '鹹' : c < 45 ? '跟海水差不多鹹' : `比海水鹹 ${(c / 35).toFixed(1)} 倍`;
+    document.getElementById('t3read').innerHTML =
+      `<div><b>${Math.round(lk.year).toLocaleString()} 年</b><span>經過時間</span></div>
+       <div><b>${c.toFixed(1)} ‰</b><span>湖水鹽度（海水約 35‰）</span></div>
+       <div><b>${word}</b><span>喝起來</span></div>`;
+  }
+  const PRE = { sun: [80, 15, true], dead: [40, 70, false], ocean: [70, 55, false] };
+  document.querySelectorAll('#p-t3 [data-pre]').forEach(b => b.onclick = () => {
+    const [a, e, o] = PRE[b.dataset.pre];
+    inR.value = a; evR.value = e; outC.checked = o; [inR, evR].forEach(x => x.dispatchEvent(new Event('input')));
+    Object.assign(lk, { ...L0, ocean: b.dataset.pre === 'ocean' }); if (!lk.play) playB.click(); else drawLake();
+  });
+  outC.onchange = () => { lk.ocean = false; drawLake(); };
+  const playB = document.getElementById('t3play');
+  playB.onclick = () => { lk.play = !lk.play; playB.textContent = lk.play ? '⏸ 暫停' : '▶ 時間前進'; };
+  document.getElementById('t3reset').onclick = () => { const p = lk.play; Object.assign(lk, { ...L0, play: p }); drawLake(); };
+  const LL = loop(lakeStep);
+  registerSim('t3', { start() { drawLake(); LL.start(); }, stop() { LL.stop(); } });
+})();
+
+/* ==== t4.js ==== */
+/* ===== 分頁 4：外營力分類、河流模擬器、Hjulström 圖 =====
+   河流：海岸在 x=690，海平面 y=330。河床高度 y(x) = 330 − 落差 × u^p，u = (690−x)/660（上游陡、下游緩）。
+   流速 ∝ √(流量 × 坡度)，能搬動的最大顆粒 ∝ 流速²。顆粒大於搬運能力就停下來（沉積）。 */
+(() => {
+  /* ---------- 分類遊戲 ---------- */
+  const host = document.getElementById('t4sort'); if (!host) return;
+  mountSort(host, ['風化', '侵蝕', '搬運', '沉積'], [
+    ['樹根伸進岩縫，把岩石撐裂', 0, '岩石變碎但還留在原地，是生物造成的風化。'],
+    ['岩縫裡的水結冰膨脹，把岩石撐破', 0, '水造成的風化（冰楔作用）。風化不一定跟「風」有關！'],
+    ['岩石表面的鐵和空氣裡的氧反應，變成紅褐色', 0, '成分被改變，也是風化（課本 p.143）。'],
+    ['大雨把山坡上鬆動的碎石沖離原地', 1, '離開原處 → 侵蝕。'],
+    ['海浪把岸邊的岩石一塊塊打下來', 1, '岩石被外營力從原處剝離 → 侵蝕。'],
+    ['河水把鵝卵石一路滾到下游', 2, '運送到其他地方 → 搬運。'],
+    ['撒哈拉沙漠的沙塵被風吹過大西洋', 2, '風也能搬運！而且能搬幾千公里（第 5 分頁有真實案例）。'],
+    ['河流到了出海口變慢，泥沙堆成三角洲', 3, '搬運力量減弱而堆積 → 沉積。'],
+  ]);
+
+  /* ---------- 河流模擬器 ---------- */
+  const cv = document.getElementById('t4cv');
+  const S = stage(cv, 760, 400), ctx = S.ctx;
+  const COAST = 690, SEA = 330, P = 2.2;
+  const rel = bindRange('t4rel', v => v < 130 ? '平緩（平原）' : v < 210 ? '中等' : '陡峭（臺灣山區）');
+  const qR = bindRange('t4q', v => v < 70 ? '枯水期' : v < 140 ? '平常' : '豐水期');
+  const KIND = [
+    { n: '巨石', d: 1.0, r: 8, c: '#78909C', w: .12 },
+    { n: '鵝卵石', d: .3, r: 4.5, c: '#A1887F', w: .25 },
+    { n: '細沙', d: .06, r: 2.4, c: '#E0B455', w: .33 },
+    { n: '泥', d: .01, r: 1.4, c: '#8D6E63', w: .30 },
+  ];
+  let flood = 0, moving = [], beds = [], delta = 0, spawn = 0;
+  const bedY = x => { const u = clamp((COAST - x) / 660, 0, 1); return SEA - +rel.value * Math.pow(u, P); };
+  const slope = x => { const u = clamp((COAST - x) / 660, 0, 1); return +rel.value * P * Math.pow(u, P - 1) / 660; };
+  const Q = () => +qR.value / 100 * (flood > 0 ? 3 : 1);
+  const cap = x => 1.92 * Q() * (slope(x) + .01);       // 能搬動的最大顆粒
+  const vel = x => Math.sqrt(Q() * (slope(x) + .01));    // 相對流速
+  const stackH = new Map();                               // 每 8px 一格，記錄堆了多高
+  function bin(x) { return Math.round(x / 8); }
+  function step(dt) {
+    if (flood > 0) flood -= dt;
+    spawn += dt * 9;
+    while (spawn > 1) {
+      spawn--;
+      let r = Math.random(), k = 0; while ((r -= KIND[k].w) > 0 && k < 3) k++;
+      if (moving.length < 260) moving.push({ k, x: 30 + Math.random() * 15, o: Math.random() });
+    }
+    // 會動的顆粒
+    for (let i = moving.length - 1; i >= 0; i--) {
+      const p = moving[i], K = KIND[p.k], c = cap(p.x);
+      if (p.x >= COAST) {                                 // 進到海裡：慢慢沉到海底，堆成三角洲
+        p.x += dt * 30; if (p.x > COAST + 10 + Math.random() * 40) { delta = Math.min(delta + K.d * 4 + .4, 1600); moving.splice(i, 1); }
+        continue;
+      }
+      if (K.d > c * (.45 + .55 * p.o)) {                  // 搬不動了 → 沉積（每顆門檻略不同，沉積帶才會散開）
+        const b = bin(p.x), h = stackH.get(b) || 0;
+        if (beds.length > 700) { const old = beds.shift(); stackH.set(bin(old.x), Math.max(0, (stackH.get(bin(old.x)) || 0) - KIND[old.k].r)); }
+        beds.push({ k: p.k, x: p.x + (Math.random() - .5) * 6, h }); stackH.set(b, Math.min(h + K.r * .5, 12));
+        moving.splice(i, 1); continue;
+      }
+      p.x += dt * (25 + 140 * vel(p.x)) * (1 - K.d / c * .6);
+    }
+    // 豪雨時，原本搬不動的又被沖走
+    for (let i = beds.length - 1; i >= 0; i--) {
+      const b = beds[i];
+      if (KIND[b.k].d * 1.25 < cap(b.x)) { stackH.set(bin(b.x), Math.max(0, (stackH.get(bin(b.x)) || 0) - KIND[b.k].r * .9)); beds.splice(i, 1); moving.push({ k: b.k, x: b.x + 2, o: Math.random() }); }
+    }
+    draw();
+  }
+  function draw() {
+    S.fit(); ctx.clearRect(0, 0, S.W, S.H);
+    ctx.fillStyle = flood > 0 ? '#C9D6E0' : '#EAF4FA'; ctx.fillRect(0, 0, S.W, S.H);
+    if (flood > 0) { ctx.strokeStyle = 'rgba(40,80,140,.35)'; for (let i = 0; i < 80; i++) { const x = (i * 53 + performance.now() / 4) % 760; ctx.beginPath(); ctx.moveTo(x, (i * 31) % 120); ctx.lineTo(x - 5, (i * 31) % 120 + 14); ctx.stroke(); } }
+    // 海
+    ctx.fillStyle = '#4F86C6'; ctx.fillRect(COAST, SEA, S.W - COAST, S.H - SEA);
+    // 三角洲
+    if (delta > 0) {
+      const L = Math.sqrt(delta) * 1.6, H = Math.min(60, Math.sqrt(delta) * .9);
+      ctx.fillStyle = '#9C7B5B'; ctx.beginPath(); ctx.moveTo(COAST - 4, SEA + 2); ctx.lineTo(COAST + L, S.H); ctx.lineTo(COAST, S.H); ctx.fill();
+      ctx.fillStyle = '#B8956A'; ctx.beginPath(); ctx.moveTo(COAST - 4, SEA - 1); ctx.lineTo(COAST + L * .5, SEA + H * .2); ctx.lineTo(COAST + L, S.H); ctx.lineTo(COAST, S.H); ctx.fill();
+      if (L > 20) label(ctx, '三角洲', COAST + 12, SEA + 30, { size: 13, color: '#fff', bold: true });
+    }
+    // 地形
+    ctx.fillStyle = '#B9A07E'; ctx.beginPath(); ctx.moveTo(0, bedY(0)); for (let x = 0; x <= COAST; x += 6) ctx.lineTo(x, bedY(x));
+    ctx.lineTo(COAST, S.H); ctx.lineTo(0, S.H); ctx.fill();
+    // 河水（流量愈大愈厚）
+    const th = 4 + Q() * 3;
+    ctx.strokeStyle = 'rgba(66,135,210,.75)'; ctx.lineWidth = th; ctx.beginPath();
+    for (let x = 20; x <= COAST; x += 6) { const y = bedY(x) - th / 2 - (stackH.get(bin(x)) || 0); x === 20 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); } ctx.stroke();
+    // 堆積物
+    beds.forEach(b => { const K = KIND[b.k]; ctx.fillStyle = K.c; ctx.beginPath(); ctx.arc(b.x, bedY(b.x) - K.r - b.h, K.r, 0, 7); ctx.fill(); });
+    // 移動中的顆粒
+    moving.forEach(p => { const K = KIND[p.k]; const y = p.x >= COAST ? SEA + (p.x - COAST) * 1.2 : bedY(p.x) - K.r - (stackH.get(bin(p.x)) || 0) - p.o * th * .6;
+      ctx.fillStyle = K.c; ctx.globalAlpha = .85; ctx.beginPath(); ctx.arc(p.x, y, K.r, 0, 7); ctx.fill(); ctx.globalAlpha = 1; });
+    // 分段標籤
+    [['上游', 110], ['中游', 330], ['下游', 560], ['出海口', 700]].forEach(([t, x]) => label(ctx, t, x, 385, { align: 'center', bold: true, size: 15, color: '#3E2723' }));
+    // 河谷橫剖面小圖
+    [['上游', 110], ['中游', 330], ['下游', 560]].forEach(([t, x], i) => {
+      const s = slope(x), bx = 40 + i * 175, by = 18, w = 130, h = 62;
+      ctx.fillStyle = 'rgba(255,255,255,.85)'; rrect(ctx, bx, by, w, h, 6); ctx.fill();
+      const half = 14 + (1 - clamp(s / .6, 0, 1)) * 46, dep = 14 + clamp(s / .6, 0, 1) * 34;
+      ctx.fillStyle = '#B9A07E'; ctx.beginPath(); ctx.moveTo(bx, by + 12); ctx.lineTo(bx + w / 2 - half, by + 12);
+      if (s > .45) ctx.lineTo(bx + w / 2, by + 12 + dep); else ctx.quadraticCurveTo(bx + w / 2, by + 12 + dep * 1.6, bx + w / 2 + half, by + 12);
+      ctx.lineTo(bx + w / 2 + half, by + 12); ctx.lineTo(bx + w, by + 12); ctx.lineTo(bx + w, by + h); ctx.lineTo(bx, by + h); ctx.fill();
+      label(ctx, `${t}河谷：${s > .45 ? 'V 形谷（往下切）' : s > .2 ? '谷底變寬' : '寬闊（往兩側侵蝕）'}`, bx + w / 2, by + h + 10, { align: 'center', size: 11, color: '#455A64' });
+    });
+    // 讀數
+    const can = x => { const c = cap(x); return c >= 1 ? '巨石' : c >= .3 ? '鵝卵石' : c >= .06 ? '細沙' : '泥'; };
+    document.getElementById('t4read').innerHTML = [['上游', 110], ['中游', 330], ['下游', 600]].map(([t, x]) =>
+      `<div><b>${(vel(x) * 3).toFixed(1)}</b><span>${t}流速（相對）<br>最大能搬：${can(x)}</span></div>`).join('') +
+      (flood > 0 ? `<div style="background:#FDECEA"><b>⛈ ${flood.toFixed(0)} 秒</b><span>豪雨中</span></div>` : '');
+  }
+  document.getElementById('t4flood').onclick = () => { flood = 5; };
+  document.getElementById('t4reset').onclick = () => { moving = []; beds = []; delta = 0; stackH.clear(); };
+  [rel, qR].forEach(e => e.addEventListener('input', () => { if (e === rel) { beds = []; stackH.clear(); } }));
+  const L = loop(step);
+  registerSim('t4', { start() { L.start(); }, stop() { L.stop(); } });
+
+  /* ---------- Hjulström 圖 ---------- */
+  const hc = document.getElementById('t4hj');
+  const H = stage(hc, 560, 400), hx = H.ctx;
+  const ERO = [[.001, 200], [.005, 90], [.01, 60], [.05, 28], [.2, 20], [.5, 20], [1, 25], [5, 60], [10, 95], [100, 330], [1000, 1000]];
+  const DEP = [[.005, .1], [.01, .2], [.1, 1.5], [1, 10], [10, 60], [100, 250], [1000, 700]];
+  const GRAIN = [['黏土', .002], ['粉砂', .02], ['細沙', .2], ['粗沙', 1], ['礫石', 10], ['卵石', 100]];
+  const ml = 58, mr = 14, mt = 16, mb = 52;
+  const X = d => ml + (Math.log10(d) + 3) / 6 * (H.W - ml - mr);
+  const Y = v => H.H - mb - (Math.log10(v) + 1) / 4 * (H.H - mt - mb);
+  const interp = (tab, d) => { const L = Math.log10(d); for (let i = 0; i < tab.length - 1; i++) { const a = Math.log10(tab[i][0]), b = Math.log10(tab[i + 1][0]); if (L >= a && L <= b) { const t = (L - a) / (b - a); return Math.pow(10, lerp(Math.log10(tab[i][1]), Math.log10(tab[i + 1][1]), t)); } } return null; };
+  const vR = bindRange('t4v', s => { const v = Math.pow(10, -1 + 4 * s / 100); return v < 1 ? v.toFixed(2) + ' 公分/秒' : v < 100 ? v.toFixed(0) + ' 公分/秒' : (v / 100).toFixed(1) + ' 公尺/秒'; }, () => drawH());
+  function drawH() {
+    H.fit(); hx.clearRect(0, 0, H.W, H.H);
+    const v = Math.pow(10, -1 + 4 * +vR.value / 100);
+    // 格線
+    hx.strokeStyle = '#EEE'; hx.lineWidth = 1;
+    for (let e = -3; e <= 3; e++) { hx.beginPath(); hx.moveTo(X(10 ** e), mt); hx.lineTo(X(10 ** e), H.H - mb); hx.stroke(); label(hx, e < 0 ? (10 ** e).toString() : (10 ** e).toString(), X(10 ** e), H.H - mb + 12, { size: 11, align: 'center', color: '#777' }); }
+    for (let e = -1; e <= 3; e++) { hx.beginPath(); hx.moveTo(ml, Y(10 ** e)); hx.lineTo(H.W - mr, Y(10 ** e)); hx.stroke(); label(hx, (10 ** e).toString(), ml - 6, Y(10 ** e), { size: 11, align: 'right', color: '#777' }); }
+    label(hx, '顆粒直徑（毫米，對數刻度）', (ml + H.W) / 2, H.H - 10, { align: 'center', size: 12, color: '#555' });
+    hx.save(); hx.translate(14, (mt + H.H - mb) / 2); hx.rotate(-Math.PI / 2); label(hx, '流速（公分/秒）', 0, 0, { align: 'center', size: 12, color: '#555' }); hx.restore();
+    // 區域上色
+    hx.fillStyle = 'rgba(229,57,53,.08)'; hx.beginPath(); hx.moveTo(X(ERO[0][0]), mt); ERO.forEach(([d, u]) => hx.lineTo(X(d), Y(u))); hx.lineTo(X(1000), mt); hx.fill();
+    hx.fillStyle = 'rgba(30,136,229,.08)'; hx.beginPath(); hx.moveTo(X(DEP[0][0]), H.H - mb); DEP.forEach(([d, u]) => hx.lineTo(X(d), Y(u))); hx.lineTo(X(1000), H.H - mb); hx.fill();
+    // 曲線
+    [[ERO, '#E53935', '侵蝕（沖起來）'], [DEP, '#1E88E5', '沉積（沉下去）']].forEach(([tab, c, t]) => {
+      hx.strokeStyle = c; hx.lineWidth = 3; hx.beginPath(); tab.forEach(([d, u], i) => i ? hx.lineTo(X(d), Y(u)) : hx.moveTo(X(d), Y(u))); hx.stroke();
+    });
+    label(hx, '侵蝕區', X(.003), Y(500), { color: '#C62828', bold: true, size: 14 });
+    label(hx, '搬運區', X(.03), Y(5), { color: '#E65100', bold: true, size: 14 });
+    label(hx, '沉積區', X(5), Y(.4), { color: '#1565C0', bold: true, size: 14 });
+    // 目前流速
+    hx.setLineDash([6, 4]); hx.strokeStyle = '#333'; hx.lineWidth = 2; hx.beginPath(); hx.moveTo(ml, Y(v)); hx.lineTo(H.W - mr, Y(v)); hx.stroke(); hx.setLineDash([]);
+    // 顆粒標記
+    const rows = GRAIN.map(([n, d]) => {
+      const e = interp(ERO, d), s = interp(DEP, d) ?? 0;
+      const st = v > e ? ['🔴 從河床被沖起來', '#C62828'] : v > s ? ['🟠 在水中就繼續被帶走；在河床上沖不起來', '#E65100'] : ['🔵 沉下去', '#1565C0'];
+      hx.fillStyle = st[1]; hx.beginPath(); hx.arc(X(d), Y(v), 6, 0, 7); hx.fill();
+      label(hx, n, X(d), Y(v) - 14, { align: 'center', size: 12, bold: true, color: st[1], bg: 'rgba(255,255,255,.85)' });
+      return `<div style="color:${st[1]}"><b>${n}</b>（${d} mm）：${st[0]}</div>`;
+    });
+    document.getElementById('t4hjList').innerHTML = rows.join('');
+  }
+  registerSim('t4', { start: drawH, resize: drawH });
+})();
+
+/* ==== t5.js ==== */
+/* ===== 分頁 5：女王頭、海蝕地形演化、風的磨蝕與沙丘、冰川 ===== */
+(() => {
+  /* ---------- ① 女王頭（差異侵蝕） ---------- */
+  const qc = document.getElementById('t5q'); if (!qc) return;
+  const Q = stage(qc, 600, 340), qx = Q.ctx;
+  const DATA = [[1994, 220], [2023.75, 118.3], [2024.8, 116.59]];
+  const yr = bindRange('t5yr', v => v + ' 年' + (v > 2024 ? '（假設）' : ''), () => drawQ());
+  const hard = bindRange('t5hard', v => v < 15 ? '幾乎一樣硬' : v < 70 ? '頭比脖子硬' : '頭硬很多', () => drawQ());
+  const neckC = y => {
+    const r0 = (220 - 116.59) / (2024.8 - 1994);      // 實測的平均速率
+    if (y <= 2024.8) return 220 - r0 * (y - 1994);     // 過去：照實測，不受滑桿影響
+    const k = +hard.value / 60;                       // 未來（假設）：硬度差愈大，脖子變細得愈快
+    return Math.max(15, 116.59 - r0 * k * (y - 2024.8));
+  };
+  function drawQ() {
+    Q.fit(); qx.clearRect(0, 0, Q.W, Q.H);
+    const y = +yr.value, C = neckC(y), dPx = C / Math.PI * 1.4;   // 直徑 → 像素
+    // 海與平台
+    qx.fillStyle = '#7FB6D9'; qx.fillRect(0, 270, Q.W, 70);
+    qx.fillStyle = '#C9B48F'; qx.fillRect(0, 280, 330, 60);
+    // 底座
+    qx.fillStyle = '#C2A57A'; qx.beginPath(); qx.ellipse(170, 285, 80, 18, 0, 0, 7); qx.fill();
+    // 脖子（較軟的砂岩）
+    const top = 150, bot = 278;
+    qx.fillStyle = '#D9BD8C';
+    qx.beginPath(); qx.moveTo(170 - dPx / 2 - 12, bot); qx.quadraticCurveTo(170 - dPx / 2, (top + bot) / 2, 170 - dPx / 2 - 6, top);
+    qx.lineTo(170 + dPx / 2 + 6, top); qx.quadraticCurveTo(170 + dPx / 2, (top + bot) / 2, 170 + dPx / 2 + 12, bot); qx.fill();
+    qx.strokeStyle = 'rgba(120,90,50,.35)'; for (let h = top + 10; h < bot; h += 14) { qx.beginPath(); qx.moveTo(170 - dPx / 2, h); qx.lineTo(170 + dPx / 2, h); qx.stroke(); }
+    // 頭（較硬的鈣質砂岩）
+    qx.fillStyle = '#A88458';
+    qx.beginPath(); qx.ellipse(160, 112, 92, 46, -.12, 0, 7); qx.fill();
+    qx.fillStyle = '#B9966A'; qx.beginPath(); qx.ellipse(210, 80, 34, 26, .3, 0, 7); qx.fill();   // 髮髻
+    qx.strokeStyle = 'rgba(80,55,30,.35)'; for (let i = 0; i < 4; i++) { qx.beginPath(); qx.ellipse(160, 112, 92 - i * 18, 46 - i * 9, -.12, 3.4, 6); qx.stroke(); }
+    label(qx, '頭：較硬（鈣質砂岩）', 160, 30, { align: 'center', size: 13, bold: true, bg: 'rgba(255,255,255,.8)' });
+    label(qx, '脖子：較軟，被侵蝕得快', 170, 306, { align: 'center', size: 13, bold: true, color: '#BF360C', bg: 'rgba(255,255,255,.8)' });
+    if (C < 60) label(qx, '⚠ 假設情境：脖子愈細，愈難撐住頭的重量', 170, 328, { align: 'center', size: 12, color: '#B71C1C', bold: true, bg: 'rgba(255,255,255,.85)' });
+    // 小圖表：頸圍 vs 年份
+    const gx = 350, gy = 40, gw = 230, gh = 200;
+    qx.fillStyle = '#fff'; rrect(qx, gx - 10, gy - 20, gw + 30, gh + 60, 8); qx.fill();
+    const X = t => gx + 20 + (t - 1990) / 50 * (gw - 20), Y = c => gy + gh - c / 240 * gh;
+    qx.strokeStyle = '#999'; qx.lineWidth = 1; qx.beginPath(); qx.moveTo(gx + 20, gy); qx.lineTo(gx + 20, gy + gh); qx.lineTo(gx + gw, gy + gh); qx.stroke();
+    [0, 100, 200].forEach(c => label(qx, c + '', gx + 14, Y(c), { size: 10, align: 'right', color: '#777' }));
+    [1990, 2010, 2030].forEach(t => label(qx, t + '', X(t), gy + gh + 10, { size: 10, align: 'center', color: '#777' }));
+    label(qx, '頸圍（公分）', gx + 20, gy - 8, { size: 11, color: '#555' });
+    qx.strokeStyle = '#C46A28'; qx.lineWidth = 2;
+    qx.beginPath(); for (let t = 1994; t <= 2024.8; t += .5) { t === 1994 ? qx.moveTo(X(t), Y(neckC(t))) : qx.lineTo(X(t), Y(neckC(t))); } qx.stroke();
+    qx.setLineDash([4, 4]); qx.beginPath(); qx.moveTo(X(2024.8), Y(neckC(2024.8))); qx.lineTo(X(2040), Y(neckC(2040))); qx.stroke(); qx.setLineDash([]);
+    DATA.forEach(([t, c]) => { qx.fillStyle = '#1F6FB2'; qx.beginPath(); qx.arc(X(t), Y(c), 4.5, 0, 7); qx.fill(); });
+    qx.fillStyle = '#E53935'; qx.beginPath(); qx.arc(X(y), Y(C), 6, 0, 7); qx.fill();
+    document.getElementById('t5qR').innerHTML = `<div><b>${C.toFixed(0)} cm</b><span>${y} 年的頸圍${y > 2024 ? '（假設）' : '（模型）'}</span></div><div><b>${(220 - C).toFixed(0)} cm</b><span>比 1994 年少了</span></div>`;
+  }
+  registerSim('t5', { start: drawQ, resize: drawQ });
+  voteList(document.getElementById('t5poll'), ['無為而治，順應自然', '補強（灌藥劑、加支撐）', '與外界隔離（禁止靠近觸摸）', '其他想法']);
+
+  /* ---------- ② 海蝕地形的一生 ---------- */
+  const sc = document.getElementById('t5sea');
+  const SE = stage(sc, 520, 320), sx = SE.ctx;
+  const stR = bindRange('t5st', v => v < 10 ? '一開始' : v < 40 ? '幾千年後' : v < 68 ? '更久以後' : v < 88 ? '又過了很久' : '非常久以後', () => drawSea());
+  const TXT = [[10, '<b>岬角</b>：海浪從兩側拍打，專挑岩石的裂縫（節理）和比較軟的地方下手。'],
+    [40, '<b>海蝕洞</b>：裂縫被海浪和被擠壓的空氣一次次撐大，變成洞穴。'],
+    [68, '<b>海蝕拱門</b>：洞被打穿，變成一座「石橋」。例：深澳象鼻岩、英國杜朵門。'],
+    [88, '<b>海蝕柱</b>：拱門頂部撐不住而崩塌，留下孤立的石柱。例：英國老哈利岩。'],
+    [101, '<b>殘根</b>：海蝕柱也被打倒，只剩下矮矮的底部；海浪削出的平坦岩面就是<b>海蝕平臺</b>。']];
+  let waveT = 0, seaPlay = false;
+  function drawSea() {
+    SE.fit(); sx.clearRect(0, 0, SE.W, SE.H);
+    const t = +stR.value, SL = 230;
+    const sky = sx.createLinearGradient(0, 0, 0, SL); sky.addColorStop(0, '#B9DCF2'); sky.addColorStop(1, '#E6F3FB');
+    sx.fillStyle = sky; sx.fillRect(0, 0, SE.W, SL);
+    const rock = '#9C8466', rockD = '#7D6950';
+    // 海蝕平臺（隨時間出現）
+    sx.fillStyle = '#8E7A5F'; sx.fillRect(110, SL - 4, 300 * clamp(t / 60, .1, 1), 10);
+    // 左邊陸地（懸崖），隨時間後退
+    const back = t * .5;
+    sx.fillStyle = rock; sx.beginPath(); sx.moveTo(0, 70); sx.lineTo(150 - back, 70); sx.lineTo(150 - back, SL - 18); sx.lineTo(140 - back, SL - 8); sx.lineTo(150 - back, SL + 40); sx.lineTo(0, SL + 40); sx.fill();
+    label(sx, '海蝕崖', 60, 120, { size: 13, color: '#fff', bold: true });
+    // 海蝕凹壁
+    sx.fillStyle = rockD; sx.beginPath(); sx.ellipse(150 - back, SL - 12, 10, 12, 0, Math.PI / 2, Math.PI * 1.5); sx.fill();
+    // 岬角（正面看）
+    const cx = 290, half = 95;
+    const holeW = t < 10 ? 0 : clamp((t - 10) / 30, 0, 1) * 34 + clamp((t - 40) / 28, 0, 1) * 16;
+    const holeTop = SL - (t < 10 ? 0 : clamp((t - 10) / 30, 0, 1) * 70 + clamp((t - 40) / 28, 0, 1) * 55);
+    if (t < 68) {
+      sx.fillStyle = rock; sx.fillRect(cx - half, 75, half * 2, SL - 75 + 40);
+      sx.strokeStyle = 'rgba(60,40,20,.35)'; sx.beginPath(); sx.moveTo(cx, 75); sx.lineTo(cx + 4, SL); sx.stroke();   // 節理
+      if (holeW > 0) {
+        if (t < 40) { sx.fillStyle = '#2E3B44'; } else { const g = sx.createLinearGradient(0, holeTop, 0, SL); g.addColorStop(0, '#D6ECF8'); g.addColorStop(1, '#BFE0F3'); sx.fillStyle = g; }
+        sx.beginPath(); sx.moveTo(cx - holeW, SL + 2); sx.lineTo(cx - holeW, holeTop + holeW * .8); sx.quadraticCurveTo(cx, holeTop - holeW * .3, cx + holeW, holeTop + holeW * .8); sx.lineTo(cx + holeW, SL + 2); sx.fill();
+      }
+    } else {
+      // 拱門崩塌後：左邊連著陸地的岬角殘餘＋右邊的海蝕柱
+      const stackTop = t < 88 ? 75 + (t - 68) * 1.5 : 160 + (t - 88) * 4;
+      sx.fillStyle = rock; sx.fillRect(cx - half, 75 + (t - 68) * .6, half - 50, SL - 75 + 40);
+      sx.fillRect(cx + 50 - (t - 68) * .3, stackTop, half - 50 + (t - 68) * .3, SL - stackTop + 40);
+      sx.fillStyle = rockD;   // 崩落的碎石
+      [[cx - 10, 8], [cx + 12, 6], [cx + 30, 9], [cx - 30, 5]].forEach(([x, r]) => { sx.beginPath(); sx.arc(x, SL + 2, r, 0, 7); sx.fill(); });
+    }
+    // 海
+    waveT += .03;
+    sx.fillStyle = 'rgba(52,120,180,.88)'; sx.fillRect(0, SL, SE.W, SE.H - SL);
+    sx.strokeStyle = 'rgba(255,255,255,.75)'; sx.lineWidth = 2;
+    for (let k = 0; k < 3; k++) { sx.beginPath(); for (let x = 0; x <= SE.W; x += 8) { const y = SL + 4 + k * 14 + Math.sin(x / 26 + waveT * 3 + k) * 3; x ? sx.lineTo(x, y) : sx.moveTo(x, y); } sx.stroke(); }
+    // 說明文字
+    document.getElementById('t5seaTxt').innerHTML = TXT.find(([lim]) => t < lim)[1];
+  }
+  const seaBtn = document.getElementById('t5seaPlay');
+  seaBtn.onclick = () => { seaPlay = !seaPlay; seaBtn.textContent = seaPlay ? '⏸ 暫停' : '▶ 自動播放'; if (seaPlay && +stR.value >= 100) stR.value = 0; };
+  const SL_ = loop(dt => { if (seaPlay) { stR.value = Math.min(100, +stR.value + dt * 6); stR.dispatchEvent(new Event('input')); if (+stR.value >= 100) seaBtn.click(); } drawSea(); });
+  registerSim('t5', { start() { SL_.start(); }, stop() { SL_.stop(); } });
+
+  /* ---------- ③ 風：磨蝕與沙丘 ---------- */
+  const wc = document.getElementById('t5wind');
+  const W = stage(wc, 520, 280), wx = W.ctx;
+  const ws = bindRange('t5ws', v => v < 15 ? '微風（吹不動沙）' : v < 50 ? '中等' : v < 80 ? '強風' : '狂風');
+  const fence = document.getElementById('t5fence');
+  const GR = 250, RX0 = 120, RX1 = 190, RH = 120, BIN = 4, NB = RH / BIN;
+  let ero = new Array(NB).fill(0), dune = new Array(130).fill(0), grains = [], wspawn = 0;
+  function windStep(dt) {
+    const v = +ws.value;
+    if (v >= 15) { wspawn += dt * v * .5; while (wspawn > 1 && grains.length < 220) { wspawn--; grains.push({ x: Math.random() * 20, y: GR, vx: v * 3 * (.8 + Math.random() * .4), vy: -(60 + v * 1.1) * (.6 + Math.random() * .6) }); } }
+    for (let i = grains.length - 1; i >= 0; i--) {
+      const g = grains[i];
+      const shelter = fence.checked && g.x > 400 ? .2 : 1;
+      g.vy += 420 * dt; g.x += g.vx * shelter * dt; g.y += g.vy * dt;
+      // 撞到石頭
+      const hb = Math.floor((GR - g.y) / BIN);
+      if (hb >= 0 && hb < NB && g.x >= RX0 + ero[hb] && g.x <= RX1 && g.y <= GR) {
+        ero[hb] = Math.min(ero[hb] + .22 * v / 60, (RX1 - RX0) * .6); grains.splice(i, 1); continue;
+      }
+      if (g.y >= GR) {
+        g.y = GR;
+        if (fence.checked && g.x > 420 && g.x < 520) { const k = Math.floor((g.x - 390) / 1); dune[clamp(k, 0, 129)] += 1; grains.splice(i, 1); continue; }
+        if (v < 15) { grains.splice(i, 1); continue; }
+        g.vy = -(60 + v * 1.1) * (.5 + Math.random() * .6);
+      }
+      if (g.x > W.W + 5) grains.splice(i, 1);
+    }
+    drawWind();
+  }
+  function drawWind() {
+    W.fit(); wx.clearRect(0, 0, W.W, W.H);
+    wx.fillStyle = '#FFF6E5'; wx.fillRect(0, 0, W.W, W.H);
+    wx.fillStyle = '#E8C98E'; wx.fillRect(0, GR, W.W, W.H - GR);
+    // 石頭（迎風面被磨掉）
+    wx.fillStyle = '#8D7B6A'; wx.beginPath(); wx.moveTo(RX1, GR);
+    for (let b = 0; b < NB; b++) wx.lineTo(RX1 - ero[b] * .15, GR - b * BIN);
+    wx.lineTo(RX1 - 4, GR - RH - 8); wx.lineTo(RX0 + 6, GR - RH - 10);
+    for (let b = NB - 1; b >= 0; b--) wx.lineTo(RX0 + ero[b], GR - b * BIN);
+    wx.closePath(); wx.fill();
+    const maxE = Math.max(...ero);
+    if (maxE > 10) label(wx, '下半部被磨得最多 → 蕈狀', RX1 + 10, GR - 20, { size: 12, color: '#5D4037', bold: true, bg: 'rgba(255,255,255,.8)' });
+    // 沙丘
+    wx.fillStyle = '#E2B867'; wx.beginPath(); wx.moveTo(390, GR);
+    // 平滑一點
+    for (let k = 0; k < 130; k++) { const s = (dune[k - 2] || 0) + (dune[k - 1] || 0) + dune[k] + (dune[k + 1] || 0) + (dune[k + 2] || 0); wx.lineTo(390 + k, GR - Math.min(110, s / 5 * .35)); }
+    wx.lineTo(520, GR); wx.fill();
+    // 防風林
+    if (fence.checked) { for (let k = 0; k < 3; k++) { const x = 400 + k * 8; wx.fillStyle = '#6D4C41'; wx.fillRect(x, GR - 30, 3, 30); wx.fillStyle = '#43A047'; wx.beginPath(); wx.arc(x + 1.5, GR - 36, 9, 0, 7); wx.fill(); } }
+    if (dune.some(d => d > 20)) label(wx, '沙丘', 470, GR - 60, { size: 13, bold: true, color: '#8D6E00' });
+    // 沙粒
+    wx.fillStyle = '#B07A2A'; grains.forEach(g => wx.fillRect(g.x, g.y - 2, 2.4, 2.4));
+    // 風
+    const v = +ws.value;
+    for (let k = 0; k < 4; k++) { const y = 40 + k * 32; const off = (performance.now() / 1000 * v * 3 + k * 70) % 520; arrow(wx, off - 40, y, off, y, `rgba(100,140,180,${.2 + v / 200})`, 2, 8); }
+    label(wx, `風 → （沙粒最高只跳到約 ${Math.round((60 + v * 1.1) ** 2 * 1.44 / 840)} 像素高）`, 10, 18, { size: 12, color: '#456' });
+  }
+  document.getElementById('t5windReset').onclick = () => { ero.fill(0); dune.fill(0); grains = []; };
+  const WL = loop(windStep);
+  registerSim('t5', { start() { WL.start(); }, stop() { WL.stop(); } });
+
+  /* ---------- ④ 冰川 ---------- */
+  const icv = document.getElementById('t5ice');
+  const I = stage(icv, 560, 300), ix = I.ctx;
+  const age = bindRange('t5age', v => v < 5 ? '剛開始' : v < 50 ? '幾萬年' : '十幾萬年');
+  const tmp = bindRange('t5tmp', v => v < 30 ? '很冷（冰期）' : v < 80 ? '回暖中' : '溫暖（冰都融了）');
+  let debris = [], moraine = [], dsp = 0;
+  const groundY = x => 120 + (x - 290) / 270 * 130;
+  function iceStep(dt) {
+    const T = +tmp.value, snout = 560 - T * 2.2;
+    dsp += dt * 1.6;
+    if (dsp > 1 && T < 80) { dsp--; debris.push({ x: 300, d: 2 + Math.random() ** 2 * 10, o: Math.random() }); }
+    for (let i = debris.length - 1; i >= 0; i--) {
+      const p = debris[i]; p.x += dt * 14;
+      if (p.x >= snout) { moraine.push({ x: snout + (Math.random() - .5) * 10, d: p.d }); debris.splice(i, 1); }
+    }
+    if (moraine.length > 260) moraine.shift();
+    drawIce(snout);
+  }
+  function drawIce(snout) {
+    I.fit(); ix.clearRect(0, 0, I.W, I.H);
+    ix.fillStyle = '#EEF5FB'; ix.fillRect(0, 0, I.W, I.H);
+    // 左：山谷橫切面
+    const a = +age.value / 100, T = +tmp.value;
+    const prof = x => { const u = (x - 135) / 115; const V = 60 + 190 * (1 - Math.abs(u)); const U = 60 + 190 * Math.sqrt(Math.max(0, 1 - u ** 4)); return lerp(V, U, a); };
+    ix.fillStyle = '#9E8B74'; ix.beginPath(); ix.moveTo(0, 60); ix.lineTo(20, 60);
+    for (let x = 20; x <= 250; x += 3) ix.lineTo(x, prof(x));
+    ix.lineTo(270, 60); ix.lineTo(270, I.H); ix.lineTo(0, I.H); ix.fill();
+    if (T < 70) {           // 冰填在谷中
+      const lv = 70 + T * 1.6;
+      ix.save(); ix.beginPath(); ix.moveTo(20, 60); for (let x = 20; x <= 250; x += 3) ix.lineTo(x, prof(x)); ix.lineTo(250, 60); ix.closePath(); ix.clip();
+      ix.fillStyle = 'rgba(200,228,250,.9)'; ix.fillRect(0, lv, 270, I.H); ix.restore();
+    }
+    label(ix, a < .3 ? '河流切出的 V 形谷' : a < .8 ? '被冰刨寬中…' : 'U 形谷', 135, 30, { align: 'center', bold: true, size: 14 });
+    ix.strokeStyle = '#ccd'; ix.beginPath(); ix.moveTo(280, 10); ix.lineTo(280, 290); ix.stroke();
+    // 右：冰舌與冰磧石
+    ix.fillStyle = '#9E8B74'; ix.beginPath(); ix.moveTo(290, groundY(290)); ix.lineTo(560, groundY(560)); ix.lineTo(560, I.H); ix.lineTo(290, I.H); ix.fill();
+    if (T < 80) {
+      ix.fillStyle = 'rgba(205,232,252,.95)'; ix.beginPath(); ix.moveTo(290, groundY(290) - 50);
+      ix.quadraticCurveTo(snout - 20, groundY(snout) - 40, snout, groundY(snout)); ix.lineTo(290, groundY(290)); ix.fill();
+      ix.strokeStyle = '#9CC3E0'; ix.stroke();
+    }
+    moraine.forEach(m => { ix.fillStyle = '#6D5D4B'; ix.beginPath(); ix.arc(m.x, groundY(m.x) - m.d * .7, m.d * .8, 0, 7); ix.fill(); });
+    debris.forEach(p => { ix.fillStyle = '#5D4E3E'; ix.beginPath(); ix.arc(p.x, groundY(p.x) - 6 - p.o * 22, p.d * .8, 0, 7); ix.fill(); });
+    if (moraine.length > 15) label(ix, '冰磧石：大小混雜', Math.min(...moraine.map(m => m.x)) - 4, groundY(snout) + 28, { size: 12, bold: true, color: '#3E2723', bg: 'rgba(255,255,255,.85)', align: 'center' });
+    label(ix, '冰川前端（冰舌）', 420, 40, { align: 'center', bold: true, size: 14 });
+  }
+  document.getElementById('t5iceReset').onclick = () => { debris = []; moraine = []; age.value = 0; age.dispatchEvent(new Event('input')); };
+  const IL = loop(iceStep);
+  registerSim('t5', { start() { IL.start(); }, stop() { IL.stop(); } });
+})();
+
+/* ==== t6.js ==== */
+/* ===== 分頁 6：河床平衡（挖砂石）、海岸線收支、截彎取直 =====
+   河床：擴散方程 z_t = D z_xx（突起被削、低窪被填）；上下游端點固定。比例 10 px = 1 m。
+   海岸線：一線模型（one-line model）。沿岸輸沙 Q = K·w·(A − B·ds/dx)，ds/dt = −dQ/dx + 河沙 − 流失；突堤處 Q = 0。 */
+(() => {
+  /* ---------- ① 挖砂石 ---------- */
+  const bc = document.getElementById('t6bed'); if (!bc) return;
+  const B = stage(bc, 760, 330), bx = B.ctx;
+  const N = 153, DX = 5, PIER = 50, PIER_X = PIER * DX;            // 橋在 x=250
+  const base = i => 110 + i * DX * .16;
+  let z0 = [], z = [], yrB = 0, bedPlay = false, mining = false;
+  function bedReset() { z0 = Array.from({ length: N }, (_, i) => base(i)); z = z0.slice(); yrB = 0; mining = false; digBtn.classList.remove('sel'); digBtn.textContent = '⛏ 在下游持續挖砂石'; drawBed(); }
+  function bedStep(dt) {
+    if (bedPlay) {
+      const yrs = dt * 4; yrB += yrs;
+      for (let k = 0; k < 8; k++) {
+        const nz = z.slice();
+        for (let i = 1; i < N - 1; i++) nz[i] = z[i] + .22 * (z[i - 1] - 2 * z[i] + z[i + 1]);
+        if (mining) for (let i = 88; i < 108; i++) nz[i] += .03 * Math.sin((i - 88) / 20 * Math.PI);   // 每年持續挖走砂石
+        z = nz;
+      }
+    }
+    drawBed();
+  }
+  function drawBed() {
+    B.fit(); bx.clearRect(0, 0, B.W, B.H);
+    bx.fillStyle = '#EAF4FA'; bx.fillRect(0, 0, B.W, B.H);
+    // 河水
+    bx.fillStyle = 'rgba(70,140,210,.45)'; bx.beginPath(); bx.moveTo(0, z[0] - 18);
+    for (let i = 0; i < N; i++) bx.lineTo(i * DX, Math.min(z[i], z0[i]) - 18); for (let i = N - 1; i >= 0; i--) bx.lineTo(i * DX, z[i]); bx.fill();
+    // 河床
+    bx.fillStyle = '#B9A07E'; bx.beginPath(); bx.moveTo(0, z[0]); for (let i = 0; i < N; i++) bx.lineTo(i * DX, z[i]); bx.lineTo(B.W, B.H); bx.lineTo(0, B.H); bx.fill();
+    bx.fillStyle = 'rgba(120,90,60,.35)'; for (let i = 0; i < N; i += 3) bx.fillRect(i * DX + 2, z[i] + 6, 2, 2);
+    // 原本河床
+    bx.setLineDash([6, 4]); bx.strokeStyle = '#C62828'; bx.lineWidth = 1.5; bx.beginPath(); for (let i = 0; i < N; i++) i ? bx.lineTo(i * DX, z0[i]) : bx.moveTo(0, z0[0]); bx.stroke(); bx.setLineDash([]);
+    // 待侵蝕／待沉積
+    for (let i = 2; i < N - 2; i += 4) {
+      const d = z[i] - z0[i];
+      if (Math.abs(d) > 4) { bx.fillStyle = d > 0 ? 'rgba(229,57,53,.18)' : 'rgba(30,136,229,.18)'; bx.fillRect(i * DX - 8, Math.min(z[i], z0[i]), 16, Math.abs(d)); }
+    }
+    // 橋
+    const deckY = 60, footBot = z0[PIER] + 40;
+    bx.fillStyle = '#607D8B'; bx.fillRect(PIER_X - 70, deckY - 10, 140, 10);
+    bx.fillStyle = '#90A4AE'; bx.fillRect(PIER_X - 9, deckY, 18, footBot - deckY);
+    bx.fillStyle = '#78909C'; bx.fillRect(PIER_X - 22, footBot - 16, 44, 16);         // 基礎
+    // 被埋住的部分用土色蓋回去
+    bx.save(); bx.beginPath(); bx.moveTo(0, z[0]); for (let i = 0; i < N; i++) bx.lineTo(i * DX, z[i]); bx.lineTo(B.W, B.H); bx.lineTo(0, B.H); bx.clip();
+    bx.fillStyle = 'rgba(185,160,126,.85)'; bx.fillRect(PIER_X - 24, 0, 48, B.H); bx.restore();
+    label(bx, '橋', PIER_X, deckY - 20, { align: 'center', bold: true, size: 14 });
+    const exposed = (z[PIER] - z0[PIER]) / 10;
+    if (exposed > .3) {
+      arrow(bx, PIER_X + 34, z0[PIER], PIER_X + 34, z[PIER], '#C62828', 2, 7);
+      label(bx, `橋墩裸露 ${exposed.toFixed(1)} m`, PIER_X + 42, (z0[PIER] + z[PIER]) / 2, { color: '#C62828', bold: true, size: 13, bg: 'rgba(255,255,255,.85)' });
+    }
+    if (z[PIER] > footBot - 16) label(bx, '⚠ 基礎被掏空，橋墩危險！', PIER_X, 30, { align: 'center', color: '#fff', bold: true, size: 14, bg: '#C62828' });
+    if (mining) label(bx, '⛏ 挖砂石', 98 * DX, z[98] + 30, { align: 'center', bold: true, size: 13, color: '#fff', bg: '#C46A28' });
+    label(bx, '上游', 16, 20, { bold: true, size: 13 }); label(bx, '下游', B.W - 16, 20, { bold: true, size: 13, align: 'right' });
+    document.getElementById('t6bedR').innerHTML = `<div><b>${Math.floor(yrB)} 年</b><span>經過時間</span></div><div><b style="color:${exposed > .3 ? '#C62828' : ''}">${Math.max(0, exposed).toFixed(1)} m</b><span>橋墩處河床下降</span></div>`;
+  }
+  const digBtn = document.getElementById('t6dig');
+  digBtn.onclick = () => { mining = !mining; digBtn.classList.toggle('sel', mining); digBtn.textContent = mining ? '⛏ 挖砂石中…（再按停止）' : '⛏ 在下游持續挖砂石'; if (mining && !bedPlay) bedBtn.click(); };
+  document.getElementById('t6bump').onclick = () => { for (let i = 60; i < 76; i++) z[i] -= 35 * Math.sin((i - 60) / 16 * Math.PI); drawBed(); };
+  const bedBtn = document.getElementById('t6bedPlay');
+  bedBtn.onclick = () => { bedPlay = !bedPlay; bedBtn.textContent = bedPlay ? '⏸ 暫停' : '▶ 時間前進'; };
+  document.getElementById('t6bedReset').onclick = bedReset;
+  bedReset();
+  const BL = loop(bedStep);
+  registerSim('t6', { start() { BL.start(); }, stop() { BL.stop(); } });
+
+  /* ---------- ② 海岸線 ---------- */
+  const cc = document.getElementById('t6coast');
+  const C = stage(cc, 760, 340), cx = C.ctx;
+  const CN = 153, S0 = 170, RIVER = 50, JET = 102, VIL = 128;
+  const sup = bindRange('t6sup', v => v < 20 ? '很少' : v < 60 ? '中等' : '很多');
+  const wave = bindRange('t6wave', v => v < 35 ? '平靜' : v < 70 ? '中等' : '大浪');
+  let s = [], yrC = 0, cPlay = false, dam = false, jetty = false;
+  function coastReset() { s = new Array(CN).fill(S0); yrC = 0; dam = false; jetty = false; updBtns(); }
+  function updBtns() { document.getElementById('t6dam').classList.toggle('sel', dam); document.getElementById('t6jetty').classList.toggle('sel', jetty); }
+  function coastStep(dt) {
+    if (cPlay) {
+      yrC += dt * 5;
+      const w = +wave.value / 50, A = 1, Bk = 60, K = .5;
+      const supply = +sup.value / 60 * (dam ? .2 : 1);
+      for (let it = 0; it < 6; it++) {
+        const Q = new Array(CN + 1);
+        Q[0] = K * w * A; Q[CN] = K * w * (A - Bk * 0);
+        for (let i = 1; i < CN; i++) Q[i] = K * w * (A - Bk * (s[i] - s[i - 1]) / DX);
+        if (jetty) Q[JET] = 0;
+        for (let i = 0; i < CN; i++) {
+          const src = supply * 1.1 * Math.exp(-((i - RIVER) ** 2) / 40);
+          s[i] += (-(Q[i + 1] - Q[i]) * 1.2 + src - .08 * w) * .05;   // 波浪愈大，被帶離海岸的沙愈多
+          s[i] = clamp(s[i], 40, 320);
+        }
+      }
+    }
+    drawCoast();
+  }
+  function drawCoast() {
+    C.fit(); cx.clearRect(0, 0, C.W, C.H);
+    cx.fillStyle = '#4F86C6'; cx.fillRect(0, 0, C.W, C.H);
+    // 原本海岸線
+    // 陸地
+    cx.fillStyle = '#A5C88A'; cx.beginPath(); cx.moveTo(0, 0); for (let i = 0; i < CN; i++) cx.lineTo(i * DX, s[i] - 10); cx.lineTo(C.W, 0); cx.fill();
+    // 沙灘
+    cx.fillStyle = '#EED9A4'; cx.beginPath(); cx.moveTo(0, s[0] - 10); for (let i = 0; i < CN; i++) cx.lineTo(i * DX, s[i] - 10); for (let i = CN - 1; i >= 0; i--) cx.lineTo(i * DX, s[i]); cx.fill();
+    // 浪花
+    cx.strokeStyle = 'rgba(255,255,255,.7)'; cx.lineWidth = 2; cx.beginPath(); for (let i = 0; i < CN; i++) cx.lineTo(i * DX, s[i] + 4 + Math.sin(i / 3 + performance.now() / 400) * 1.5); cx.stroke();
+    cx.setLineDash([6, 4]); cx.strokeStyle = '#FFEB3B'; cx.lineWidth = 1.5; cx.beginPath(); cx.moveTo(0, S0); cx.lineTo(C.W, S0); cx.stroke(); cx.setLineDash([]);
+    label(cx, '原本的海岸線', 8, S0 + 14, { size: 12, color: '#FFEB3B', bold: true });
+    // 河流
+    cx.strokeStyle = '#3E7CC0'; cx.lineWidth = 7; cx.beginPath(); cx.moveTo(RIVER * DX - 60, 0); cx.quadraticCurveTo(RIVER * DX + 20, 60, RIVER * DX, s[RIVER] - 6); cx.stroke();
+    if (dam) { cx.fillStyle = '#546E7A'; cx.fillRect(RIVER * DX - 62, 20, 34, 10); label(cx, '水庫', RIVER * DX - 45, 42, { size: 12, align: 'center', bold: true }); }
+    label(cx, '河口', RIVER * DX + 14, s[RIVER] - 24, { size: 12, bold: true, color: '#0D47A1' });
+    // 突堤
+    if (jetty) { cx.fillStyle = '#5D4037'; cx.fillRect(JET * DX - 4, s[JET] - 30, 8, 80); label(cx, '突堤', JET * DX + 10, s[JET] + 40, { size: 12, color: '#fff', bold: true }); }
+    // 村莊
+    const vy = S0 - 40;
+    cx.fillStyle = s[VIL] - 10 < vy + 10 ? '#E57373' : '#FFF8E1';
+    for (let k = 0; k < 3; k++) { cx.fillRect(VIL * DX + k * 16 - 20, vy - 8, 12, 10); }
+    label(cx, s[VIL] - 10 < vy + 10 ? '⚠ 海邊村莊被海侵蝕' : '海邊村莊', VIL * DX - 2, vy - 20, { align: 'center', size: 12, bold: true, color: s[VIL] - 10 < vy + 10 ? '#B71C1C' : '#33691E', bg: 'rgba(255,255,255,.8)' });
+    // 沿岸流
+    for (let k = 0; k < 5; k++) { const x = (k * 160 + performance.now() / 30) % 800 - 40; arrow(cx, x, 300, x + 40, 300, 'rgba(255,255,255,.55)', 2, 8); }
+    label(cx, '沿岸流 →', 10, 322, { size: 12, color: '#fff' });
+    const dv = i => ((s[i] - S0) * 10).toFixed(0);
+    document.getElementById('t6coastR').innerHTML = `<div><b>${Math.floor(yrC)} 年</b><span>經過時間</span></div>
+      <div><b>${dv(RIVER) > 0 ? '+' : ''}${dv(RIVER)} m</b><span>河口海岸線（＋前進／−後退）</span></div>
+      ${jetty ? `<div><b>${dv(JET - 4) > 0 ? '+' : ''}${dv(JET - 4)} m</b><span>突堤左側（上游側）</span></div>
+      <div><b>${dv(JET + 8) > 0 ? '+' : ''}${dv(JET + 8)} m</b><span>突堤右側（下游側）</span></div>` : `<div><b>${dv(VIL) > 0 ? '+' : ''}${dv(VIL)} m</b><span>海邊村莊前的海岸</span></div>`}`;
+  }
+  document.getElementById('t6dam').onclick = () => { dam = !dam; updBtns(); if (!cPlay) cBtn.click(); };
+  document.getElementById('t6jetty').onclick = () => { jetty = !jetty; updBtns(); if (!cPlay) cBtn.click(); };
+  const cBtn = document.getElementById('t6coastPlay');
+  cBtn.onclick = () => { cPlay = !cPlay; cBtn.textContent = cPlay ? '⏸ 暫停' : '▶ 時間前進'; };
+  document.getElementById('t6coastReset').onclick = () => { coastReset(); drawCoast(); };
+  coastReset();
+  const CL = loop(coastStep);
+  registerSim('t6', { start() { CL.start(); }, stop() { CL.stop(); } });
+
+  /* ---------- ③ 截彎取直 ---------- */
+  const mc = document.getElementById('t6mea');
+  const M = stage(mc, 560, 420), mx = M.ctx;
+  const str = bindRange('t6str', v => v === 0 ? '原本彎曲' : v < 100 ? v + '%' : '完全拉直', () => drawM());
+  function hydro(Lrel) {
+    // 河道愈短 → 坡度愈陡 → 流速愈快；水流到下游的時間 T = L / v，v ∝ √(H/L)
+    const v = Math.sqrt(1 / Lrel), T = Lrel / v, k = .55 * T;
+    const out = [], dt = .05; let S = 0;
+    for (let t = 0; t <= 12; t += dt) {
+      const tt = t - T * .8;                                  // 平移延遲
+      const I = tt < 0 ? 0 : tt < 1 ? tt : tt < 3 ? (3 - tt) / 2 : 0;   // 降雨造成的入流（三角形）
+      S += (I - S / k) * dt; out.push([t, S / k]);
+    }
+    return { v, T, out };
+  }
+  function drawM() {
+    M.fit(); mx.clearRect(0, 0, M.W, M.H);
+    const f = +str.value / 100, L0 = 2.2, Lrel = lerp(L0, 1, f) / 1;    // 原本長度是直線距離的 2.2 倍
+    // 上：河道
+    mx.fillStyle = '#E8F1E0'; mx.fillRect(0, 0, M.W, 170);
+    const amp = 52 * (1 - f);
+    mx.strokeStyle = '#3E7CC0'; mx.lineWidth = 8; mx.lineCap = 'round'; mx.beginPath();
+    for (let x = 30; x <= 530; x += 4) { const y = 85 + amp * Math.sin((x - 30) / 500 * Math.PI * 5); x === 30 ? mx.moveTo(x, y) : mx.lineTo(x, y); } mx.stroke();
+    if (f > 0) { mx.strokeStyle = 'rgba(62,124,192,.18)'; mx.lineWidth = 6; mx.beginPath(); for (let x = 30; x <= 530; x += 4) { const y = 85 + 52 * Math.sin((x - 30) / 500 * Math.PI * 5); x === 30 ? mx.moveTo(x, y) : mx.lineTo(x, y); } mx.stroke(); label(mx, '淡色：舊河道', 400, 155, { size: 11, color: '#5A7EA8' }); }
+    label(mx, '上游（高）', 30, 16, { size: 12, bold: true }); label(mx, '下游（低）', 530, 16, { size: 12, bold: true, align: 'right' });
+    // 下：流量歷線
+    const h0 = hydro(L0), h1 = hydro(Lrel);
+    const gx = 50, gy = 195, gw = 490, gh = 190;
+    const peak0 = Math.max(...h0.out.map(p => p[1]));
+    const Yv = q => gy + gh - q / (peak0 * 1.9) * gh, Xt = t => gx + t / 12 * gw;
+    mx.strokeStyle = '#999'; mx.lineWidth = 1; mx.beginPath(); mx.moveTo(gx, gy); mx.lineTo(gx, gy + gh); mx.lineTo(gx + gw, gy + gh); mx.stroke();
+    label(mx, '下游的水量', gx, gy - 8, { size: 12, color: '#555' }); label(mx, '時間 →', gx + gw, gy + gh + 14, { size: 12, color: '#555', align: 'right' });
+    // 淹水警戒線
+    const warn = peak0 * 1.15;
+    mx.setLineDash([5, 4]); mx.strokeStyle = '#E53935'; mx.beginPath(); mx.moveTo(gx, Yv(warn)); mx.lineTo(gx + gw, Yv(warn)); mx.stroke(); mx.setLineDash([]);
+    label(mx, '堤防高度（超過就淹水）', gx + gw, Yv(warn) - 10, { size: 11, color: '#E53935', align: 'right' });
+    [[h0, '#9E9E9E'], [h1, '#1E88E5']].forEach(([h, c]) => { mx.strokeStyle = c; mx.lineWidth = 3; mx.beginPath(); h.out.forEach(([t, q], i) => i ? mx.lineTo(Xt(t), Yv(q)) : mx.moveTo(Xt(t), Yv(q))); mx.stroke(); });
+    const p1 = Math.max(...h1.out.map(p => p[1]));
+    const tp = o => o.out.reduce((a, b) => b[1] > a[1] ? b : a)[0];
+    document.getElementById('t6meaR').innerHTML = `<div><b>${(Lrel / L0 * 100).toFixed(0)}%</b><span>河道長度（和原本比）</span></div>
+      <div><b>${(L0 / Lrel).toFixed(1)} 倍</b><span>坡度</span></div>
+      <div><b>${(h1.v / h0.v).toFixed(1)} 倍</b><span>流速</span></div>
+      <div><b style="color:${p1 > warn ? '#C62828' : ''}">${(p1 / peak0).toFixed(1)} 倍</b><span>下游最高水量（洪峰）${p1 > warn ? '⚠ 溢堤' : ''}</span></div>
+      <div><b>提早 ${Math.max(0, (tp(h0) - tp(h1)) / tp(h0) * 100).toFixed(0)}%</b><span>洪峰抵達時間</span></div>`;
+  }
+  registerSim('t6', { start: drawM, resize: drawM });
+})();
+
+/* ==== t7.js ==== */
+/* ===== 分頁 7：火成岩／沉積岩／變質岩製造機、虛擬實驗桌、岩石循環、礦物檢查表 ===== */
+(() => {
+  const ic = document.getElementById('t7ign'); if (!ic) return;
+
+  /* ---------- 共用：岩石紋理 ---------- */
+  function speckle(ctx, x, y, w, h, cols, n, rmin, rmax, seed) {
+    const r = rng(seed);
+    for (let i = 0; i < n; i++) { ctx.fillStyle = cols[Math.floor(r() * cols.length)]; const rr = rmin + r() * (rmax - rmin); ctx.beginPath(); ctx.ellipse(x + r() * w, y + r() * h, rr, rr * (.6 + r() * .5), r() * 3, 0, 7); ctx.fill(); }
+  }
+  // 依名稱畫一塊岩石或礦物的表面
+  function texture(ctx, name, x, y, w, h, seed = 1) {
+    ctx.save(); rrect(ctx, x, y, w, h, 14); ctx.clip();
+    const r = rng(seed);
+    switch (name) {
+      case '玄武岩': ctx.fillStyle = '#2E2E30'; ctx.fillRect(x, y, w, h); speckle(ctx, x, y, w, h, ['#3A3A3D', '#252527'], 900, .6, 1.4, seed);
+        ctx.fillStyle = '#18181A'; for (let i = 0; i < 12; i++) { ctx.beginPath(); ctx.arc(x + r() * w, y + r() * h, 2 + r() * 3, 0, 7); ctx.fill(); } break;
+      case '花岡岩': ctx.fillStyle = '#E9DDD2'; ctx.fillRect(x, y, w, h); speckle(ctx, x, y, w, h, ['#E3B7A3', '#F4EFE8', '#D4CFCB', '#2A2A2A'], 260, 3, 8, seed); break;
+      case '礫岩': ctx.fillStyle = '#B9A383'; ctx.fillRect(x, y, w, h); speckle(ctx, x, y, w, h, ['#8D7B6A', '#A1887F', '#6D5D4B', '#C8B49A'], 40, 7, 20, seed); speckle(ctx, x, y, w, h, ['#A89272'], 300, .8, 1.5, seed + 1); break;
+      case '石灰岩': ctx.fillStyle = '#D9D6CC'; ctx.fillRect(x, y, w, h); speckle(ctx, x, y, w, h, ['#CFCBC0', '#E3E0D7'], 300, 1, 3, seed);
+        ctx.strokeStyle = 'rgba(120,110,95,.6)'; ctx.lineWidth = 1.5; for (let i = 0; i < 6; i++) { const cx = x + r() * w, cy = y + r() * h; ctx.beginPath(); ctx.arc(cx, cy, 6 + r() * 6, Math.PI, 2 * Math.PI); ctx.stroke(); for (let k = -2; k <= 2; k++) { ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + k * 3, cy - 9); ctx.stroke(); } } break;
+      case '板岩': ctx.fillStyle = '#4A4F57'; ctx.fillRect(x, y, w, h); ctx.strokeStyle = 'rgba(160,170,185,.35)'; ctx.lineWidth = 1;
+        for (let i = -h; i < w; i += 6) { ctx.beginPath(); ctx.moveTo(x + i, y); ctx.lineTo(x + i + h * .25, y + h); ctx.stroke(); } break;
+      case '頁岩': ctx.fillStyle = '#7B7064'; ctx.fillRect(x, y, w, h); for (let yy = y; yy < y + h; yy += 3 + r() * 4) { ctx.fillStyle = r() > .5 ? '#6E6458' : '#8A7F72'; ctx.fillRect(x, yy, w, 2); } break;
+      case '大理岩': ctx.fillStyle = '#F5F3EF'; ctx.fillRect(x, y, w, h); ctx.strokeStyle = 'rgba(200,195,190,.9)'; ctx.lineWidth = 1;
+        for (let i = 0; i < 70; i++) { const cx = x + r() * w, cy = y + r() * h, s = 6 + r() * 8; ctx.beginPath(); for (let k = 0; k < 6; k++) { const a = k / 6 * 7 + r(); ctx.lineTo(cx + Math.cos(a) * s, cy + Math.sin(a) * s); } ctx.closePath(); ctx.stroke(); }
+        ctx.strokeStyle = 'rgba(150,150,160,.5)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x, y + h * .3); ctx.bezierCurveTo(x + w * .3, y + h * .1, x + w * .6, y + h * .7, x + w, y + h * .5); ctx.stroke(); break;
+      case '花岡片麻岩': for (let yy = y, k = 0; yy < y + h; yy += 9, k++) { ctx.fillStyle = k % 2 ? '#2F2F33' : '#E9DCCD'; ctx.beginPath(); ctx.moveTo(x, yy); for (let xx = x; xx <= x + w; xx += 8) ctx.lineTo(xx, yy + Math.sin((xx + k * 13) / 18) * 3); ctx.lineTo(x + w, yy + 10); ctx.lineTo(x, yy + 10); ctx.fill(); } break;
+      case '方解石': ctx.fillStyle = '#EEF2F5'; ctx.fillRect(x, y, w, h); ctx.strokeStyle = 'rgba(150,170,190,.7)'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(x + w * .2, y + h * .3); ctx.lineTo(x + w * .6, y + h * .15); ctx.lineTo(x + w * .85, y + h * .55); ctx.lineTo(x + w * .45, y + h * .8); ctx.closePath(); ctx.stroke(); break;
+      case '石英': ctx.fillStyle = '#E8ECEF'; ctx.fillRect(x, y, w, h); ctx.fillStyle = 'rgba(255,255,255,.9)'; ctx.strokeStyle = 'rgba(140,160,175,.8)'; ctx.lineWidth = 2;
+        [[.3, .2], [.5, .1], [.68, .25]].forEach(([fx, fy]) => { const cx = x + w * fx, cy = y + h * fy; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + 14, cy + 18); ctx.lineTo(cx + 14, cy + h * .7); ctx.lineTo(cx - 14, cy + h * .7); ctx.lineTo(cx - 14, cy + 18); ctx.closePath(); ctx.fill(); ctx.stroke(); }); break;
+      default: ctx.fillStyle = '#999'; ctx.fillRect(x, y, w, h);
+    }
+    ctx.restore();
+  }
+
+  /* ---------- 火成岩：晶體生長 ---------- */
+  const IG = stage(ic, 400, 260), igx = IG.ctx;
+  const GW = 200, GH = 130;
+  const off = document.createElement('canvas'); off.width = GW; off.height = GH; const ox = off.getContext('2d');
+  const MIN = {
+    light: [['石英', '#D9D9D9', .3], ['長石', '#EDB9A5', .3], ['長石', '#F6F1EA', .25], ['雲母', '#262626', .15]],
+    mid: [['斜長石', '#E7E4DE', .5], ['角閃石', '#2C2F2B', .38], ['長石', '#D9B3A1', .12]],
+    dark: [['輝石', '#1F2420', .5], ['斜長石', '#8F948F', .4], ['橄欖石', '#5E7A3A', .1]],
+  };
+  const NAME = {
+    light: [['花岡岩', true, '晶體大、肉眼看得見白、粉紅、黑三種顆粒（石英、長石、雲母）。例：金門。'], ['流紋岩', false, '和花岡岩成分一樣，但冷卻快、晶體細小。']],
+    mid: [['閃長岩', false, '和安山岩成分一樣，但在地底慢慢冷卻，晶體較大。'], ['安山岩', true, '灰色、晶體細小。例：大屯火山群（陽明山）。']],
+    dark: [['輝長岩', false, '和玄武岩成分一樣，但在地底慢慢冷卻，晶體較大。'], ['玄武岩', true, '深黑色，晶體細到肉眼幾乎看不到。例：澎湖。']],
+  };
+  let comp = 'light', grow = 1, labels = null, dists = null, seedCol = null, R = 1, igAnim = false;
+  const cool = bindRange('t7cool', v => v < 35 ? '地底深處，慢慢冷卻（上萬年）' : v < 90 ? '噴出地表，很快冷卻' : '瞬間急凍（例如熔岩流進海裡）');
+  function compute() {
+    const v = +cool.value, glass = v >= 90;
+    const N = glass ? 0 : v < 35 ? Math.round(lerp(22, 80, v / 35)) : Math.round(lerp(300, 1100, (v - 35) / 55));
+    const r = rng(42 + N);
+    const seeds = Array.from({ length: N }, () => [r() * GW, r() * GH]);
+    seedCol = seeds.map(() => { let q = r(), k = 0; const arr = MIN[comp]; while (k < arr.length - 1 && (q -= arr[k][2]) > 0) k++; return arr[k][1]; });
+    labels = new Int32Array(GW * GH); dists = new Float32Array(GW * GH);
+    // 用格子加速找最近的種子
+    const CS = 10, gw = Math.ceil(GW / CS), gh = Math.ceil(GH / CS), grid = Array.from({ length: gw * gh }, () => []);
+    seeds.forEach(([sx, sy], i) => grid[Math.floor(sy / CS) * gw + Math.floor(sx / CS)].push(i));
+    for (let py = 0; py < GH; py++) for (let px = 0; px < GW; px++) {
+      let best = -1, bd = 1e9; const cx = Math.floor(px / CS), cy = Math.floor(py / CS);
+      for (let rad = 0; rad < Math.max(gw, gh) && (best < 0 || rad <= Math.ceil(Math.sqrt(bd) / CS) + 1); rad++) {
+        for (let gy = cy - rad; gy <= cy + rad; gy++) for (let gx = cx - rad; gx <= cx + rad; gx++) {
+          if (gx < 0 || gy < 0 || gx >= gw || gy >= gh || (Math.abs(gx - cx) !== rad && Math.abs(gy - cy) !== rad)) continue;
+          for (const i of grid[gy * gw + gx]) { const d = (seeds[i][0] - px) ** 2 + (seeds[i][1] - py) ** 2; if (d < bd) { bd = d; best = i; } }
+        }
+        if (N === 0) break;
+      }
+      labels[py * GW + px] = best; dists[py * GW + px] = Math.sqrt(bd);
+    }
+    R = N ? Math.sqrt(GW * GH / N) * .75 : 1;
+  }
+  function drawIgn() {
+    IG.fit();
+    if (!labels) compute();
+    const v = +cool.value, glass = v >= 90;
+    const img = ox.createImageData(GW, GH), d = img.data;
+    const melt = [255, Math.round(120 + 60 * (1 - grow)), 40];
+    for (let i = 0; i < GW * GH; i++) {
+      let c;
+      if (glass) { const t = grow; const px = i % GW, py = (i / GW) | 0; const sheen = 18 * Math.sin(px / 9 + py / 14) * t; c = [lerp(melt[0], 22 + sheen, t), lerp(melt[1], 22 + sheen, t), lerp(melt[2], 28 + sheen, t)]; }
+      else if (grow >= 1 || dists[i] <= R * grow * 1.6) {
+        const hex = seedCol[labels[i]]; c = [parseInt(hex.slice(1, 3), 16), parseInt(hex.slice(3, 5), 16), parseInt(hex.slice(5, 7), 16)];
+        const px = i % GW; if ((px < GW - 1 && labels[i + 1] !== labels[i]) || (i + GW < GW * GH && labels[i + GW] !== labels[i])) c = c.map(q => q * .65);
+      } else c = melt;
+      d[i * 4] = c[0]; d[i * 4 + 1] = c[1]; d[i * 4 + 2] = c[2]; d[i * 4 + 3] = 255;
+    }
+    ox.putImageData(img, 0, 0);
+    igx.imageSmoothingEnabled = false; igx.drawImage(off, 0, 0, IG.W, IG.H);
+    if (grow < 1) label(igx, '🔥 岩漿冷卻中…晶體正在長大', 200, 24, { align: 'center', size: 15, bold: true, color: '#fff', bg: 'rgba(0,0,0,.45)' });
+    else label(igx, '放大約 10 倍', 392, 248, { align: 'right', size: 12, color: '#fff', bg: 'rgba(0,0,0,.4)' });
+  }
+  function nameIgn() {
+    const v = +cool.value;
+    const el = document.getElementById('t7ignName');
+    if (v >= 90) { el.innerHTML = `<span class="big">火山玻璃（例如黑曜岩）</span> <span class="tag" style="color:var(--deep)">🟣 加深加廣</span><br>冷卻快到原子來不及排好，連晶體都沒有，像玻璃一樣光滑、斷口銳利。`; return; }
+    const [nm, inBook, desc] = NAME[comp][v < 35 ? 0 : 1];
+    el.innerHTML = `<span class="big">${nm}</span> ${inBook ? '<span class="tag" style="color:var(--ok)">✔ 課本</span>' : '<span class="tag" style="color:var(--deep)">🟣 加深加廣</span>'}<br>${desc}<br><span class="note">${v < 35 ? '慢慢冷卻 → 晶體有時間長大 → 顆粒大' : '快速冷卻 → 晶體來不及長大 → 顆粒小'}</span>`;
+  }
+  document.querySelectorAll('#t7comp .chip').forEach(b => b.onclick = () => { document.querySelectorAll('#t7comp .chip').forEach(x => x.classList.remove('on')); b.classList.add('on'); comp = b.dataset.c; labels = null; grow = 1; drawIgn(); nameIgn(); });
+  cool.addEventListener('input', () => { labels = null; grow = 1; drawIgn(); nameIgn(); });
+  const IL = loop(dt => { if (!igAnim) return; grow = Math.min(1, grow + dt / 2.5); drawIgn(); if (grow >= 1) { igAnim = false; nameIgn(); } });
+  document.getElementById('t7go').onclick = () => { if (!labels) compute(); grow = 0; igAnim = true; document.getElementById('t7ignName').innerHTML = '冷卻中……先猜猜看：晶體會長得大還是小？'; };
+  registerSim('t7', { start() { drawIgn(); nameIgn(); IL.start(); }, stop() { IL.stop(); }, resize: drawIgn });
+
+  /* ---------- 沉積岩 ---------- */
+  const sc = document.getElementById('t7sed');
+  const SD = stage(sc, 400, 260), sx = SD.ctx;
+  const SED = [
+    { n: '礫岩', c: '#A1887F', r: [5, 11], k: 50, txt: '顆粒最大（大於 2 毫米）。例：苗栗火炎山——膠結差、易崩落。' },
+    { n: '砂岩', c: '#D9B66F', r: [1.5, 3], k: 380, txt: '摸起來粗粗的。例：野柳的岩層、女王頭。' },
+    { n: '頁岩', c: '#8D7F72', r: [.6, 1.1], k: 1200, txt: '顆粒最細，常可沿著層理一片片剝開。' },
+    { n: '石灰岩', c: '#E5E1D6', r: [2, 6], k: 130, txt: '由貝殼、珊瑚等生物遺骸堆積而成，主要成分是碳酸鈣，滴鹽酸會冒泡。常作水泥原料。例：墾丁船帆石。', shell: true },
+    { n: '鹽岩', c: '#F7F7F7', r: [2, 4], k: 260, txt: '海水或鹹水湖蒸發後，鹽結晶沉積而成（還記得第 3 分頁湖底那層白色的鹽嗎？）。', cube: true },
+  ];
+  let selS = 0, layers = [], falling = null;
+  function sedDraw() {
+    SD.fit(); sx.clearRect(0, 0, SD.W, SD.H);
+    sx.fillStyle = '#CFE6F5'; sx.fillRect(0, 0, SD.W, SD.H);
+    let yb = SD.H;
+    layers.forEach((L, i) => {
+      const rock = i < layers.length - 1;                      // 上面又蓋了一層 → 被壓密膠結
+      const h = rock ? L.h * .7 : L.h; const top = yb - h;
+      const K = SED[L.s];
+      sx.fillStyle = rock ? K.c : 'rgba(255,255,255,.0)'; sx.fillRect(0, top, SD.W, h);
+      if (rock) { sx.fillStyle = 'rgba(0,0,0,.08)'; sx.fillRect(0, top, SD.W, 2); }
+      const r = rng(L.seed);
+      sx.fillStyle = K.c;
+      for (let k = 0; k < K.k; k++) {
+        const px = r() * SD.W, py = top + r() * h, rr = K.r[0] + r() * (K.r[1] - K.r[0]);
+        sx.fillStyle = rock ? `rgba(0,0,0,${.08 + r() * .12})` : K.c;
+        if (K.cube) sx.fillRect(px, py, rr * 1.6, rr * 1.6);
+        else if (K.shell && r() > .5) { sx.beginPath(); sx.arc(px, py, rr * 1.4, Math.PI, 2 * Math.PI); sx.fill(); }
+        else { sx.beginPath(); sx.ellipse(px, py, rr, rr * .75, 0, 0, 7); sx.fill(); }
+      }
+      if (rock) label(sx, K.n, 10, top + h / 2, { size: 14, bold: true, bg: 'rgba(255,255,255,.85)' });
+      else label(sx, '鬆散的' + ['礫石', '沙', '泥', '貝殼碎片', '鹽結晶'][L.s], 10, top + h / 2, { size: 13, color: '#455A64', bg: 'rgba(255,255,255,.7)' });
+      yb = top;
+    });
+    if (falling) {
+      const K = SED[falling.s], r = rng(falling.seed);
+      for (let k = 0; k < Math.min(K.k, 160); k++) { const px = r() * SD.W, py = falling.t * (yb - 10) * (.6 + r() * .4); sx.fillStyle = K.c; sx.beginPath(); sx.arc(px, py, K.r[0] + r() * (K.r[1] - K.r[0]), 0, 7); sx.fill(); }
+    }
+    if (!layers.length && !falling) label(sx, '這裡是湖底或海底。按「一層層堆上去」', 200, 130, { align: 'center', size: 14, color: '#456' });
+    if (layers.length > 1) { arrow(sx, 380, 10, 380, 40, '#C62828', 3, 10); label(sx, '上面的重量往下壓', 372, 54, { align: 'right', size: 12, color: '#C62828', bold: true }); }
+  }
+  const SL = loop(dt => { if (!falling) return; falling.t += dt * 1.4; if (falling.t >= 1) { layers.push({ s: falling.s, h: 55, seed: falling.seed }); if (layers.length > 4) layers.shift(); falling = null; sedName(); } sedDraw(); });
+  function sedName() {
+    const el = document.getElementById('t7sedName');
+    if (layers.length < 2) { el.innerHTML = layers.length ? '鬆散的沉積物還不是岩石。再堆一層上去，讓上面的重量把它<b>壓密</b>，水中的礦物質把顆粒<b>膠結</b>在一起。' : '先選沉積物，再按「一層層堆上去」。'; return; }
+    const K = SED[layers[layers.length - 2].s];
+    el.innerHTML = `<span class="big">${K.n}</span>（沉積岩）<br>${K.txt}`;
+  }
+  document.querySelectorAll('#t7sedC .chip').forEach(b => b.onclick = () => { document.querySelectorAll('#t7sedC .chip').forEach(x => x.classList.remove('on')); b.classList.add('on'); selS = +b.dataset.s; });
+  document.getElementById('t7press').onclick = () => { if (!falling) falling = { s: selS, t: 0, seed: Math.floor(Math.random() * 1e6) }; };
+  document.getElementById('t7sedReset').onclick = () => { layers = []; falling = null; sedName(); sedDraw(); };
+  registerSim('t7', { start() { sedDraw(); sedName(); SL.start(); }, stop() { SL.stop(); }, resize: sedDraw });
+
+  /* ---------- 變質岩 ---------- */
+  const mc = document.getElementById('t7met');
+  const MT = stage(mc, 400, 230), mx = MT.ctx;
+  const PAR = [['頁岩', '板岩', '頁岩變質而成，質地緻密，可以剝成平整的石板。臺灣原住民用來蓋冬暖夏涼的石板屋。'],
+    ['石灰岩', '大理岩', '石灰岩變質而成，方解石重新結晶、緊密咬合，質地細緻，常做雕刻與建材。例：太魯閣、奇美博物館。'],
+    ['花岡岩', '花岡片麻岩', '花岡岩變質而成，礦物被壓成深淺相間的條紋（片麻狀構造）。']];
+  let selM = 0;
+  const heat = bindRange('t7heat', v => `約 ${Math.round(v * .3)} 公里深、${Math.round(25 + v * 8)} °C`, () => metDraw());
+  function metDraw() {
+    MT.fit(); mx.clearRect(0, 0, MT.W, MT.H);
+    const h = +heat.value, [p, m, txt] = PAR[selM];
+    const a = clamp((h - 25) / 25, 0, 1);
+    if (h < 85) {
+      texture(mx, p, 20, 20, 170, 170, 7 + selM); if (a > 0) { mx.globalAlpha = a; texture(mx, m, 20, 20, 170, 170, 7 + selM); mx.globalAlpha = 1; }
+      label(mx, a < .5 ? p : m, 105, 210, { align: 'center', bold: true, size: 16 });
+    } else {
+      const g = mx.createRadialGradient(105, 105, 10, 105, 105, 110); g.addColorStop(0, '#FFE082'); g.addColorStop(.5, '#FF7043'); g.addColorStop(1, '#BF360C');
+      mx.fillStyle = g; rrect(mx, 20, 20, 170, 170, 14); mx.fill(); label(mx, '岩漿', 105, 210, { align: 'center', bold: true, size: 16, color: '#BF360C' });
+    }
+    // 溫度計
+    mx.fillStyle = '#eee'; rrect(mx, 240, 20, 26, 180, 13); mx.fill();
+    const lv = 20 + 180 * (1 - h / 100); const gg = mx.createLinearGradient(0, 200, 0, 20); gg.addColorStop(0, '#FFB74D'); gg.addColorStop(1, '#D32F2F');
+    mx.fillStyle = gg; rrect(mx, 240, lv, 26, 200 - lv, 13); mx.fill();
+    mx.setLineDash([4, 3]); mx.strokeStyle = '#C62828'; mx.beginPath(); mx.moveTo(232, 20 + 180 * .15); mx.lineTo(392, 20 + 180 * .15); mx.stroke(); mx.setLineDash([]);
+    label(mx, '開始熔化', 278, 20 + 180 * .15 - 10, { size: 12, color: '#C62828', bold: true });
+    mx.setLineDash([4, 3]); mx.strokeStyle = '#6A1B9A'; mx.beginPath(); mx.moveTo(232, 20 + 180 * .6); mx.lineTo(392, 20 + 180 * .6); mx.stroke(); mx.setLineDash([]);
+    label(mx, '開始變質', 278, 20 + 180 * .6 - 10, { size: 12, color: '#6A1B9A', bold: true });
+    const el = document.getElementById('t7metName');
+    el.innerHTML = h < 40 ? `還是<b>${p}</b>。溫度和壓力還不夠，礦物沒有明顯改變。`
+      : h < 85 ? `<span class="big">${m}</span>（變質岩）<br>${txt}<br><span class="note">岩石沒有熔化！是在「固體狀態」下，礦物重新排列、重新結晶。</span>`
+      : `<b>熔化了！</b>溫度太高，岩石熔成岩漿——它已經不是變質岩，冷卻後會變成<b>火成岩</b>。這就是「岩石循環」的一段路（資優挑戰有完整地圖）。`;
+  }
+  document.querySelectorAll('#t7metC .chip').forEach(b => b.onclick = () => { document.querySelectorAll('#t7metC .chip').forEach(x => x.classList.remove('on')); b.classList.add('on'); selM = +b.dataset.m; metDraw(); });
+  registerSim('t7', { start: metDraw, resize: metDraw });
+
+  /* ---------- 虛擬實驗桌 ---------- */
+  const LAB = {
+    '玄武岩': { look: '深黑色，顆粒非常細，肉眼幾乎看不到晶體，有時有小氣孔。', acid: false, nail: false, iron: false },
+    '花岡岩': { look: '白、粉紅、黑色的顆粒交錯，晶體大到肉眼看得見（石英、長石、雲母）。', acid: false, nail: false, iron: false, ironNote: '石英和長石刻不動（黑色的雲母比較軟，可能刮出痕跡）。' },
+    '礫岩': { look: '大小不一、圓滑的礫石，被細沙和膠結物黏在一起。', acid: false, nail: false, iron: false, acidNote: '大多沒有氣泡（如果膠結物含碳酸鈣，可能冒出少量氣泡）。', ironNote: '礫石刻不動，但膠結物可能被刮下來。' },
+    '石灰岩': { look: '灰白色、細緻，有時看得到貝殼或珊瑚碎片。', acid: true, nail: false, iron: true },
+    '板岩': { look: '深灰色，質地緻密，可以沿著平行的面剝成薄片。', acid: false, nail: false, iron: false, ironNote: '大致刻不動，可能留下淡淡的刮痕。' },
+    '大理岩': { look: '白色或淺色，由許多閃亮的方解石結晶緊密咬合在一起。', acid: true, nail: false, iron: true },
+    '方解石': { look: '無色透明或白色；敲開時會沿三個方向裂成斜斜的方塊。（礦物）', acid: true, nail: false, iron: true },
+    '石英': { look: '無色透明或白色，斷口像玻璃一樣有光澤。（礦物）', acid: false, nail: false, iron: false, ironNote: '刻不動！石英比鐵釘還硬，反而能刮傷鐵釘。' },
+  };
+  const lc = document.getElementById('t7lab');
+  const LB = stage(lc, 420, 240), lx = LB.ctx;
+  let spec = '石灰岩', tool = null, toolT = 0;
+  const specBox = document.getElementById('t7spec');
+  Object.keys(LAB).forEach(n => { const b = document.createElement('button'); b.className = 'chip' + (n === spec ? ' on' : ''); b.textContent = n; b.onclick = () => { specBox.querySelectorAll('.chip').forEach(x => x.classList.remove('on')); b.classList.add('on'); spec = n; tool = null; labOut(); }; specBox.appendChild(b); });
+  document.querySelectorAll('#t7tools [data-t]').forEach(b => b.onclick = () => { tool = b.dataset.t; toolT = 0; labOut(); });
+  function labOut() {
+    const L = LAB[spec], el = document.getElementById('t7labOut');
+    if (!tool) { el.innerHTML = `標本：<b>${spec}</b>。選一個工具試試看。`; return; }
+    const res = {
+      look: `🔍 ${L.look}`,
+      acid: L.acid ? '💧 <b>冒出大量氣泡！</b>這些氣泡是<b>二氧化碳</b>，表示含有<b>碳酸鈣</b>（碳酸鈣＋鹽酸 → 氯化鈣＋水＋二氧化碳）。' : `💧 ${L.acidNote || '沒有氣泡。'}`,
+      nail: `💅 ${L.nail ? '刻得出刮痕。' : '刻不動——它比指甲硬。'}`,
+      iron: `🔩 ${L.iron ? '<b>刻得出刮痕</b>——它比鐵釘軟。' : (L.ironNote || '刻不動——它比鐵釘硬。')}`,
+    }[tool];
+    el.innerHTML = `標本：<b>${spec}</b><br>${res}` + (spec === '方解石' || spec === '石英' ? '<br><span class="note">探討活動 5-1：方解石和石英長得很像，但用「硬度」和「滴鹽酸」就分得出來。</span>' : '');
+  }
+  function labDraw(dt) {
+    toolT += dt || 0;
+    LB.fit(); lx.clearRect(0, 0, LB.W, LB.H);
+    lx.fillStyle = '#F7F3EA'; lx.fillRect(0, 0, LB.W, LB.H);
+    lx.fillStyle = 'rgba(0,0,0,.12)'; lx.beginPath(); lx.ellipse(210, 215, 130, 14, 0, 0, 7); lx.fill();
+    texture(lx, spec, 90, 40, 240, 170, 3);
+    const L = LAB[spec];
+    if (tool === 'look') {
+      lx.save(); lx.beginPath(); lx.arc(300, 90, 62, 0, 7); lx.clip(); lx.translate(300, 90); lx.scale(2.2, 2.2); lx.translate(-300, -90); texture(lx, spec, 90, 40, 240, 170, 3); lx.restore();
+      lx.strokeStyle = '#5D4037'; lx.lineWidth = 7; lx.beginPath(); lx.arc(300, 90, 62, 0, 7); lx.stroke(); lx.beginPath(); lx.moveTo(345, 135); lx.lineTo(395, 190); lx.stroke();
+    } else if (tool === 'acid') {
+      lx.fillStyle = '#90A4AE'; lx.fillRect(196, 0, 10, 26); lx.fillStyle = '#B3E5FC'; lx.beginPath(); lx.arc(201, 30 + Math.min(toolT, 1) * 80, 5, 0, 7); lx.fill();
+      if (toolT > 1) { lx.fillStyle = 'rgba(180,220,255,.5)'; lx.beginPath(); lx.ellipse(205, 115, 34, 10, 0, 0, 7); lx.fill();
+        if (L.acid) { const r = rng(Math.floor(toolT * 6)); lx.strokeStyle = 'rgba(255,255,255,.95)'; lx.lineWidth = 1.5; for (let i = 0; i < 26; i++) { lx.beginPath(); lx.arc(175 + r() * 60, 112 - r() * 40 * ((toolT * 2) % 1 + .2), 2 + r() * 4, 0, 7); lx.stroke(); } } }
+    } else if (tool === 'nail' || tool === 'iron') {
+      const ok = L[tool], p = Math.min(1, toolT / 1.2);
+      lx.strokeStyle = ok ? 'rgba(255,255,255,.95)' : 'rgba(255,255,255,0)'; lx.lineWidth = 3; lx.beginPath(); lx.moveTo(150, 140); lx.lineTo(150 + 120 * p, 120); lx.stroke();
+      lx.save(); lx.translate(150 + 120 * p, 120); lx.rotate(-.9);
+      if (tool === 'iron') { lx.fillStyle = '#78909C'; lx.fillRect(-4, -90, 8, 90); lx.fillRect(-12, -96, 24, 8); }
+      else { lx.fillStyle = '#F2C9A8'; rrect(lx, -14, -90, 28, 90, 12); lx.fill(); lx.fillStyle = '#FBE9E7'; rrect(lx, -10, -20, 20, 18, 6); lx.fill(); }
+      lx.restore();
+      if (p >= 1) label(lx, ok ? '✔ 刮出痕跡' : '✘ 刮不動', 210, 20, { align: 'center', bold: true, size: 15, color: ok ? '#2E7D32' : '#C62828', bg: 'rgba(255,255,255,.9)' });
+    }
+    label(lx, spec, 210, 228, { align: 'center', bold: true, size: 14 });
+  }
+  const LL = loop(labDraw);
+  registerSim('t7', { start() { labOut(); LL.start(); }, stop() { LL.stop(); } });
+  mountSort(document.getElementById('t7sort'), ['火成岩', '沉積岩', '變質岩'], [
+    ['玄武岩', 0, '岩漿噴出地表快速冷卻。'], ['花岡岩', 0, '岩漿在地底慢慢冷卻，晶體大。'], ['礫岩', 1, '礫石沉積後壓密膠結。'],
+    ['石灰岩', 1, '生物遺骸堆積而成（含碳酸鈣）。'], ['板岩', 2, '頁岩經高溫高壓變質。'], ['大理岩', 2, '石灰岩變質——所以和石灰岩一樣，滴鹽酸會冒泡！'],
+  ]);
+
+  /* ---------- 岩石循環地圖 ---------- */
+  const cc = document.getElementById('t7cyc');
+  const CY = stage(cc, 480, 400), cx = CY.ctx;
+  const NODE = { sed: ['沉積物', 240, 50, '#D9B66F'], sr: ['沉積岩', 410, 160, '#C8A97E'], mr: ['變質岩', 370, 320, '#8E7CC3'], mg: ['岩漿', 150, 340, '#E65100'], ir: ['火成岩', 70, 170, '#546E7A'] };
+  const EDGE = [
+    ['sed', 'sr', '沉積、壓密、膠結', '鬆散的碎屑一層層堆積，被壓緊、黏合。'],
+    ['sr', 'mr', '高溫高壓', '沉積岩被埋到地底深處（例：頁岩 → 板岩）。'],
+    ['mr', 'mg', '熔融', '溫度再升高，岩石熔化成岩漿。'],
+    ['mg', 'ir', '冷卻凝固', '在地底慢慢冷卻（花岡岩）或噴出地表快速冷卻（玄武岩）。'],
+    ['ir', 'sed', '抬升、風化、侵蝕、搬運', '火成岩露出地表，被外營力打碎帶走。'],
+    ['ir', 'mr', '高溫高壓', '火成岩也可以直接變質（例：花岡岩 → 花岡片麻岩）。'],
+    ['mr', 'sed', '抬升、風化、侵蝕、搬運', '變質岩被抬升到地表也會被侵蝕（例：太魯閣大理岩被立霧溪沖成碎石）。'],
+    ['sr', 'sed', '抬升、風化、侵蝕、搬運', '沉積岩被抬升，再被打碎（例：野柳砂岩的差異侵蝕）。'],
+    ['sr', 'mg', '熔融', '沉積岩被帶到很深的地方，也可能直接熔化。'],
+    ['ir', 'mg', '熔融', '火成岩再被加熱，也會重新熔化。'],
+  ];
+  let hiE = -1, walkPos = null;
+  function edgePts(e) {
+    const a = NODE[e[0]], b = NODE[e[1]], dx = b[1] - a[1], dy = b[2] - a[2], L = Math.hypot(dx, dy), nx = -dy / L, ny = dx / L;
+    const bend = (EDGE.findIndex(q => q[0] === e[1] && q[1] === e[0]) >= 0) ? 16 : 0;   // 雙向的線錯開一點
+    return [a[1] + dx / L * 42 + nx * bend, a[2] + dy / L * 42 + ny * bend, b[1] - dx / L * 42 + nx * bend, b[2] - dy / L * 42 + ny * bend];
+  }
+  function cycDraw() {
+    CY.fit(); cx.clearRect(0, 0, CY.W, CY.H);
+    EDGE.forEach((e, i) => { const [x1, y1, x2, y2] = edgePts(e); arrow(cx, x1, y1, x2, y2, i === hiE ? '#6A3FA0' : '#B0A8BC', i === hiE ? 4 : 2, 11); });
+    Object.entries(NODE).forEach(([k, [n, x, y, c]]) => {
+      cx.fillStyle = c; cx.beginPath(); cx.arc(x, y, 38, 0, 7); cx.fill();
+      if (walkPos === k) { cx.strokeStyle = '#FFD27A'; cx.lineWidth = 6; cx.stroke(); }
+      label(cx, n, x, y, { align: 'center', bold: true, size: 15, color: '#fff' });
+    });
+    if (hiE >= 0) { const [x1, y1, x2, y2] = edgePts(EDGE[hiE]); label(cx, EDGE[hiE][2], (x1 + x2) / 2, (y1 + y2) / 2, { align: 'center', size: 13, bold: true, color: '#4A2C7A', bg: 'rgba(255,255,255,.92)' }); }
+  }
+  cc.addEventListener('pointerdown', ev => {
+    const p = CY.pt(ev); let best = -1, bd = 26;
+    EDGE.forEach((e, i) => { const [x1, y1, x2, y2] = edgePts(e); const d = Math.hypot((x1 + x2) / 2 - p.x, (y1 + y2) / 2 - p.y); if (d < bd) { bd = d; best = i; } });
+    if (best >= 0) { hiE = best; const e = EDGE[best]; document.getElementById('t7walkLog').innerHTML = `<b>${NODE[e[0]][0]} → ${NODE[e[1]][0]}</b>：${e[2]}<br>${e[3]}`; cycDraw(); }
+  });
+  let walkTimer = null;
+  document.getElementById('t7walk').onclick = () => {
+    clearInterval(walkTimer);
+    walkPos = ['ir', 'sr', 'mr'][Math.floor(Math.random() * 3)];
+    const log = [`起點：<b>${NODE[walkPos][0]}</b>`]; let n = 0;
+    document.getElementById('t7walkLog').innerHTML = log.join('<br>'); cycDraw();
+    walkTimer = setInterval(() => {
+      const opts = EDGE.map((e, i) => [e, i]).filter(([e]) => e[0] === walkPos);
+      const [e, i] = opts[Math.floor(Math.random() * opts.length)];
+      hiE = i; walkPos = e[1]; log.push(`${++n}. ${e[2]} → <b>${NODE[e[1]][0]}</b>`);
+      document.getElementById('t7walkLog').innerHTML = log.join('<br>'); cycDraw();
+      if (n >= 6) clearInterval(walkTimer);
+    }, 900);
+  };
+  registerSim('t7', { start: cycDraw, resize: cycDraw });
+
+  /* ---------- 礦物檢查表 ---------- */
+  mountSort(document.getElementById('t7min'), ['是礦物', '不是礦物'], [
+    ['石英', 0, '天然、原子規則排列、固體、無機物，四條都符合。'],
+    ['冰河裡的冰', 0, '天然形成、水分子規則排列成晶體、在冰河中是固體、無機物——是礦物！'],
+    ['窗戶的玻璃', 1, '原子排列沒有規則，而且是人造的。'],
+    ['煤', 1, '由古代植物遺骸形成，屬於有機物。'],
+    ['花岡岩', 1, '它是「岩石」：由長石、石英、雲母等多種礦物組成。'],
+    ['實驗室合成的鑽石', 1, '成分和結構跟天然鑽石一樣，但不是「天然產生」。'],
+    ['黃鐵礦（愚人金）', 0, '天然的硫化鐵晶體，是礦物，只是常被誤認成黃金。'],
+  ]);
+})();
+
+/* ==== t8.js ==== */
+/* ===== 分頁 8：總複習（心智圖翻牌、快問快答、迷思總整理） ===== */
+(() => {
+  const mapHost = document.getElementById('t8map'); if (!mapHost) return;
+  const MAP = [
+    ['5-1 我們的地球', '#1F6FB2', [
+      ['地球三圈', '大氣圈、水圈、岩石圈，彼此交互作用。'],
+      ['水的分布', '鹹水約 97%；淡水約 3%（冰川約 2%、地下水約 1%，河流湖泊更少）。能直接用的：地下水、河流、湖泊。'],
+      ['地下水', '雨水滲入，累積在透水層的孔隙中，頂部是地下水面。雨季上升、旱季下降。'],
+      ['超抽地下水', '地層下陷（不可逆）、沿海地下水鹹化、淹水與海水倒灌。'],
+      ['海水為什麼鹹', '河流和地下水溶解岩石中的鹽類帶進海裡；水蒸發、鹽留下。'],
+      ['淡水湖 vs 鹹水湖', '日月潭有出口；死海是河流終點＋強烈蒸發 → 鹽愈積愈多。'],
+      ['水循環', '蒸發、凝結、降水、滲入……水三態變化，同時搬運能量、調節氣候。'],
+    ]],
+    ['5-2 地表的改變與平衡', '#2E7D32', [
+      ['內營力 vs 外營力', '內營力（板塊、火山）使地表起伏；外營力（河流、風、冰川、海浪）使地表趨於平坦。'],
+      ['外營力四作用', '風化（變碎、變質、留原地）→ 侵蝕（離開原處）→ 搬運 → 沉積。風化不一定是風！'],
+      ['河流', '上游：流速快、侵蝕旺盛、V 形谷、巨石；中下游：鵝卵石、細沙、河面寬；出海口：沉積為主、三角洲。'],
+      ['風', '沙粒撞擊磨蝕 → 風稜石；風力減弱 → 沙丘。'],
+      ['冰川', '削磨岩石 → U 形谷；前緣融化 → 冰磧石（大小混雜）。'],
+      ['海浪', '海蝕崖、海蝕平臺、海蝕洞、海蝕拱門；沙灘、沙洲是海積地形。'],
+      ['差異侵蝕', '軟的岩層被侵蝕得快、硬的突出 → 凹凸不平（女王頭、蕈狀岩）。'],
+      ['河道變化', '突起處被侵蝕、低窪處被沉積；挖砂石 → 上游河床被掏、橋墩裸露；截彎取直 → 坡陡流速快。'],
+      ['海岸線變化', '沉積量 ＞ 搬運量 → 向海前進（淤積、海埔新生地）；沉積量 ＜ 搬運量 → 向陸後退。'],
+    ]],
+    ['5-3 岩石與礦物', '#8D6E63', [
+      ['火成岩', '岩漿冷卻凝固。地底慢冷 → 晶體大（花岡岩）；地表快冷 → 晶體小（玄武岩、安山岩）。'],
+      ['沉積岩', '碎屑沉積後壓密、膠結：礫岩 ＞ 砂岩 ＞ 頁岩（顆粒由大到小）；另有鹽岩、石灰岩（生物遺骸、碳酸鈣）。'],
+      ['變質岩', '高溫高壓、未熔融：頁岩 → 板岩；石灰岩 → 大理岩；花岡岩 → 花岡片麻岩。'],
+      ['臺灣的岩石', '金門、大屯火山群、澎湖：火成岩；西部：沉積岩；中央山脈：變質岩。'],
+      ['礦物', '天然產生、原子排列規則的固體無機物。岩石由一種或多種礦物組成。'],
+      ['方解石 vs 石英', '方解石：鐵釘刻得動、滴鹽酸冒泡（碳酸鈣）；石英：刻不動、不冒泡。'],
+      ['礦物的用途', '長石（地殼最多）→ 黏土 → 陶瓷；石英 → 玻璃、晶圓；寶石：金剛石、剛玉；黃鐵礦＝愚人金。'],
+    ]],
+  ];
+  mapHost.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px">` +
+    MAP.map(([t, c, items]) => `<div><div style="background:${c};color:#fff;border-radius:10px;padding:8px 12px;font-weight:bold">${t}</div>` +
+      items.map(([k, v]) => `<button class="opt flip" style="margin-top:6px;width:100%;display:block"><b style="color:${c}">${k}</b><div class="fv note" style="display:none;color:var(--ink);margin-top:4px">${v}</div><div class="fq note">（先說說看，再點開）</div></button>`).join('') + `</div>`).join('') + `</div>`;
+  const flip = (b, on) => { $('.fv', b).style.display = on ? 'block' : 'none'; $('.fq', b).style.display = on ? 'none' : 'block'; };
+  $$('.flip', mapHost).forEach(b => b.onclick = () => flip(b, $('.fv', b).style.display === 'none'));
+  $('#t8hide').onclick = () => $$('.flip', mapHost).forEach(b => flip(b, false));
+  $('#t8show').onclick = () => $$('.flip', mapHost).forEach(b => flip(b, true));
+
+  // [單元, 題目, 選項, 正解, 解說]
+  const QB = [
+    ['5-1', '地球上的水，大部分是哪一種？', ['鹹水', '冰川', '地下水', '河流與湖泊'], 0, '鹹水約占 97%。'],
+    ['5-1', '人類可以直接利用的淡水，主要存在哪裡？', ['海洋與冰川', '地下水、河流與湖泊', '只有雨水', '只有冰川'], 1, '冰川雖是淡水，但多在極區或高山，不易直接利用。'],
+    ['5-1', '地下水主要的來源是什麼？', ['海水', '雨水', '岩漿', '溫泉'], 1, '雨水往下滲透，遇到不透水層後開始累積。'],
+    ['5-1', '地下水主要累積在哪裡？', ['不透水層裡', '透水層岩層的孔隙中', '地核', '大氣中'], 1, '水會停在不透水層之上，填滿透水層的孔隙。'],
+    ['5-1', '超抽地下水造成地層下陷後，停止抽水會怎樣？', ['立刻恢復原高度', '幾年後慢慢恢復', '無法恢復原本的高度', '地面反而隆起'], 2, '地層下陷是不可逆的（課本 p.139）。'],
+    ['5-1', '海水中鹽類的主要來源是？', ['海底的石磨', '河流與地下水溶解岩石中的礦物質與鹽類', '雨水本身很鹹', '海中生物製造'], 1, '水蒸發了，鹽卻留在海中。'],
+    ['5-1', '死海鹽度極高的主要原因是？', ['湖有出口', '它是河流的終點，又有強烈蒸發', '湖底有鹽礦噴發', '常常下雨'], 1, '沒有出口＋乾燥蒸發 → 鹽愈積愈多。'],
+    ['5-2', '下列何者屬於「外營力」？', ['板塊運動', '火山活動', '河流', '地震'], 2, '外營力：河流、風、冰川、海浪。'],
+    ['5-2', '外營力作用的結果，會使地表趨向？', ['高低起伏', '平坦', '不變', '隆起'], 1, '削平高處、填平低處。'],
+    ['5-2', '植物的根伸入岩縫，使岩石破裂，屬於哪一種作用？', ['風化', '侵蝕', '搬運', '沉積'], 0, '岩石變碎但留在原地 → 風化。'],
+    ['5-2', '河流上游常見的地形是？', ['V 形谷', 'U 形谷', '三角洲', '沙丘'], 0, '上游坡陡流速快，向下侵蝕旺盛。'],
+    ['5-2', '出海口的三角洲，主要是哪一種作用形成的？', ['風化', '侵蝕', '沉積', '變質'], 2, '流速變緩，泥沙沉積。'],
+    ['5-2', '冰川造成的典型地形是？', ['V 形谷', 'U 形谷', '海蝕拱門', '沙丘'], 1, '冰川削磨谷壁與谷底。'],
+    ['5-2', '冰磧石最大的特徵是？', ['顆粒都很圓滑', '大小混雜', '全部是細泥', '都是鹽的結晶'], 1, '冰是固體，石頭被一起凍著搬運，沒有分選。'],
+    ['5-2', '風稜石是怎麼形成的？', ['冰川削磨', '風吹起沙粒撞擊磨蝕岩石', '海浪拍打', '岩漿冷卻'], 1, '例：新北富貴角。'],
+    ['5-2', '野柳女王頭的脖子愈來愈細，最主要的原因是？', ['差異侵蝕', '岩漿冷卻', '板塊擠壓', '地層下陷'], 0, '脖子的岩層較軟，被侵蝕得比較快。'],
+    ['5-2', '當海岸沉積的泥沙量「大於」被搬運走的量，海岸線會？', ['向海前進', '向陸地後退', '不變', '消失'], 0, '例：港口淤積、海埔新生地。'],
+    ['5-2', '在河流下游大量挖取砂石，可能造成什麼結果？', ['上游河床被侵蝕，橋墩裸露', '上游河床變高', '海岸線前進', '河水變鹹'], 0, '河床會自己找平衡，把上游的砂石「借」過來填補。'],
+    ['deep', '基隆河截彎取直後，帶來什麼新問題？', ['河道變長、流速變慢', '坡度變陡、流速加快，中下游更容易淹水', '河水變鹹', '河床不再有沉積'], 1, '後來又興建員山子分洪道。'],
+    ['deep', '水流從靜止慢慢加快，河床上哪一種顆粒「最先」被沖起來？', ['黏土', '細沙', '礫石', '巨石'], 1, '黏土有黏性，反而要更快的水流（Hjulström 圖）。'],
+    ['deep', '北極海上漂浮的海冰全部融化，海平面會？', ['明顯上升', '幾乎不變', '下降'], 1, '浮冰本來就排開了和自己同重的水。陸地上的冰融化才會讓海平面明顯上升。'],
+    ['5-3', '花岡岩的晶體比玄武岩大，原因是？', ['岩漿較多', '在地底深處緩慢冷卻', '噴出地表快速冷卻', '被變質'], 1, '慢慢冷卻，晶體才有時間長大。'],
+    ['5-3', '澎湖群島主要由哪一種岩石構成？', ['花岡岩', '玄武岩', '大理岩', '頁岩'], 1, '玄武岩質的岩漿冷卻形成，有柱狀玄武岩。'],
+    ['5-3', '由貝殼、珊瑚等生物遺骸堆積而成，主要成分為碳酸鈣的岩石是？', ['砂岩', '石灰岩', '玄武岩', '板岩'], 1, '常作為水泥原料。'],
+    ['5-3', '頁岩經高溫高壓變質後，會變成？', ['大理岩', '板岩', '花岡片麻岩', '礫岩'], 1, '原住民的石板屋就是用板岩。'],
+    ['5-3', '石灰岩經高溫高壓變質後，會變成？', ['大理岩', '板岩', '玄武岩', '砂岩'], 0, '例：太魯閣峽谷、奇美博物館的建材。'],
+    ['5-3', '滴稀鹽酸會冒出氣泡的一組是？', ['石灰岩、大理岩', '花岡岩、玄武岩', '板岩、頁岩', '礫岩、玄武岩'], 0, '兩者都含碳酸鈣，冒出的是二氧化碳。'],
+    ['5-3', '要分辨長得很像的方解石與石英，下列哪個方法可行？', ['看顏色', '用鐵釘刻＋滴鹽酸', '聞味道', '秤重量'], 1, '方解石比鐵釘軟、會冒泡；石英比鐵釘硬、不冒泡。'],
+    ['5-3', '關於岩石與礦物，何者正確？', ['礦物由岩石組成', '岩石由一種或多種礦物組成', '兩者沒有關係', '岩石的化學成分固定'], 1, '例：花岡岩由長石、石英、雲母組成。'],
+    ['5-3', '地殼中含量最多的礦物是？', ['石英', '長石', '雲母', '方解石'], 1, '長石風化後成為黏土，可製陶瓷。'],
+    ['5-3', '常被誤認為黃金、有「愚人金」之稱的礦物是？', ['黃鐵礦', '石英', '剛玉', '長石'], 0, '它有金屬光澤，但不是金。'],
+    ['deep', '2026 年尼泊爾朗塘冰川崩塌，引發的土石流沖到下游約 100 公里。沿途留下的沉積物最可能是？', ['大小混雜、沒有分選', '上游巨石、下游細沙，排列整齊', '只有細泥', '只有鹽的結晶'], 0, '土石流和冰川一樣，是「一大團一起移動」，速度一降就整團倒下，沒有時間依大小分選——和冰磧石很像。'],
+    ['deep', '依照礦物的定義，下列何者「是」礦物？', ['玻璃', '煤', '冰河的冰', '實驗室合成的鑽石'], 2, '冰：天然、規則排列、固體、無機，四條全符合。'],
+  ];
+  let filt = 'all', cur = null, used = new Set();
+  const pool = () => QB.map((q, i) => [q, i]).filter(([q]) => filt === 'all' || q[0] === filt);
+  function upd() { document.getElementById('t8count').textContent = `題庫 ${pool().length} 題，已抽 ${[...used].filter(i => pool().some(p => p[1] === i)).length} 題`; }
+  function show() {
+    const host = document.getElementById('t8q');
+    if (cur === null) { host.innerHTML = '<p class="note">按「🎲 抽一題」開始。</p>'; return; }
+    const [u, q, opts] = QB[cur];
+    host.innerHTML = `<div class="note">${u === 'deep' ? '🟣 加深' : u}</div><div class="big" style="margin:6px 0 10px;font-size:1.35rem">${q}</div><div class="vl"></div><div class="reveal callout good" id="t8why"></div>`;
+    const v = voteList($('.vl', host), opts);
+    document.getElementById('t8ans').onclick = () => { v.reveal(QB[cur][3]); const w = document.getElementById('t8why'); w.innerHTML = '💡 ' + QB[cur][4]; w.classList.add('show'); };
+  }
+  document.getElementById('t8draw').onclick = () => {
+    let p = pool().filter(([, i]) => !used.has(i)); if (!p.length) { pool().forEach(([, i]) => used.delete(i)); p = pool(); }
+    cur = p[Math.floor(Math.random() * p.length)][1]; used.add(cur); show(); upd();
+  };
+  document.querySelectorAll('#t8filter .chip').forEach(b => b.onclick = () => { document.querySelectorAll('#t8filter .chip').forEach(x => x.classList.remove('on')); b.classList.add('on'); filt = b.dataset.f; upd(); });
+  show(); upd();
+
+  // 迷思總整理（從各分頁的擂台自動彙整）
+  document.getElementById('t8myth').innerHTML = '<tr><th>迷思</th><th>其實是</th><th>在哪一頁</th></tr>' +
+    Object.entries(ARENA).map(([k, a]) => {
+      const tab = k.replace(/b$/, ''), btn = document.querySelector(`nav.tabs button[data-tab="${tab}"]`);
+      return `<tr><td style="text-align:left">${a.title.replace(/^迷思 \d：/, '')}</td><td style="text-align:left">${a.short || a.opts[a.ans]}</td><td><button class="chip" onclick="showTab('${tab}')">${btn ? btn.textContent : tab}</button></td></tr>`;
+    }).join('');
+})();
+
+boot();
+</script>
+</body>
+</html>

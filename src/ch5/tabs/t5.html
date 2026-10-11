@@ -1,0 +1,155 @@
+<!--NAV: 風・冰川・海浪-->
+<div class="pagehead">
+  <span class="ref">課本 p.143–148｜5-2 ② 風、冰川、海浪＋差異侵蝕</span>
+  <h2>風、冰、浪：另外三把雕刻刀</h2>
+  <p class="hook"><b>課本 In my life：</b>野柳女王頭的脖子為什麼一年比一年細？我們應該拯救她嗎？</p>
+</div>
+
+<details class="teacher"><summary>👩‍🏫 教學提示</summary><div class="inner">
+  這頁有四個模擬，可依時間挑 2–3 個。建議順序：女王頭（差異侵蝕，連結課本 In my life 討論）→ 海蝕地形演化 → 風 → 冰川。<br>
+  資優班的擂台放在冰川之後：用「冰磧石沒有分選」去撞第 4 分頁學到的「河流會把石頭排好」。
+</div></details>
+
+<div data-guess="t5"></div>
+
+<!-- ① 女王頭 -->
+<div class="card">
+  <h3>👑 女王頭的脖子：差異侵蝕</h3>
+  <div class="grid2">
+    <canvas class="sim" id="t5q" style="background:#DCEBF3"></canvas>
+    <div class="controls">
+      <div class="ctl"><label>年份 <output for="t5yr"></output></label><input type="range" id="t5yr" min="1994" max="2040" value="2024"></div>
+      <div class="ctl"><label>上下岩層的硬度差（只影響 2025 年以後的假設） <output for="t5hard"></output></label><input type="range" id="t5hard" min="0" max="100" value="60"></div>
+      <div class="readout" id="t5qR"></div>
+      <p class="note">● 實心點是北觀處的實際量測值；2025 年以後的虛線只是「如果照過去的速度」的假設，不是預測。</p>
+    </div>
+  </div>
+  <div class="cases" style="margin:12px 0 0">
+    <div class="case">
+      <div class="where">🇹🇼 臺灣｜新北 野柳地質公園</div>
+      <h4>30 年瘦了 103 公分</h4>
+      <p>北觀處量測：女王頭頸圍 1994 年約 <b>220 公分</b>，2024 年 10 月只剩 <span class="num">116.59 公分</span>。</p>
+      <p>2025 年 7 月網友發現後頸有「裂痕」，園方說明那是原本就有的<b>節理</b>（岩石天然的裂隙），目前沒有擴大。也曾研究用藥劑補強，但藥劑滲不進岩石內部，技術上還做不到。</p>
+      <div class="links"><a href="https://newtalk.tw/news/view/2025-07-19/982665" target="_blank" rel="noopener">📰 新頭殼 2025/07 報導</a><a href="https://news.pts.org.tw/article/415961" target="_blank" rel="noopener">📰 公視：頸圍年年縮</a><a href="https://www.google.com/search?tbm=isch&q=%E9%87%8E%E6%9F%B3%E5%A5%B3%E7%8E%8B%E9%A0%AD+%E6%AD%B7%E5%B9%B4" target="_blank" rel="noopener">📷 歷年照片</a></div>
+    </div>
+    <div class="case" style="border-top-color:#C46A28">
+      <div class="where" style="color:#C46A28">🗳 全班表態（課本 p.148）</div>
+      <h4>女王頭需要被拯救嗎？</h4>
+      <div id="t5poll"></div>
+      <p class="note">這題沒有標準答案。請每個選項找一位同學說出理由，理由要用到「風化」「侵蝕」這兩個詞。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ② 海蝕地形 -->
+<div class="card">
+  <h3>🌊 海蝕地形的一生</h3>
+  <div class="grid2">
+    <canvas class="sim" id="t5sea" style="background:#CFE6F5"></canvas>
+    <div class="controls">
+      <div class="ctl"><label>經過時間 <output for="t5st"></output></label><input type="range" id="t5st" min="0" max="100" value="0" step="any"></div>
+      <div class="btnrow"><button class="btn" id="t5seaPlay">▶ 自動播放</button></div>
+      <div class="callout" id="t5seaTxt"></div>
+    </div>
+  </div>
+  <div class="cases" style="margin:12px 0 0">
+    <div class="case world">
+      <div class="where">🌍 國際｜馬爾他 戈佐島</div>
+      <h4>「藍窗」一夜之間消失</h4>
+      <p>馬爾他著名的海蝕拱門「藍窗」，2017 年 3 月 8 日在一場暴風雨中整個崩塌，拱門頂部和右邊的柱子全部掉進海裡。</p>
+      <p class="ask">對照模擬：藍窗原本在哪個階段？它崩塌後幾乎什麼都沒留下——自然界不一定照模擬的每一步走，你覺得為什麼？</p>
+      <div class="links"><a href="https://en.wikipedia.org/wiki/Azure_Window" target="_blank" rel="noopener">維基百科（英）</a><a href="https://www.youtube.com/results?search_query=Azure+Window+collapse+2017" target="_blank" rel="noopener">🎬 崩塌前後影片</a></div>
+    </div>
+    <div class="case world">
+      <div class="where">🌍 國際｜英國 多塞特海岸</div>
+      <h4>一條海岸看完全部階段</h4>
+      <p>「杜朵門」是石灰岩海蝕拱門；不遠處的「老哈利岩」是海蝕柱。老哈利身旁原本還有一根「老哈利的妻子」，在 1896 年倒塌，只剩矮矮的殘根。</p>
+      <div class="links"><a href="https://dorsetlife.co.uk/treasures-of-dorset-durdle-door/" target="_blank" rel="noopener">Dorset Life 介紹（英）</a><a href="https://www.google.com/search?tbm=isch&q=Durdle+Door+Old+Harry+Rocks" target="_blank" rel="noopener">📷 看照片</a></div>
+    </div>
+    <div class="case">
+      <div class="where">🇹🇼 臺灣｜北海岸</div>
+      <h4>在臺灣找找看</h4>
+      <p>野柳、和平島（基隆）、深澳象鼻岩（新北瑞芳）、老梅綠石槽，都是海浪長期侵蝕的作品。象鼻岩就是一座海蝕拱門。</p>
+      <div class="links"><a href="https://www.google.com/search?tbm=isch&q=%E6%B7%B1%E6%BE%B3+%E8%B1%A1%E9%BC%BB%E5%B2%A9" target="_blank" rel="noopener">📷 深澳象鼻岩</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ③ 風 -->
+<div class="card">
+  <h3>💨 風：磨石頭、堆沙丘</h3>
+  <div class="grid2">
+    <canvas class="sim" id="t5wind" style="background:#FFF6E5"></canvas>
+    <div class="controls">
+      <div class="ctl"><label>風速 <output for="t5ws"></output></label><input type="range" id="t5ws" min="0" max="100" value="60"></div>
+      <label class="note"><input type="checkbox" id="t5fence" checked> 種一排防風林</label>
+      <div class="btnrow"><button class="btn ghost" id="t5windReset">↺ 換一顆新石頭</button></div>
+      <p class="note">觀察：沙粒都在「多高」的地方跳？石頭哪個部位被磨得最多？防風林後面發生什麼事？</p>
+    </div>
+  </div>
+  <div class="cases" style="margin:12px 0 0">
+    <div class="case">
+      <div class="where">🇹🇼 臺灣｜雲林・彰化 濁水溪</div>
+      <h4>冬天的「河川揚塵」</h4>
+      <p>秋冬枯水期，濁水溪下游大片河床露出來，東北季風一吹，細沙漫天，南岸空氣品質常常變成「紫爆」。</p>
+      <p>對策正好用到這一頁學的原理：把河床弄濕（水覆蓋）、種草（綠覆蓋）、鋪稻草蓆和防塵網——讓風「抓」不到沙。</p>
+      <div class="links"><a href="https://news.pts.org.tw/article/447358" target="_blank" rel="noopener">📰 公視：揚塵提早</a><a href="https://news.tvbs.com.tw/life/970518" target="_blank" rel="noopener">📰 TVBS：揚塵改善</a></div>
+    </div>
+    <div class="case world">
+      <div class="where">🌍 國際｜撒哈拉沙漠 → 亞馬遜雨林</div>
+      <h4>風把沙漠的沙送去當肥料</h4>
+      <p>NASA 用衛星追蹤發現：每年平均約 <span class="num">2770 萬噸</span> 撒哈拉沙塵飄過大西洋，落在南美洲亞馬遜雨林。</p>
+      <p>沙塵裡帶有磷（植物的養分），每年約 2 萬 2 千噸，差不多補回雨林被雨水沖走的量。</p>
+      <div class="links"><a href="https://svs.gsfc.nasa.gov/11775" target="_blank" rel="noopener">🎬 NASA 動畫（英）</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ④ 冰川 -->
+<div class="card">
+  <h3>🧊 冰川：慢速推土機</h3>
+  <div class="grid2">
+    <canvas class="sim" id="t5ice" style="background:#EEF5FB"></canvas>
+    <div class="controls">
+      <div class="ctl"><label>冰川流過的時間 <output for="t5age"></output></label><input type="range" id="t5age" min="0" max="100" value="0"></div>
+      <div class="ctl"><label>氣溫 <output for="t5tmp"></output></label><input type="range" id="t5tmp" min="0" max="100" value="30"></div>
+      <div class="btnrow"><button class="btn ghost" id="t5iceReset">↺ 重來</button></div>
+      <p class="note">左圖：山谷的橫切面。右圖：冰川的前端（冰舌）。冰裡夾著大大小小的石頭，跟著冰一起慢慢往前移動。調高氣溫看看冰舌和石頭。</p>
+    </div>
+  </div>
+  <div class="cases" style="margin:12px 0 0">
+    <div class="case world">
+      <div class="where">🌍 國際｜瑞士 布拉滕村</div>
+      <h4>冰川崩塌，村子九成被掩埋</h4>
+      <p>2025 年 5 月 28 日，瑞士阿爾卑斯山的比爾希冰川有一大段崩落，冰和岩石沖下山谷，布拉滕村幾乎九成被埋。</p>
+      <p>好消息是：科學家事先監測到冰川移動從每天不到 1 公尺，在崩塌前幾天加速到約每天 10 公尺；5 月 19 日（提前 9 天）就撤離了約 300 位居民和牲畜。冰面上堆積的岩屑最厚約 80 公尺。崩塌前，冰川上方的岩坡（永凍土）反覆崩落，大量岩石堆壓在冰川上，讓冰川加速、最後整段斷裂。科學家認為，暖化讓高山永凍土變弱，這類崩落會更常發生。</p>
+      <div class="links"><a href="https://www.earth.com/news/glacier-collapse-buried-a-village-in-the-swiss-alps" target="_blank" rel="noopener">Earth.com 報導（英）</a><a href="https://www.youtube.com/results?search_query=Blatten+glacier+collapse" target="_blank" rel="noopener">🎬 YouTube 影片</a></div>
+    </div>
+    <div class="case world" style="grid-column:1/-1">
+      <div class="where">🌍 國際｜尼泊爾・西藏邊界 朗塘山谷（2026 年 8 月 26 日）</div>
+      <h4>冰川崩塌變成土石洪流：一次看到第五章的好幾個概念</h4>
+      <p>朗塘里朗峰北坡的一塊冰川（約 0.2 平方公里）在海拔約 5200 公尺處斷裂，連同岩石往下墜落約 1200 公尺，變成高速的「岩冰崩落」，接著轉成<b>土石流</b>，沿著特蘇利河（Trishuli River）一路沖到下游約 100 公里遠。</p>
+      <p>對照這一章：<br>
+        🧊 <b>冰川</b>：冰川本身移動很慢，衛星看到它崩塌前每月只動約 1 公分，崩塌前幾週才突然加快。<br>
+        🏞 <b>搬運</b>：土石流的速度估計約每秒 52 公尺（時速約 190 公里），水量和速度暴增，搬運力跟著暴增，連房子都被沖走。<br>
+        🪨 <b>沉積</b>：災區堆了 1.5 公尺以上的泥沙；土石把河道堵住，還形成兩個<b>堰塞湖</b>。<br>
+        🌡 <b>暖化</b>：有學者認為，原本把岩石和冰「凍在一起」的永凍土因暖化變弱，讓這類崩塌更容易發生；也有研究者提醒，這次的直接原因還在研究中。</p>
+      <p>這是一場嚴重的災難。根據統計（截至 2026 年 10 月 4 日），尼泊爾至少 1,454 人罹難、5,000 多人失蹤（失蹤數字官方仍在核實，可能有重複），12 座水力發電廠受損；數字仍在更新。</p>
+      <p class="ask">想一想：①這場土石流留下的沉積物，會像河流一樣「大的在上游、小的在下游」排好嗎？（對照下面的擂台）②比較瑞士布拉滕村：為什麼一個能提前撤離，一個幾乎來不及？</p>
+      <div class="links"><a href="https://en.wikipedia.org/wiki/2026_Nepal%E2%80%93Tibet_floods" target="_blank" rel="noopener">維基百科整理（英）</a><a href="https://www.undp.org/asia-pacific/nepal-floods-2026" target="_blank" rel="noopener">聯合國開發計畫署（英）</a><a href="https://www.unicef.org/emergencies/nepal-flood" target="_blank" rel="noopener">聯合國兒童基金會（英）</a><a href="https://www.youtube.com/results?search_query=Nepal+Langtang+glacier+collapse+flood+2026" target="_blank" rel="noopener">🎬 YouTube 影片</a></div>
+    </div>
+    <div class="case">
+      <div class="where">🇹🇼 臺灣｜雪山</div>
+      <h4>臺灣也有冰川留下的痕跡？</h4>
+      <p>臺灣現在沒有冰川，但許多學者認為雪山主峰附近的「圈谷」，是上一次冰河時期留下的冰川地形。</p>
+      <p class="ask">想一想：如果要證明這裡曾經有冰川，你要去找什麼證據？（提示：看下面的擂台）</p>
+      <div class="links"><a href="https://www.google.com/search?tbm=isch&q=%E9%9B%AA%E5%B1%B1%E5%9C%88%E8%B0%B7" target="_blank" rel="noopener">📷 雪山圈谷</a></div>
+    </div>
+  </div>
+</div>
+
+<details class="deep"><summary>🧠 資優挑戰｜迷思擂台：冰川也會把石頭「排好」嗎？</summary><div class="inner">
+  <div data-arena="t5"></div>
+</div></details>
+
+<div class="takeaway">💬 <b>一句話帶走：</b>風化不是「風」的專利；風、冰川、海浪都會______、______、______和______。</div>

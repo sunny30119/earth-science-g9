@@ -1,0 +1,65 @@
+<!--NAV: 地震：規模與震度-->
+<div class="pagehead">
+  <span class="ref">課本 p.175–177｜6-2 ① 地震與火山</span>
+  <h2>同一個地震，為什麼各地搖得不一樣？</h2>
+  <p class="hook"><b>課本 tell me why：</b>世界上每個地方都像臺灣一樣常常地震嗎？還是這和臺灣的位置有關？——先搞懂地震報告上的每一個詞。</p>
+</div>
+
+<details class="teacher"><summary>👩‍🏫 教學提示</summary><div class="inner">
+  ① 先按「0403 花蓮」重現課本圖 6-10 的地震報告，請學生讀出震央、震源深度、規模、各地震度。② 拖曳紅色震央、改規模和深度，讓學生歸納「震度和什麼有關」。③ 例題 6-1 放在資優擂台的換情境題。④ 最後 3 分鐘：震度分級表＋「趴下、掩護、穩住」。
+</div></details>
+
+<div data-guess="t4"></div>
+
+<div class="card">
+  <h3>🗺 臺灣地震模擬器 <span class="tag note">拖曳紅色星號 = 移動震央</span></h3>
+  <div class="grid2">
+    <canvas class="sim" id="c6eq" style="background:#D8ECF5;max-width:520px;margin:0 auto"></canvas>
+    <div class="controls">
+      <div class="btnrow"><button class="btn ghost" data-pre="hl">0403 花蓮</button><button class="btn ghost" data-pre="cc">921 集集</button><button class="btn ghost" data-pre="deep">深層地震</button></div>
+      <div class="ctl"><label>規模（釋放的能量） <output for="c6M"></output></label><input type="range" id="c6M" min="40" max="80" value="71"></div>
+      <div class="ctl"><label>震源深度 <output for="c6D"></output></label><input type="range" id="c6D" min="5" max="150" value="22"></div>
+      <canvas class="sim" id="c6side" style="background:#fff"></canvas>
+      <div id="c6eqList" style="font-size:.9rem"></div>
+    </div>
+  </div>
+  <p class="note">震度依「規模、距離」用簡化公式估算，用來看趨勢；真實震度還和地質、地形有關。</p>
+</div>
+
+<div class="card">
+  <h3>📋 震度分級（中央氣象署，課本 p.176）</h3>
+  <table class="simple" id="c6scale"></table>
+  <div class="callout" style="margin-top:10px">
+    <b>地震發生時：趴下、掩護、穩住！</b>趴在地上，爬到堅固的桌子下，雙手抓牢桌腳，護住頭頸部。<br>
+    <b>地震發生前：</b>準備緊急避難包——保暖衣物、緊急糧食與飲水、貴重物品、醫療清潔用品。
+  </div>
+</div>
+
+<div class="cases">
+  <div class="case">
+    <div class="where">🇹🇼 臺灣｜2024 年 4 月 3 日 花蓮</div>
+    <h4>25 年來最大的地震</h4>
+    <p>早上 7:58，震央在花蓮縣政府南南西方約 15 公里，震源深度 22.5 公里，課本記錄的芮氏規模為 7.1。花蓮最大震度 6 強，房屋倒塌、太魯閣山區大規模崩塌。</p>
+    <p>氣象署當天初報規模 7.2；因為東部海域的測站較少，有些地區一開始估得偏低，沒收到國家級警報——這也讓地震預警系統持續改進（下一分頁）。</p>
+    <div class="links"><a href="https://www.google.com/search?q=0403+%E8%8A%B1%E8%93%AE%E5%9C%B0%E9%9C%87+%E5%9C%B0%E9%9C%87%E5%A0%B1%E5%91%8A" target="_blank" rel="noopener">🔎 搜尋地震報告</a></div>
+  </div>
+  <div class="case world">
+    <div class="where">🌍 國際｜日本 2011 年 3 月 11 日</div>
+    <h4>規模 9.0：能量約是 921 的 350 倍</h4>
+    <p>東日本大地震發生在太平洋板塊隱沒到日本下方的海溝附近，引發巨大海嘯，約 1 萬 8 千人罹難或失蹤，還造成福島核電廠事故。</p>
+    <p class="ask">算算看：規模每大 1，能量約變成 32 倍。9.0 比 7.3 大了 1.7，能量約是幾倍？</p>
+  </div>
+  <div class="case world">
+    <div class="where">🌍 🟣 加深｜尼泊爾 2026 年 8 月 26 日</div>
+    <h4>地震儀記到的，不一定是「地震」</h4>
+    <p>朗塘山谷冰川崩塌的那一刻，地震儀記錄到相當於規模 5 多的訊號，大家一開始以為是地震引發了災難。後來美國地質調查局分析波形，發現這個訊號是<b>冰和岩石崩塌本身</b>造成的——巨大的質量砸到地面，也會產生地震波。</p>
+    <p class="ask">想一想：這和課本「岩層斷裂釋放能量 → 地震波」有什麼相同、有什麼不同？</p>
+    <div class="links"><a href="https://en.wikipedia.org/wiki/2026_Nepal%E2%80%93Tibet_floods" target="_blank" rel="noopener">維基百科整理（英）</a></div>
+  </div>
+</div>
+
+<details class="deep"><summary>🧠 資優挑戰｜迷思擂台：規模比較大，就一定搖得比較兇？</summary><div class="inner">
+  <div data-arena="t4"></div>
+</div></details>
+
+<div class="takeaway">💬 <b>一句話帶走：</b>規模看「震源放出多少______」，同一次地震只有______個；震度看「各地______的程度」，離震央愈近通常愈______。</div>
