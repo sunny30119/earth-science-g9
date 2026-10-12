@@ -199,6 +199,10 @@ details.deep > .inner { padding: 0 16px 16px; }
   background: var(--primary); color: #fff; border-radius: 12px; padding: 12px 18px; margin-bottom: 20px;
 }
 .takeaway b { color: #FFD27A; }
+.takeaway .blank { cursor: pointer; border-bottom: 2px dashed rgba(255,210,122,.7); padding: 0 3px; }
+.takeaway .blank.show { color: #FFD27A; font-weight: bold; border-bottom-style: solid; }
+.takeaway .hintbtn { margin-left: 10px; border: 1px solid rgba(255,255,255,.6); background: transparent; color: #fff; border-radius: 999px; padding: 2px 12px; font-size: .85rem; cursor: pointer; font-family: inherit; vertical-align: middle; }
+.takeaway .hintbtn:hover { background: rgba(255,255,255,.15); }
 details.teacher {
   border: 1px dashed #B9B2A3; border-radius: 10px; background: #FBFAF6; margin-bottom: 16px; font-size: .88rem;
 }
@@ -301,7 +305,7 @@ kbd { background: #eee; border-radius: 4px; padding: 0 5px; font-size: .8em; bor
   </p>
 </div>
 
-<div class="takeaway">💬 <b>一句話帶走：</b>照片裡看起來一樣大的東西，真實的距離和大小可能差了______倍。</div>
+<div class="takeaway" data-ans="上兆（非常非常多）">💬 <b>一句話帶走：</b>照片裡看起來一樣大的東西，真實的距離和大小可能差了______倍。</div>
 
 </section>
 <section class="panel" id="p-t1">
@@ -352,7 +356,7 @@ kbd { background: #eee; border-radius: 4px; padding: 0 5px; font-size: .8em; bor
   <div data-arena="t1"></div>
 </div></details>
 
-<div class="takeaway">💬 <b>一句話帶走：</b>宇宙的層級：宇宙 ＞ ______ ＞ 恆星 ＞ ______ ＞ 衛星。1 光年是光走一年的______，不是時間。</div>
+<div class="takeaway" data-ans="星系|行星|距離">💬 <b>一句話帶走：</b>宇宙的層級：宇宙 ＞ ______ ＞ 恆星 ＞ ______ ＞ 衛星。1 光年是光走一年的______，不是時間。</div>
 
 </section>
 <section class="panel" id="p-t2">
@@ -427,7 +431,7 @@ kbd { background: #eee; border-radius: 4px; padding: 0 5px; font-size: .8em; bor
   <div data-arena="t2"></div>
 </div></details>
 
-<div class="takeaway">💬 <b>一句話帶走：</b>類地行星：體積小、密度______、有岩石外殼；類木行星：體積大、密度______、主要由氣體組成。</div>
+<div class="takeaway" data-ans="大|小">💬 <b>一句話帶走：</b>類地行星：體積小、密度______、有岩石外殼；類木行星：體積大、密度______、主要由氣體組成。</div>
 
 </section>
 <section class="panel" id="p-t3">
@@ -500,7 +504,7 @@ kbd { background: #eee; border-radius: 4px; padding: 0 5px; font-size: .8em; bor
   <div data-arena="t3"></div>
 </div></details>
 
-<div class="takeaway">💬 <b>一句話帶走：</b>晝夜是因為地球______；四季是因為地球______加上自轉軸______ 23.5 度，讓陽光直射的位置一年中來回移動。</div>
+<div class="takeaway" data-ans="自轉|公轉|傾斜">💬 <b>一句話帶走：</b>晝夜是因為地球______；四季是因為地球______加上自轉軸______ 23.5 度，讓陽光直射的位置一年中來回移動。</div>
 
 </section>
 <section class="panel" id="p-t4">
@@ -573,7 +577,7 @@ kbd { background: #eee; border-radius: 4px; padding: 0 5px; font-size: .8em; bor
   <div data-arena="t4"></div>
 </div></details>
 
-<div class="takeaway">💬 <b>一句話帶走：</b>月相是因為月球繞地球公轉，我們看到它「被太陽照亮那一半」的______不同；不是地球的______。</div>
+<div class="takeaway" data-ans="比例（多少）|影子">💬 <b>一句話帶走：</b>月相是因為月球繞地球公轉，我們看到它「被太陽照亮那一半」的______不同；不是地球的______。</div>
 
 </section>
 <section class="panel" id="p-t5">
@@ -639,7 +643,7 @@ kbd { background: #eee; border-radius: 4px; padding: 0 5px; font-size: .8em; bor
   <div data-arena="t5"></div>
 </div></details>
 
-<div class="takeaway">💬 <b>一句話帶走：</b>日食：______在中間，只發生在______；月食：______在中間，只發生在______。</div>
+<div class="takeaway" data-ans="月球|新月（朔）|地球|滿月（望）">💬 <b>一句話帶走：</b>日食：______在中間，只發生在______；月食：______在中間，只發生在______。</div>
 
 </section>
 <section class="panel" id="p-t6">
@@ -710,7 +714,7 @@ kbd { background: #eee; border-radius: 4px; padding: 0 5px; font-size: .8em; bor
   <div data-arena="t6"></div>
 </div></details>
 
-<div class="takeaway">💬 <b>一句話帶走：</b>潮汐主要是______的引力造成的；同一地點一天大約有______次滿潮。初一、十五潮差最大，叫做______。</div>
+<div class="takeaway" data-ans="月球（和太陽）|兩|大潮">💬 <b>一句話帶走：</b>潮汐主要是______的引力造成的；同一地點一天大約有______次滿潮。初一、十五潮差最大，叫做______。</div>
 
 </section>
 <section class="panel" id="p-t7">
@@ -1011,6 +1015,17 @@ function boot() {
     if (['input', 'textarea', 'select'].includes(tag)) return;
     if (e.key === 'ArrowRight' || e.key === 'PageDown') { stepTab(1); e.preventDefault(); }
     if (e.key === 'ArrowLeft' || e.key === 'PageUp') { stepTab(-1); e.preventDefault(); }
+  });
+  // 一句話帶走：空格可以點開看提示
+  $$('.takeaway[data-ans]').forEach(tk => {
+    const ans = tk.dataset.ans.split('|'); let k = 0;
+    tk.innerHTML = tk.innerHTML.replace(/_{4,}/g, () => `<span class="blank" data-a="${ans[k++] || ''}" title="點一下看這一格">______</span>`);
+    const btn = document.createElement('button'); btn.className = 'hintbtn'; btn.textContent = '💡 看提示';
+    const blanks = $$('.blank', tk);
+    const setB = (b, on) => { b.classList.toggle('show', on); b.textContent = on ? b.dataset.a : '______'; };
+    blanks.forEach(b => b.onclick = () => setB(b, !b.classList.contains('show')));
+    btn.onclick = () => { const on = !blanks.every(b => b.classList.contains('show')); blanks.forEach(b => setB(b, on)); btn.textContent = on ? '🙈 藏起來' : '💡 看提示'; };
+    tk.appendChild(btn);
   });
   // 掛上「猜一猜」「迷思擂台」
   $$('[data-guess]').forEach(h => mountGuess(h, GUESS[h.dataset.guess]));

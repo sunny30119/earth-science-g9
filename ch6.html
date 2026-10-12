@@ -199,6 +199,10 @@ details.deep > .inner { padding: 0 16px 16px; }
   background: var(--primary); color: #fff; border-radius: 12px; padding: 12px 18px; margin-bottom: 20px;
 }
 .takeaway b { color: #FFD27A; }
+.takeaway .blank { cursor: pointer; border-bottom: 2px dashed rgba(255,210,122,.7); padding: 0 3px; }
+.takeaway .blank.show { color: #FFD27A; font-weight: bold; border-bottom-style: solid; }
+.takeaway .hintbtn { margin-left: 10px; border: 1px solid rgba(255,255,255,.6); background: transparent; color: #fff; border-radius: 999px; padding: 2px 12px; font-size: .85rem; cursor: pointer; font-family: inherit; vertical-align: middle; }
+.takeaway .hintbtn:hover { background: rgba(255,255,255,.15); }
 details.teacher {
   border: 1px dashed #B9B2A3; border-radius: 10px; background: #FBFAF6; margin-bottom: 16px; font-size: .88rem;
 }
@@ -300,7 +304,7 @@ kbd { background: #eee; border-radius: 4px; padding: 0 5px; font-size: .8em; bor
   <div class="callout" style="margin-top:8px">和第五章接起來：第五章是<b>外營力</b>把地表「削平」；第六章是<b>內營力</b>把地表「推高、扯開」。</div>
 </div>
 
-<div class="takeaway">💬 <b>一句話帶走：</b>海底有陸地動物的化石，代表這裡______是______。地球的環境一直在變。</div>
+<div class="takeaway" data-ans="以前|陸地">💬 <b>一句話帶走：</b>海底有陸地動物的化石，代表這裡______是______。地球的環境一直在變。</div>
 
 </section>
 <section class="panel" id="p-t1">
@@ -366,7 +370,7 @@ kbd { background: #eee; border-radius: 4px; padding: 0 5px; font-size: .8em; bor
   <div data-arena="t1"></div>
 </div></details>
 
-<div class="takeaway">💬 <b>一句話帶走：</b>看成分分成地殼、______、______；看軟硬分成堅硬的______圈和可塑的______圈。</div>
+<div class="takeaway" data-ans="地函|地核|岩石|軟流">💬 <b>一句話帶走：</b>看成分分成地殼、______、______；看軟硬分成堅硬的______圈和可塑的______圈。</div>
 
 </section>
 <section class="panel" id="p-t2">
@@ -434,7 +438,7 @@ kbd { background: #eee; border-radius: 4px; padding: 0 5px; font-size: .8em; bor
   <div data-arena="t2"></div>
 </div></details>
 
-<div class="takeaway">💬 <b>一句話帶走：</b>板塊分離 → 中洋脊、______；板塊聚合 → 海溝、火山、______。高山和火山大多在板塊______。</div>
+<div class="takeaway" data-ans="裂谷|山脈|交界處">💬 <b>一句話帶走：</b>板塊分離 → 中洋脊、______；板塊聚合 → 海溝、火山、______。高山和火山大多在板塊______。</div>
 
 </section>
 <section class="panel" id="p-t3">
@@ -507,7 +511,7 @@ kbd { background: #eee; border-radius: 4px; padding: 0 5px; font-size: .8em; bor
   <div data-arena="t3"></div>
 </div></details>
 
-<div class="takeaway">💬 <b>一句話帶走：</b>岩層受力 → 彎曲是______，斷裂並錯動是______。正斷層的上盤往______，逆斷層的上盤往______。</div>
+<div class="takeaway" data-ans="褶皺|斷層|下|上">💬 <b>一句話帶走：</b>岩層受力 → 彎曲是______，斷裂並錯動是______。正斷層的上盤往______，逆斷層的上盤往______。</div>
 
 </section>
 <section class="panel" id="p-t4">
@@ -575,7 +579,7 @@ kbd { background: #eee; border-radius: 4px; padding: 0 5px; font-size: .8em; bor
   <div data-arena="t4"></div>
 </div></details>
 
-<div class="takeaway">💬 <b>一句話帶走：</b>規模看「震源放出多少______」，同一次地震只有______個；震度看「各地______的程度」，離震央愈近通常愈______。</div>
+<div class="takeaway" data-ans="能量|一|搖晃（破壞）|大">💬 <b>一句話帶走：</b>規模看「震源放出多少______」，同一次地震只有______個；震度看「各地______的程度」，離震央愈近通常愈______。</div>
 
 </section>
 <section class="panel" id="p-t5">
@@ -634,7 +638,7 @@ kbd { background: #eee; border-radius: 4px; padding: 0 5px; font-size: .8em; bor
   <div data-arena="t5"></div>
 </div></details>
 
-<div class="takeaway">💬 <b>一句話帶走：</b>地震預警利用「______波比地震波快」來搶時間；離震央愈______，預警時間愈長。它不是地震「預測」。</div>
+<div class="takeaway" data-ans="電磁|遠">💬 <b>一句話帶走：</b>地震預警利用「______波比地震波快」來搶時間；離震央愈______，預警時間愈長。它不是地震「預測」。</div>
 
 </section>
 <section class="panel" id="p-t6">
@@ -701,7 +705,7 @@ kbd { background: #eee; border-radius: 4px; padding: 0 5px; font-size: .8em; bor
   <div data-arena="t6"></div>
 </div></details>
 
-<div class="takeaway">💬 <b>一句話帶走：</b>臺灣位在______板塊和______板塊的交界，交界在______；板塊擠壓 → 南北走向的山脈、頻繁的地震。</div>
+<div class="takeaway" data-ans="歐亞|菲律賓海|花東縱谷">💬 <b>一句話帶走：</b>臺灣位在______板塊和______板塊的交界，交界在______；板塊擠壓 → 南北走向的山脈、頻繁的地震。</div>
 
 </section>
 <section class="panel" id="p-t7">
@@ -788,7 +792,7 @@ kbd { background: #eee; border-radius: 4px; padding: 0 5px; font-size: .8em; bor
   <div data-arena="t7"></div>
 </div></details>
 
-<div class="takeaway">💬 <b>一句話帶走：</b>下面的岩層比較______；被切過的比切過它的______。化石可以判斷岩層的______和______。</div>
+<div class="takeaway" data-ans="老|早（老）|環境|年代">💬 <b>一句話帶走：</b>下面的岩層比較______；被切過的比切過它的______。化石可以判斷岩層的______和______。</div>
 
 </section>
 <section class="panel" id="p-t8">
@@ -1089,6 +1093,17 @@ function boot() {
     if (['input', 'textarea', 'select'].includes(tag)) return;
     if (e.key === 'ArrowRight' || e.key === 'PageDown') { stepTab(1); e.preventDefault(); }
     if (e.key === 'ArrowLeft' || e.key === 'PageUp') { stepTab(-1); e.preventDefault(); }
+  });
+  // 一句話帶走：空格可以點開看提示
+  $$('.takeaway[data-ans]').forEach(tk => {
+    const ans = tk.dataset.ans.split('|'); let k = 0;
+    tk.innerHTML = tk.innerHTML.replace(/_{4,}/g, () => `<span class="blank" data-a="${ans[k++] || ''}" title="點一下看這一格">______</span>`);
+    const btn = document.createElement('button'); btn.className = 'hintbtn'; btn.textContent = '💡 看提示';
+    const blanks = $$('.blank', tk);
+    const setB = (b, on) => { b.classList.toggle('show', on); b.textContent = on ? b.dataset.a : '______'; };
+    blanks.forEach(b => b.onclick = () => setB(b, !b.classList.contains('show')));
+    btn.onclick = () => { const on = !blanks.every(b => b.classList.contains('show')); blanks.forEach(b => setB(b, on)); btn.textContent = on ? '🙈 藏起來' : '💡 看提示'; };
+    tk.appendChild(btn);
   });
   // 掛上「猜一猜」「迷思擂台」
   $$('[data-guess]').forEach(h => mountGuess(h, GUESS[h.dataset.guess]));

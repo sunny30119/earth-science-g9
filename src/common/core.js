@@ -248,6 +248,17 @@ function boot() {
     if (e.key === 'ArrowRight' || e.key === 'PageDown') { stepTab(1); e.preventDefault(); }
     if (e.key === 'ArrowLeft' || e.key === 'PageUp') { stepTab(-1); e.preventDefault(); }
   });
+  // 一句話帶走：空格可以點開看提示
+  $$('.takeaway[data-ans]').forEach(tk => {
+    const ans = tk.dataset.ans.split('|'); let k = 0;
+    tk.innerHTML = tk.innerHTML.replace(/_{4,}/g, () => `<span class="blank" data-a="${ans[k++] || ''}" title="點一下看這一格">______</span>`);
+    const btn = document.createElement('button'); btn.className = 'hintbtn'; btn.textContent = '💡 看提示';
+    const blanks = $$('.blank', tk);
+    const setB = (b, on) => { b.classList.toggle('show', on); b.textContent = on ? b.dataset.a : '______'; };
+    blanks.forEach(b => b.onclick = () => setB(b, !b.classList.contains('show')));
+    btn.onclick = () => { const on = !blanks.every(b => b.classList.contains('show')); blanks.forEach(b => setB(b, on)); btn.textContent = on ? '🙈 藏起來' : '💡 看提示'; };
+    tk.appendChild(btn);
+  });
   // 掛上「猜一猜」「迷思擂台」
   $$('[data-guess]').forEach(h => mountGuess(h, GUESS[h.dataset.guess]));
   $$('[data-arena]').forEach(h => mountArena(h, ARENA[h.dataset.arena]));
