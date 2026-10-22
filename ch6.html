@@ -339,6 +339,22 @@ kbd { background: #eee; border-radius: 4px; padding: 0 5px; font-size: .8em; bor
   </table>
 </div>
 
+<div class="card">
+  <h3>🔍 科學家怎麼用地震波「聽」出分層？</h3>
+  <p style="margin-top:0">我們發現：<b>地震波的速度會隨深度改變</b>，而且在某幾個深度會「突然跳一下」。速度突然改變，代表那裡的物質突然不一樣了——這種分界面叫做<b>不連續面</b>。</p>
+  <div class="grid2">
+    <div>
+      <canvas class="sim" id="c6vel" style="background:#fff"></canvas>
+      <div class="chips" id="c6velZoom" style="margin-top:6px"><button class="chip on" data-z="all">看整個地球（0～6371 公里）</button><button class="chip" data-z="top">放大地表附近（0～400 公里）</button></div>
+    </div>
+    <div class="callout" id="c6velTxt" style="min-height:160px">點圖上的 ① ② ③ 標記，看看在那個深度發生了什麼事。</div>
+  </div>
+
+  <h3 style="margin-top:16px">🧩 推理鏈：從「觀察」一步步推到「地球的分層」</h3>
+  <div id="c6chain"></div>
+  <div class="btnrow" style="margin-top:8px"><button class="btn" id="c6chainNext">▶ 下一步推論</button><button class="btn ghost" id="c6chainAll">全部展開</button><button class="btn ghost" id="c6chainReset">↺ 從頭開始</button></div>
+</div>
+
 <div class="cases">
   <div class="case world">
     <div class="where">🌍 國際｜俄羅斯 科拉半島</div>
@@ -1505,6 +1521,95 @@ ARENA.t7 = {
   registerSim('t1', { start: wdraw, resize: wdraw });
 })();
 
+/* ===== 地震波速度–深度圖＋推理鏈（莫氏、古氏、雷曼不連續面） =====
+   速度數值依「初步參考地球模型」（PREM）概略取值，單位：公里/秒。 */
+(() => {
+  const cv = document.getElementById('c6vel'); if (!cv) return;
+  const S = stage(cv, 460, 420), ctx = S.ctx;
+  // [深度, P 波速度, S 波速度]；同一深度出現兩次代表「跳一下」
+  const PROF = [[0, 5.8, 3.2], [35, 6.8, 3.9], [35, 8.0, 4.5], [100, 8.0, 4.45], [180, 7.9, 4.35], [220, 8.5, 4.6], [400, 9.0, 4.9], [670, 10.2, 5.6], [670, 10.8, 5.95],
+    [2891, 13.7, 7.3], [2891, 8.06, 0], [5150, 10.36, 0], [5150, 11.03, 3.5], [6371, 11.26, 3.67]];
+  const MARK = [
+    [35, '①', '莫氏不連續面（約 35 公里，大陸地殼底部）', '<b>① 莫氏不連續面</b>（地殼｜地函）<br>深度：大陸底下約 30～50 公里，海洋底下約 5～10 公里。<br>P 波速度從每秒約 6～7 公里突然<b>變快</b>到約 8 公里 → 下面的岩石密度更大、更堅硬。'],
+    [2891, '②', '古氏不連續面（約 2900 公里）', '<b>② 古氏不連續面</b>（地函｜地核）<br>深度：約 2900 公里。<br>P 波速度突然<b>大幅變慢</b>（約 13.7 → 8 公里/秒），而且 <b>S 波消失了</b> → 下面是液體：<b>外地核</b>（液態的鐵、鎳）。'],
+    [5150, '③', '雷曼不連續面（約 5150 公里）', '<b>③ 雷曼不連續面</b>（外地核｜內地核）<br>深度：約 5150 公里。<br>P 波速度又<b>變快</b>，而且科學家推論這裡 S 波又能傳播 → 下面是固體：<b>內地核</b>。'],
+  ];
+  let zoom = 'all', sel = -1;
+  const geo = () => { const dmax = zoom === 'all' ? 6371 : 400; return { dmax, X: v => 50 + v / 14 * 380, Y: d => 30 + d / dmax * 360 }; };
+  function draw() {
+    S.fit(); ctx.clearRect(0, 0, S.W, S.H);
+    const { dmax, X, Y } = geo();
+    // 分層底色
+    const bands = [[0, 35, '#D7CCC8', '地殼'], [35, 2891, '#FFE0B2', '地函'], [2891, 5150, '#FFF59D', '外地核（液）'], [5150, 6371, '#FFECB3', '內地核（固）']];
+    bands.forEach(([a, b, c, n]) => { if (a > dmax) return; const y0 = Y(a), y1 = Y(Math.min(b, dmax)); ctx.fillStyle = c; ctx.fillRect(50, y0, 380, y1 - y0); if (y1 - y0 > 18) label(ctx, n, 425, (y0 + y1) / 2, { align: 'right', size: 13, bold: true, color: '#6D4C41' }); });
+    if (zoom === 'top') { ctx.fillStyle = 'rgba(192,80,77,.15)'; ctx.fillRect(50, Y(100), 380, Y(220) - Y(100)); label(ctx, '軟流圈附近：S 波變慢一點', 300, Y(160), { size: 12, color: '#B71C1C', bold: true }); }
+    // 座標軸
+    ctx.strokeStyle = '#999'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(50, 30); ctx.lineTo(430, 30); ctx.moveTo(50, 30); ctx.lineTo(50, 390); ctx.stroke();
+    [0, 4, 8, 12].forEach(v => label(ctx, v + '', X(v), 18, { align: 'center', size: 12, color: '#666' }));
+    label(ctx, '速度（公里/秒）→', 430, 404, { align: 'right', size: 12, color: '#666' });
+    const ticks = zoom === 'all' ? [0, 1000, 2000, 3000, 4000, 5000, 6000] : [0, 100, 200, 300, 400];
+    ticks.forEach(d => label(ctx, d + '', 44, Y(d), { align: 'right', size: 12, color: '#666' }));
+    label(ctx, '深度（公里）', 6, 404, { size: 12, color: '#666' });
+    // 曲線
+    [[1, '#1E88E5', 'P 波'], [2, '#E53935', 'S 波']].forEach(([k, c, n]) => {
+      ctx.strokeStyle = c; ctx.lineWidth = 3; ctx.beginPath(); let started = false;
+      PROF.forEach(p => { if (p[0] > dmax + 1) return; const x = X(p[k]), y = Y(Math.min(p[0], dmax)); if (!started) { ctx.moveTo(x, y); started = true; } else ctx.lineTo(x, y); });
+      if (dmax < 6371) { const last = PROF.filter(p => p[0] <= dmax).pop(); ctx.lineTo(X(last[k]), Y(dmax)); }
+      ctx.stroke();
+      label(ctx, n, X(k === 1 ? 6.2 : 3.4) + 6, Y(dmax * .04) + 6, { size: 13, bold: true, color: c, bg: 'rgba(255,255,255,.85)' });
+    });
+    if (zoom === 'all') label(ctx, 'S 波到這裡就消失了', X(1.2), Y(3600), { size: 12, bold: true, color: '#C62828', bg: 'rgba(255,255,255,.85)' });
+    // 不連續面標記
+    MARK.forEach(([d, sym, nm], i) => {
+      if (d > dmax) return;
+      const y = Y(d);
+      ctx.setLineDash([5, 4]); ctx.strokeStyle = i === sel ? '#6A3FA0' : 'rgba(0,0,0,.35)'; ctx.lineWidth = i === sel ? 2.5 : 1.2; ctx.beginPath(); ctx.moveTo(50, y); ctx.lineTo(430, y); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = i === sel ? '#6A3FA0' : '#455A64'; ctx.beginPath(); ctx.arc(64, y, 11, 0, 7); ctx.fill();
+      label(ctx, sym, 64, y, { align: 'center', size: 13, bold: true, color: '#fff' });
+      MARK[i].hit = y;
+    });
+  }
+  cv.addEventListener('pointerdown', e => {
+    const p = S.pt(e); let best = -1, bd = 22;
+    MARK.forEach((m, i) => { if (m.hit !== undefined && m[0] <= geo().dmax && Math.abs(m.hit - p.y) < bd) { bd = Math.abs(m.hit - p.y); best = i; } });
+    if (best < 0) return; sel = best; draw(); document.getElementById('c6velTxt').innerHTML = MARK[best][3];
+  });
+  document.querySelectorAll('#c6velZoom .chip').forEach(b => b.onclick = () => { document.querySelectorAll('#c6velZoom .chip').forEach(x => x.classList.remove('on')); b.classList.add('on'); zoom = b.dataset.z; draw(); });
+  registerSim('t1', { start: draw, resize: draw });
+
+  /* ---------- 推理鏈 ---------- */
+  const CH = [
+    ['🧠 前提', '我們已經知道的事', '① 波的速度會隨介質改變，碰到兩種介質的交界會<b>轉彎（折射）或反彈（反射）</b>（第三冊學過）。<br>② 地震波有兩種：<b>P 波</b>在固體、液體裡都能傳；<b>S 波</b>只能在<b>固體</b>裡傳。', ''],
+    ['👀 觀察 1', '1909 年｜克羅埃西亞科學家 莫霍洛維奇', '一次地震後，他比對各地測站的紀錄：離震央大約 200 公里以外的測站，竟然收到一組 P 波<b>比預期更早到</b>。',
+      '🤔 推論：走「比較深、比較遠」的路線反而先到，代表地下某個深度以下的岩石，讓波跑得<b>更快</b>——就像繞道走高速公路，路比較長卻比較早到。<br>✅ 結論：地殼和下面的地函之間有一個分界 → <b>莫氏不連續面</b>（大陸底下約 30～50 公里、海洋底下約 5～10 公里）。'],
+    ['👀 觀察 2', '1914 年｜德國科學家 古騰堡', '全世界的測站發現：在距離震央大約 103°～142° 的一圈地區，<b>幾乎收不到 P 波</b>（P 波陰影區）。',
+      '🤔 推論：P 波在某個深度突然<b>變慢、大幅轉彎</b>，像光從空氣射進水裡一樣偏折，所以跳過了這一圈。古騰堡算出這個界面約在 <b>2900 公里</b>深。<br>✅ 結論：地函和地核的分界 → <b>古氏不連續面</b>。'],
+    ['👀 觀察 3', '1926 年｜英國科學家 傑佛瑞斯等人', '距離震央 103° 以外的地方，<b>完全收不到 S 波</b>。',
+      '🤔 推論：S 波只能在固體中傳播。它一碰到 2900 公里深的界面就過不去 → 界面下面是<b>液體</b>。<br>✅ 結論：地核的外層是液態的鐵、鎳 → <b>外地核</b>。（這一頁下方的資優挑戰「地震波穿過地球」可以親手驗證。）'],
+    ['👀 觀察 4', '1936 年｜丹麥女科學家 雷曼', '奇怪的是，在 P 波陰影區<b>裡面</b>，竟然收到了<b>微弱的 P 波</b>。如果整個地核都是液體，這些 P 波應該不會出現在這裡。',
+      '🤔 推論：地核裡面一定還有另一個界面，把一部分 P 波反彈、折射進陰影區。而且 P 波在那裡又<b>變快</b>了 → 那是一個<b>固體</b>的核心。<br>✅ 結論：約 5150 公里深處有 <b>內地核</b>（固態），分界叫做<b>雷曼不連續面</b>。'],
+    ['🟣 加深', '更熱的內核，為什麼反而是固體？', '地球愈深愈熱，內地核的溫度可能比外地核還高，卻是固體，好像說不通？',
+      '🤔 推論：深處的<b>壓力</b>大到不可思議（約是地表大氣壓力的 300 多萬倍）。壓力愈大，鐵的熔點就愈高——鐵被「壓」成了固體。<br>💡 所以「是固體還是液體」，要同時看溫度和壓力。'],
+    ['🏁 全部連起來', '一張地圖', '地殼 ─①莫氏不連續面─ 地函 ─②古氏不連續面─ 外地核（液）─③雷曼不連續面─ 內地核（固）',
+      '沒有人去過地底下，科學家只靠「波在哪裡變快、變慢、轉彎、消失」這些線索，就畫出了整個地球的內部構造。這就是<b>從證據推論</b>的科學方法。'],
+  ];
+  let shown = 0;
+  const host = document.getElementById('c6chain');
+  function renderChain() {
+    host.innerHTML = CH.slice(0, Math.max(1, shown)).map(([tag, who, obs, inf], i) => `
+      <div class="callout" style="margin:8px 0;${tag.includes('🟣') ? 'background:var(--deep-bg);border-left:4px solid var(--deep)' : ''}">
+        <div><b>${tag}</b>　<span class="note">${who}</span></div>
+        <div style="margin-top:4px">${obs}</div>
+        ${inf ? `<div style="margin-top:6px">${inf}</div>` : ''}
+      </div>`).join('');
+    document.getElementById('c6chainNext').style.display = shown >= CH.length ? 'none' : '';
+  }
+  document.getElementById('c6chainNext').onclick = () => { shown = Math.min(CH.length, Math.max(1, shown) + 1); renderChain(); };
+  document.getElementById('c6chainAll').onclick = () => { shown = CH.length; renderChain(); };
+  document.getElementById('c6chainReset').onclick = () => { shown = 1; renderChain(); };
+  shown = 1; renderChain();
+})();
+
 /* ==== t2.js ==== */
 /* ===== 第六章 分頁 2：板塊交界模擬器（剖面）＋分類 ===== */
 (() => {
@@ -2198,6 +2303,7 @@ ARENA.t7 = {
   const MAP = [
     ['6-1 地球的構造與板塊運動', '#1F6FB2', [
       ['怎麼知道地球內部', '鑽井只能到十幾公里；科學家用地震波在地球內部傳遞的變化來推論分層。'],
+      ['不連續面', '地震波速度突然改變的深度＝物質改變的分界：莫氏不連續面（地殼｜地函）、古氏不連續面（地函｜地核，約 2900 公里）、雷曼不連續面（外地核｜內地核）。'],
       ['地殼', '最外層。大陸地殼：較厚、密度小、花岡岩；海洋地殼：較薄、密度大、玄武岩。'],
       ['地函', '地殼下方，密度更大的岩石，主要元素為氧、矽、鎂（大部分是固體）。'],
       ['地核', '最內層，密度最大，主要由鐵、鎳組成。'],
@@ -2237,6 +2343,8 @@ ARENA.t7 = {
   // [單元, 題目, 選項, 正解, 解說]
   const QB = [
     ['6-1', '科學家主要是利用什麼來推論地球內部的分層？', ['鑽井到地心取樣', '地震波在地球內部傳遞的變化', '火山噴出的岩漿', '衛星照片'], 1, '鑽井只能到十幾公里深。'],
+    ['6-1', '地殼和地函的分界面稱為？', ['古氏不連續面', '莫氏不連續面', '雷曼不連續面', '中洋脊'], 1, '地震波通過莫氏不連續面時速度突然變快。'],
+    ['deep', '在 P 波陰影區裡竟然收到微弱的 P 波，讓科學家推論出什麼？', ['地函是液體', '地核裡還有一個固態的內地核', '地殼很薄', '地震儀壞了'], 1, '1936 年雷曼的推論。'],
     ['6-1', '地球由外到內的分層順序是？', ['地殼、地函、地核', '地核、地函、地殼', '地函、地殼、地核', '岩石圈、地核、地函'], 0, '依密度與成分分層。'],
     ['6-1', '海洋地殼和大陸地殼相比，何者正確？', ['海洋地殼較厚', '海洋地殼密度較大、以玄武岩為主', '大陸地殼以玄武岩為主', '兩者密度相同'], 1, '大陸地殼較厚、密度小、以花岡岩為主。'],
     ['6-1', '地核主要由哪些元素組成？', ['氧、矽、鎂', '鐵、鎳', '碳、氫', '鈣、鈉'], 1, '地函才是氧、矽、鎂。'],

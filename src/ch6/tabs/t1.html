@@ -29,6 +29,22 @@
   </table>
 </div>
 
+<div class="card">
+  <h3>🔍 科學家怎麼用地震波「聽」出分層？</h3>
+  <p style="margin-top:0">我們發現：<b>地震波的速度會隨深度改變</b>，而且在某幾個深度會「突然跳一下」。速度突然改變，代表那裡的物質突然不一樣了——這種分界面叫做<b>不連續面</b>。</p>
+  <div class="grid2">
+    <div>
+      <canvas class="sim" id="c6vel" style="background:#fff"></canvas>
+      <div class="chips" id="c6velZoom" style="margin-top:6px"><button class="chip on" data-z="all">看整個地球（0～6371 公里）</button><button class="chip" data-z="top">放大地表附近（0～400 公里）</button></div>
+    </div>
+    <div class="callout" id="c6velTxt" style="min-height:160px">點圖上的 ① ② ③ 標記，看看在那個深度發生了什麼事。</div>
+  </div>
+
+  <h3 style="margin-top:16px">🧩 推理鏈：從「觀察」一步步推到「地球的分層」</h3>
+  <div id="c6chain"></div>
+  <div class="btnrow" style="margin-top:8px"><button class="btn" id="c6chainNext">▶ 下一步推論</button><button class="btn ghost" id="c6chainAll">全部展開</button><button class="btn ghost" id="c6chainReset">↺ 從頭開始</button></div>
+</div>
+
 <div class="cases">
   <div class="case world">
     <div class="where">🌍 國際｜俄羅斯 科拉半島</div>
